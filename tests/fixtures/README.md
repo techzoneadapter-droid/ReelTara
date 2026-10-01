@@ -1,0 +1,1 @@
+`progress.webm` is an original 32×32 alternating red/blue canvas recording (~2.3 seconds), created for ReelTara tests using browser MediaRecorder and remuxed to WebM with finite duration and seek metadata. It contains no third-party footage or audio. It is only served by Playwright request interception, never bundled in the app.

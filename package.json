@@ -7,7 +7,9 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build",
     "preview": "vite --host 0.0.0.0 --port 4173",
-    "qa": "npm run build"
+    "qa": "npm run test && npm run test:e2e && npm run build",
+    "test": "tsx --test tests/services.test.ts",
+    "test:e2e": "node scripts/prepare-browser.mjs && TMPDIR=\"$PWD/.cache/tmp\" playwright test"
   },
   "dependencies": {
     "lucide-react": "0.468.0",
@@ -15,9 +17,13 @@
     "react-dom": "19.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@sparticuz/chromium": "^153.0.0",
+    "@types/node": "^26.6.3",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@vitejs/plugin-react": "^4.3.4",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.2",
     "vite": "^6.0.0"
   },

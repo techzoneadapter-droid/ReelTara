@@ -1,0 +1,35 @@
+{
+  "bunny": {
+    "sourceName": "Blender Foundation",
+    "sourcePageUrl": "https://peach.blender.org/",
+    "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+    "fallbackPlaybackUrls": [
+      "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4"
+    ],
+    "licenseType": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "attribution": "© 2008 Blender Foundation · peach.blender.org"
+  },
+  "sintel": {
+    "sourceName": "Blender Foundation",
+    "sourcePageUrl": "https://durian.blender.org/",
+    "playbackUrl": "https://archive.org/download/Sintel/sintel-2048-stereo_512kb.mp4",
+    "fallbackPlaybackUrls": [
+      "https://archive.org/download/Sintel/sintel-2048-stereo.mp4"
+    ],
+    "licenseType": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "attribution": "© 2010 Blender Foundation · durian.blender.org"
+  },
+  "steel": {
+    "sourceName": "Blender Foundation",
+    "sourcePageUrl": "https://mango.blender.org/",
+    "playbackUrl": "https://archive.org/download/Tears-of-Steel/tears_of_steel_720p.mp4",
+    "fallbackPlaybackUrls": [
+      "https://archive.org/download/Tears-of-Steel/tears_of_steel_1080p.mp4"
+    ],
+    "licenseType": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "attribution": "© 2012 Blender Foundation · mango.blender.org"
+  }
+}

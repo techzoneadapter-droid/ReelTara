@@ -5,3 +5,9 @@ dist
 .env.local
 *.log
 .DS_Store
+
+*.tsbuildinfo
+
+.cache/
+test-results/
+playwright-report/
