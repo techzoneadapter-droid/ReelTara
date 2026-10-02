@@ -1,4 +1,5 @@
 import type { Movie, Trailer } from "../types/movie";
+import { compatibleCandidates } from "../services/playbackHealth";
 const legalDomains = [
   "themoviedb.org",
   "www.themoviedb.org",
@@ -11,6 +12,9 @@ const legalDomains = [
   "mango.blender.org",
   "download.blender.org",
   "creativecommons.org",
+  "commons.wikimedia.org",
+  "upload.wikimedia.org",
+  "studio.blender.org",
 ];
 export function legalUrl(value: string | undefined): string | undefined {
   try {
@@ -26,6 +30,8 @@ export function legalUrl(value: string | undefined): string | undefined {
   }
 }
 export function canPlay(movie: Movie): boolean {
+  if (movie.playable === false) return false;
+  if (movie.playbackCandidates && !compatibleCandidates(movie.playbackCandidates).length) return false;
   const source = movie.source;
   if (
     movie.contentMode !== "free_legal" ||
@@ -39,8 +45,8 @@ export function canPlay(movie: Movie): boolean {
   const url = legalUrl(source.playableUrl);
   return (
     !!url &&
-    ["download.blender.org", "archive.org"].includes(new URL(url).hostname) &&
-    /\.(mp4|m4v|mov)$/i.test(new URL(url).pathname)
+    ["download.blender.org", "archive.org", "upload.wikimedia.org"].includes(new URL(url).hostname) &&
+    /\.(mp4|m4v|mov|webm|ogv|ogg)$/i.test(new URL(url).pathname)
   );
 }
 export function youtubeKey(url?: string): string | undefined {
@@ -55,13 +61,16 @@ export function youtubeKey(url?: string): string | undefined {
     return undefined;
   }
 }
+/** Direct sources must be explicitly reviewed; metadata alone is not authorization. */
+export function validTrailer(trailer: Trailer): boolean {
+  if (typeof trailer.sourceName !== "string" || !trailer.sourceName.trim() || (!trailer.official && !trailer.verified)) return false;
+  if (trailer.provider === "youtube") return /^[\w-]{11}$/.test(trailer.videoId || "");
+  return trailer.provider === "direct" && trailer.verified === true &&
+    !!legalUrl(trailer.directPlaybackUrl) && !!legalUrl(trailer.sourcePageUrl) &&
+    ["video/mp4", "video/webm", "video/ogg"].includes(trailer.mimeType || "");
+}
 export function preferredTrailer(videos: Trailer[]): Trailer | undefined {
-  return videos
-    .filter((v) => /^[\w-]{11}$/.test(v.key))
-    .sort(
-      (a, b) =>
-        (a.type === "Trailer" ? 0 : 2) +
-        (a.official ? 0 : 1) -
-        ((b.type === "Trailer" ? 0 : 2) + (b.official ? 0 : 1)),
-    )[0];
+  const rank = (v: Trailer) => !v.official ? 3 :
+    v.type === "Teaser" ? 2 : v.provider === "direct" ? 0 : 1;
+  return videos.filter(validTrailer).sort((a, b) => rank(a) - rank(b))[0];
 }

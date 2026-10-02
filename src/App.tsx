@@ -32,7 +32,7 @@ import {
 import { canPlay, legalUrl } from "./services/legal";
 import { AppError } from "./services/http";
 import { ProviderPicker } from "./components/ProviderPicker";
-import { Player } from "./components/Player";
+import { PlayerScreen } from "./components/player/PlayerScreen";
 import type {
   Movie,
   MovieDetails,
@@ -154,7 +154,9 @@ export default function App() {
       setProviderPicker(null);
       const nextMovie: Movie | null = event.state?.movie || null;
       setPlayer(
-        event.state?.player && nextMovie
+        event.state?.player &&
+        nextMovie &&
+        (event.state.playerMode !== "free" || canPlay(nextMovie))
           ? {
               movie: nextMovie,
               mode: event.state.playerMode === "free" ? "free" : "trailer",
@@ -184,8 +186,16 @@ export default function App() {
     }
   };
   const openPlayer = (movie: Movie, mode: "free" | "trailer") => {
+    if (mode === "free" && !canPlay(movie)) return;
     history.pushState(
-      { ...history.state, movie, tab, player: true, playerMode: mode },
+      {
+        ...history.state,
+        movie,
+        tab,
+        player: true,
+        playerMode: mode,
+        detailScroll: window.scrollY,
+      },
       "",
     );
     setPlayer({ movie, mode });
@@ -270,7 +280,7 @@ export default function App() {
   useEffect(() => {
     if (!detail || trailerIntent.current !== detail.id) return;
     trailerIntent.current = null;
-    if (detail.trailerUrl) openPlayer(detail, "trailer");
+    if (detail.trailer || detail.trailerUrl) openPlayer(detail, "trailer");
     else setNotice("Trailer unavailable for this movie.");
   }, [detail]);
   const cards = (items: Movie[], wide = false, trailer = false) =>
@@ -285,6 +295,21 @@ export default function App() {
         trailer={trailer}
       />
     ));
+  const paginationGeneration = useRef(0);
+  const [extraMovies, setExtraMovies] = useState<Movie[]>([]);
+  const [nextPage, setNextPage] = useState(2);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [moreError, setMoreError] = useState("");
+  const [hasMore, setHasMore] = useState(true);
+  useEffect(() => { paginationGeneration.current++; setLoadingMore(false); setExtraMovies([]); setNextPage(2); setHasMore(true); setMoreError(""); }, [tab, sort, query, user.country]);
+  const loadMore = async () => {
+    const generation = paginationGeneration.current;
+    setLoadingMore(true); setMoreError("");
+    try { const items = await MovieService.page(user.country, nextPage, sort, query); if (generation !== paginationGeneration.current) return; setExtraMovies(previous => [...new Map([...previous, ...items].map(m => [m.id, m])).values()]); setNextPage(n => n + 1); setHasMore(items.length >= 20 && nextPage < 50); }
+    catch { if (generation !== paginationGeneration.current) return; setMoreError("More titles are temporarily unavailable. Please retry."); }
+    finally { if (generation === paginationGeneration.current) setLoadingMore(false); }
+  };
+  useEffect(() => { const show = () => setTab("free"); window.addEventListener("reeltara-free", show); return () => window.removeEventListener("reeltara-free", show); }, []);
   const browse =
     tab === "list"
       ? user.watchlist.map((entry) => entry.movie)
@@ -295,7 +320,7 @@ export default function App() {
           : tab === "discover" && sort === "trending"
             ? catalog.trending
             : movies;
-  const filtered = browse
+  const filtered = [...new Map([...browse, ...extraMovies].map(m => [m.id, m])).values()]
     .filter(
       (movie) =>
         (tab !== "free" || movie.free) &&
@@ -314,7 +339,13 @@ export default function App() {
           : 0,
     );
   return (
-    <div className="app-shell">
+    <>
+    {/* Keep the detail/catalog mounted to preserve filters and local state. */}
+    <div
+      className="app-shell"
+      style={player ? { display: "none" } : undefined}
+      inert={!!player}
+    >
       <a className="skip-link" href="#main">
         Skip to content
       </a>
@@ -493,7 +524,7 @@ export default function App() {
                         <ProviderButton movie={current} />
                       )
                     ) : null}
-                    {current.trailerUrl && (
+                    {(current.trailer || current.trailerUrl) && (
                       <button
                         disabled={detailLoading}
                         className={`button ${current.contentMode === "free_legal" ? "secondary" : "primary"}`}
@@ -508,7 +539,7 @@ export default function App() {
                         onClick={() => setProviderPicker({})}
                       />
                     )}
-                    {!detailLoading && !current.trailerUrl && !current.free && (
+                    {!detailLoading && !current.trailer && !current.trailerUrl && !current.free && (
                       <span role="status">Trailer unavailable</span>
                     )}
                     <SecondaryButton
@@ -1013,6 +1044,8 @@ export default function App() {
                     )}
                   </div>
                 )}
+              {(tab === "discover" || tab === "search") && hasMore && <button className="button secondary" disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? "Loading…" : "Load more"}</button>}
+              {moreError && <p role="status">{moreError}</p>}
               <p className="result-count" aria-live="polite">
                 {filtered.length} {filtered.length === 1 ? "story" : "stories"}{" "}
                 to discover
@@ -1106,9 +1139,6 @@ export default function App() {
           onClose={() => setProviderPicker(null)}
         />
       )}
-      {player && (
-        <Player movie={player.movie} mode={player.mode} onClose={closePlayer} />
-      )}
       {notice && (
         <div className="toast" role="status">
           <Check size={17} />
@@ -1116,6 +1146,17 @@ export default function App() {
         </div>
       )}
     </div>
+    {player && (
+      <PlayerScreen
+        key={`${player.movie.id}-${player.mode}`}
+        movie={player.movie}
+        next={catalog.free.find(m => m.id !== player.movie.id)}
+        onNext={() => { const next = catalog.free.find(m => m.id !== player.movie.id); if (next) setPlayer({ movie: next, mode: "free" }); }}
+        mode={player.mode}
+        onClose={closePlayer}
+      />
+    )}
+    </>
   );
 }
 function Metadata({ movie }: { movie: Movie }) {

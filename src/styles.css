@@ -1901,13 +1901,7 @@ footer > p {
 }
 
 /* Functional states and media only; existing layout and brand tokens are unchanged. */
-.player-dialog { width: min(960px, calc(100% - 24px)); max-height: 92dvh; overflow: auto; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
-.player-dialog::backdrop { background: #000c; }
-.player-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-.player-heading h2 { font-size: 20px; }
-.player-dialog video, .player-dialog iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; background: #000; }
-.player-dialog .hero-buttons { margin-top: 16px; flex-wrap: wrap; }
-.player-dialog p, .provider-availability p { color: var(--muted); margin-top: 12px; font-size: 13px; }
+.provider-availability p { color: var(--muted); margin-top: 12px; font-size: 13px; }
 .provider-availability { margin-top: 24px; }
 .provider-availability .hero-buttons { flex-wrap: wrap; margin-top: 12px; }
 .status-banner button { text-decoration: underline; }

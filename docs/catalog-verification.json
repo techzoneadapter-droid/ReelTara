@@ -1,0 +1,280 @@
+{
+  "items": [
+    {
+      "id": "bunny",
+      "title": "Big Buck Bunny",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    {
+      "id": "sintel",
+      "title": "Sintel",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    {
+      "id": "steel",
+      "title": "Tears of Steel",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    {
+      "id": "archive:MorePopeyeCartoons",
+      "title": "More Popeye cartoons!",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "archive:POPEYEMeetsSindbadTheSailor1936",
+      "title": "POPEYE Meets Sindbad The Sailor ( 1936)",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "archive:bugs-bunny-all-this-and-rabbit-stew",
+      "title": "Bugs Bunny - All This and Rabbit Stew",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "archive:SantasSuprise",
+      "title": "Santa's Surprise",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "archive:JackFrost_",
+      "title": "Jack Frost",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "archive:SteamboatWillie",
+      "title": "Sigmaboat willy",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "archive:elephants_dream_voscastellano",
+      "title": "elephants dream",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    {
+      "id": "archive:SupermanCartoonsVideoQualityUpgrades",
+      "title": "SUPERMAN CARTOONS video quality upgrades",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "archive:PlaneCrazy_201511",
+      "title": "Plane Crazy",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "archive:PopeyeTheSailorMeetsAliBabasFortyThieves",
+      "title": "Popeye The Sailor Meets Ali Baba's Forty Thieves",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+    },
+    {
+      "id": "commons:76416208",
+      "title": "Paula Vázquez et al. - Miñocas",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:82808773",
+      "title": "Kara Fern - Interview, The",
+      "verifiedLegal": true,
+      "playable": true,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:106322221",
+      "title": "The Day I Helped Save The World",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:118777687",
+      "title": "Adisra Promthep - Lost Flower (2012)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:120543302",
+      "title": "Philip Piaget - Urraca (2011)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:138263998",
+      "title": "Fox Dark - Cat (2017)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:143148567",
+      "title": "Ivonne Castillo and Javier Hernández - Obsolete (2023)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:144859221",
+      "title": "Eni Talić - ACAB (2019)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:145063858",
+      "title": "Emma Rose Marshall - Notre Jeu - Cave Flower, The (2024)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:146002164",
+      "title": "Natasha Nayo - Beyond the Walls (2015)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:146376230",
+      "title": "Kagan Marks - Jen and Gen (2014)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:146447955",
+      "title": "David Romero - Nightmare, The (2013)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:146708460",
+      "title": "Destiny Zukevich et al. - Jeremy (2024)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:146789463",
+      "title": "Aline Dykmans - Sheep Possible (2015)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:146912889",
+      "title": "Matthew Yang - You Imagined (2013)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:147007275",
+      "title": "Katherine Chi - Telescope (2015)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:149208741",
+      "title": "Rensaven - Seaside (2024)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:165057593",
+      "title": "RavenRugosa - Understories (2025)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:187686046",
+      "title": "The Animated Sign",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "id": "commons:187686048",
+      "title": "Il segno animato",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    {
+      "id": "commons:197148047",
+      "title": "(OO) - Animation Short Film (2017)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:197148187",
+      "title": "Afternoon Class - Animation Short Film (2014)",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    },
+    {
+      "id": "commons:197148274",
+      "title": "Award Winning Animated Short Film - Koji",
+      "verifiedLegal": true,
+      "playable": false,
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+    }
+  ],
+  "lastFreeRefresh": "2026-10-01T16:03:45.147Z",
+  "freeItemCount": 36,
+  "verifiedFreeCount": 36,
+  "playableFreeCount": 15,
+  "sources": [
+    {
+      "adapter": "CuratedLegalAdapter",
+      "count": 3,
+      "status": "fulfilled"
+    },
+    {
+      "adapter": "InternetArchiveAdapter",
+      "count": 11,
+      "status": "fulfilled"
+    },
+    {
+      "adapter": "WikimediaCommonsAdapter",
+      "count": 23,
+      "status": "fulfilled"
+    }
+  ],
+  "browserVerifiedFreeCount": 36,
+  "browserPlayableFreeCount": 15,
+  "notes": "Snapshot from final validation. Playable counts depend on current upstream availability. Browser diagnostics matched transport counts. Wikimedia HTTP 429 is temporary upstream throttling, not an application failure."
+}

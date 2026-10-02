@@ -96,7 +96,7 @@ export function ProviderButton({
       target="_blank"
       rel="noopener noreferrer"
     >
-      {movie.free ? "View Source" : `Search ${movie.provider}`}{" "}
+      {movie.free ? "View Legal Source" : `Search ${movie.provider}`}{" "}
       <ArrowUpRight size={16} />
     </a>
   );

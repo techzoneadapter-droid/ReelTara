@@ -34,8 +34,9 @@ test("legal boundary blocks commercial playback and unsafe URLs", () => {
 test("official trailers take priority over teasers and malformed IDs", () => {
   const base = {
     id: "1",
-    key: "abcdefghijk",
-    site: "YouTube" as const,
+    videoId: "abcdefghijk",
+    provider: "youtube" as const,
+    sourceName: "YouTube",
     name: "Video",
   };
   assert.equal(
@@ -48,7 +49,7 @@ test("official trailers take priority over teasers and malformed IDs", () => {
   );
   assert.equal(
     preferredTrailer([
-      { ...base, key: "<script>", type: "Trailer", official: true },
+      { ...base, videoId: "<script>", type: "Trailer", official: true },
     ]),
     undefined,
   );
@@ -277,4 +278,72 @@ test("media probe rejects arbitrary URLs, HTML and unsafe redirects, cancels the
   });
   assert.equal(unsafe.body.ok, false);
   assert.equal(calls, 1);
+});
+
+test("trailer priority requires reviewed direct sources and excludes fan uploads", () => {
+  const official = { id: "yt", provider: "youtube" as const, videoId: "abcdefghijk", sourceName: "YouTube", name: "Trailer", type: "Trailer" as const, official: true };
+  const direct = { ...official, id: "direct", provider: "direct" as const, verified: true, directPlaybackUrl: "https://download.blender.org/trailer.mp4", mimeType: "video/mp4", sourcePageUrl: "https://peach.blender.org/" };
+  assert.equal(preferredTrailer([official, direct])?.id, "direct");
+  assert.equal(preferredTrailer([{ ...direct, verified: false }, official])?.id, "yt");
+  assert.equal(preferredTrailer([{ ...direct, directPlaybackUrl: "https://random.test/x.mp4" }, official])?.id, "yt");
+  assert.equal(preferredTrailer([{ ...official, official: false }]), undefined);
+  assert.equal(preferredTrailer([{ ...official, official: false, verified: true, id: "fallback" }, { ...official, type: "Teaser" }])?.id, "yt");
+});
+
+test("free catalog legal filter rejects ambiguous, noncommercial, malformed license metadata", async () => {
+  const { openLicense } = await import('../server/freeCatalog.mjs');
+  assert.equal(openLicense('https://creativecommons.org/licenses/by/4.0/'), true);
+  assert.equal(openLicense('https://creativecommons.org/publicdomain/mark/1.0/'), true);
+  for (const value of ['public domain', 'free movie', '', 'https://evil.test/by/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/']) assert.equal(openLicense(value), false);
+});
+
+test("server catalog cache deduplicates concurrent refreshes and serves stale data", async () => {
+  const { cached } = await import('../server/cache.mjs');
+  let calls = 0;
+  const load = async () => { calls++; return { title: 'verified' }; };
+  await Promise.all([cached('test-catalog', 1, load), cached('test-catalog', 1, load)]);
+  assert.equal(calls, 1);
+  await new Promise(resolve => setTimeout(resolve, 5));
+  assert.deepEqual(await cached('test-catalog', 1, async () => { throw new Error('offline'); }), { title: 'verified' });
+});
+
+test('dynamic verification derives license and file identity; never trusts client URLs or flags', async () => {
+  const { playbackResponse } = await import('../server/playback.mjs');
+  const meta = { metadata: { mediatype: 'movies', creator: 'Author', title: 'Film', licenseurl: 'https://creativecommons.org/licenses/by/4.0/' }, files: [{ name: 'movie.mp4', format: 'h.264' }, { name: 'private.mp4', format: 'h.264', private: true }, { name: 'trailer.mp4', format: 'h.264' }] };
+  const calls: string[] = [];
+  const fetcher = async (url: string) => {
+    calls.push(url);
+    return url.includes('/metadata/') ? new Response(JSON.stringify(meta)) : new Response(null, { status: 206, headers: { 'Content-Type': 'video/mp4' } });
+  };
+  const query = '/?provider=internet_archive&sourceId=dynamic-film&fileName=';
+  const valid = await playbackResponse(query + 'movie.mp4', fetcher);
+  assert.equal(valid.body.playable, true);
+  assert.equal(valid.body.candidate.sourceProvider, 'internet_archive');
+  assert.equal(valid.body.playbackUrl, 'https://archive.org/download/dynamic-film/movie.mp4');
+  for (const name of ['private.mp4', 'trailer.mp4', '../movie.mp4', 'missing.mp4']) assert.equal((await playbackResponse(query + encodeURIComponent(name), fetcher)).status, 400);
+  meta.metadata.licenseurl = 'https://creativecommons.org/licenses/by-nc/4.0/';
+  assert.equal((await playbackResponse(query + 'movie.mp4&verifiedLegal=true', fetcher)).body.ok, false);
+  calls.length = 0;
+  for (const input of ['/?url=https://archive.org/download/random/movie.mp4', '/?provider=internet_archive&sourceId=..%2Fadmin&fileName=x.mp4', '/?provider=wikimedia&sourceId=https://evil.test', '/?provider=blender&sourceId=unknown']) assert.equal((await playbackResponse(input, fetcher)).status, 400);
+  assert.equal(calls.length, 0);
+});
+
+test('Commons playback resolves canonical transcodes and rejects unsafe redirects on metadata and media', async () => {
+  const { playbackResponse } = await import('../server/playback.mjs');
+  const page = { pageid: 42, videoinfo: [{ url: 'https://upload.wikimedia.org/movie.webm', mime: 'video/webm', extmetadata: { LicenseUrl: { value: 'https://creativecommons.org/licenses/by-sa/4.0/' }, Artist: { value: 'Artist' } }, derivatives: [{ src: 'https://upload.wikimedia.org/movie.480p.webm', type: 'video/webm; codecs="vp9, opus"', transcodekey: '480p.vp9.webm', height: 480 }] }] };
+  const input = '/?provider=wikimedia&sourceId=42&fileName=480p.vp9.webm';
+  let calls = 0;
+  const good = await playbackResponse(input, async (url: string) => {
+    calls++;
+    return url.includes('/w/api.php') ? new Response(JSON.stringify({ query: { pages: { 42: page } } })) : new Response(null, { status: 206, headers: { 'Content-Type': 'video/webm' } });
+  });
+  assert.equal(good.body.ok, true);
+  assert.equal(good.body.candidate.mimeType, 'video/webm; codecs="vp9, opus"');
+  assert.equal(calls, 2);
+  for (const location of ['http://127.0.0.1/', 'https://upload.wikimedia.org.evil.test/', 'https://upload.wikimedia.org:444/', 'https://user@upload.wikimedia.org/', 'https://archive.org/download/other']) {
+    calls = 0;
+    const result = await playbackResponse(input, async () => { calls++; return new Response(null, { status: 302, headers: { Location: location } }); });
+    assert.equal(result.body.ok, false);
+    assert.equal(calls, 1);
+  }
 });

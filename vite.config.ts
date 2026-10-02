@@ -6,12 +6,15 @@ import { tmdbResponse } from "./server/tmdb.mjs";
 import { archiveResponse } from "./server/archive.mjs";
 // @ts-ignore Shared media headers probe.
 import { playbackResponse } from "./server/playback.mjs";
+// @ts-ignore Shared legal catalog handler.
+import { freeCatalogResponse } from "./server/freeCatalog.mjs";
 export default defineConfig({
   plugins: [
     react(),
     {
       name: "tmdb-server-proxy",
       configureServer(server) {
+        server.middlewares.use("/api/free-catalog", async (_req, res) => { const result = await freeCatalogResponse(); res.setHeader("Content-Type", "application/json"); res.end(JSON.stringify(result.body)); });
         server.middlewares.use("/api/playback", async (req, res) => {
           const result = await playbackResponse(req.url);
           res.statusCode = result.status;

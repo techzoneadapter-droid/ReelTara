@@ -27,6 +27,9 @@ export async function request<T>(
   validate: (value: unknown) => T,
   ttl = 300_000,
 ): Promise<T> {
+  if (!cache.has(url)) {
+    try { const saved = JSON.parse(localStorage.getItem(`reeltara-cache:${url}`) || 'null'); if (saved && saved.expires > Date.now() - 604800000) cache.set(url, saved); } catch { /* Storage optional. */ }
+  }
   const hit = cache.get(url);
   if (hit && hit.expires > Date.now()) return validate(hit.data);
   let task = pending.get(url);
@@ -34,7 +37,7 @@ export async function request<T>(
     task = (async () => {
       for (let attempt = 0; attempt < 2; attempt++) {
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 8000);
+        const timer = setTimeout(() => controller.abort(), url.startsWith("/api/free-catalog") ? 60000 : 8000);
         try {
           const response = await fetch(url, {
             signal: controller.signal,
@@ -48,7 +51,10 @@ export async function request<T>(
             );
           const raw: unknown = await response.json();
           validate(raw);
-          cache.set(url, { expires: Date.now() + ttl, data: raw });
+          const entry = { expires: Date.now() + ttl, data: raw };
+          cache.set(url, entry);
+          try { localStorage.setItem(`reeltara-cache:${url}`, JSON.stringify(entry)); } catch { /* Quota or private browsing. */ }
+          if (typeof window !== "undefined") window.dispatchEvent(new Event("catalog-updated"));
           if (cache.size > 150) cache.delete(cache.keys().next().value!);
           return raw;
         } catch (error) {
@@ -80,6 +86,7 @@ export async function request<T>(
     pending.set(url, task);
     task.finally(() => pending.delete(url)).catch(() => {});
   }
+  if (hit) { void task.catch(() => {}); return validate(hit.data); }
   return validate(await task);
 }
 export function object(value: unknown): Record<string, unknown> {

@@ -10,8 +10,14 @@ export type CastMember = {
 export type CrewMember = { id: number; name: string; job: string };
 export type Trailer = {
   id: string;
-  key: string;
-  site: "YouTube";
+  provider: "youtube" | "direct";
+  videoId?: string;
+  directPlaybackUrl?: string;
+  mimeType?: string;
+  sourceName: string;
+  sourcePageUrl?: string;
+  /** Reviewed authorization for direct sources or non-official fallbacks. */
+  verified?: boolean;
   name: string;
   official: boolean;
   type: "Trailer" | "Teaser";
@@ -45,6 +51,10 @@ export type FreeStreamingSource = {
   archiveId?: string;
 };
 export type Movie = {
+  playable?: boolean;
+  verifiedLegal?: boolean;
+  captionTracks?: CaptionTrack[];
+  playbackCandidates?: PlaybackCandidate[];
   tmdbId?: number;
   id: string;
   title: string;
@@ -66,6 +76,7 @@ export type Movie = {
   provider: string;
   providerUrl: string;
   trailerUrl?: string;
+  trailer?: Trailer;
   contentMode: ContentMode;
   source?: FreeStreamingSource;
   freeSource?: FreeSource;
@@ -113,3 +124,7 @@ export type MovieDetail = MovieDetails;
 export type WatchProvider = StreamingProvider;
 export type WatchProgress = PlaybackProgress;
 export type CountryPreference = { country: Country };
+
+export type CaptionTrack = { src: string; language: string; label: string };
+export type PlaybackCandidate = { sourceProvider?: "internet_archive" | "wikimedia" | "blender"; sourceId?: string; fileName?: string; index?: number; verifiedLegal?: boolean; licenseType?: string; licenseUrl?: string; attribution?: string; quality?: string; transportVerified?: boolean; url: string; mimeType: string; height?: number; health: "healthy" | "unknown" | "broken" };
+export type FreeLegalMovie = { id: string; title: string; overview: string; posterUrl: string; backdropUrl?: string; year?: number; runtime?: number; genres: string[]; creator?: string; language?: string; sourceProvider: string; sourcePageUrl: string; playbackCandidates: PlaybackCandidate[]; captionTracks: CaptionTrack[]; licenseType: string; licenseUrl?: string; attribution: string; verifiedLegal: boolean; playable: boolean; lastVerifiedAt: string };

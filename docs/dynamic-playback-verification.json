@@ -1,0 +1,212 @@
+{
+  "observedAt": "2026-10-01",
+  "beforeChange": {
+    "movie": {
+      "overview": "Lost Flower is a Canadian 2D computer animated short film made by Adisra Promthep.\nThe original description of the video by Adisra Promthep (Peach) provided from the source: \n\n\nI could be prettier, but yeah. 😛\nI cheat a shitload on shadows and stuff, and so many errors in the layout I don't even care anymore.",
+      "posterUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/500px--Adisra_Promthep_-_Lost_Flower_%282012%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "genres": [
+        "Short film"
+      ],
+      "captionTracks": [],
+      "id": "commons:118777687",
+      "title": "Adisra Promthep - Lost Flower (2012)",
+      "creator": "Adisra Promthep (Peach)",
+      "runtime": 2,
+      "sourceProvider": "Wikimedia Commons",
+      "sourcePageUrl": "https://commons.wikimedia.org/wiki/File:Adisra_Promthep_-_Lost_Flower_(2012).webm",
+      "licenseType": "CC BY 3.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+      "attribution": "Adisra Promthep (Peach) · YouTube: Lost Flower (2012) – View/save archived versions on archive.org",
+      "playbackCandidates": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+          "mimeType": "video/webm; codecs=\"vp9, opus\"",
+          "height": 720,
+          "health": "unknown"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "mimeType": "video/webm",
+          "height": 720,
+          "health": "unknown"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/Adisra_Promthep_-_Lost_Flower_%282012%29.webm.480p.vp9.webm",
+          "mimeType": "video/webm; codecs=\"vp9, opus\"",
+          "height": 480,
+          "health": "unknown"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/Adisra_Promthep_-_Lost_Flower_%282012%29.webm.240p.vp9.webm",
+          "mimeType": "video/webm; codecs=\"vp9, opus\"",
+          "height": 240,
+          "health": "unknown"
+        }
+      ],
+      "verifiedLegal": true,
+      "playable": true,
+      "lastVerifiedAt": "2026-10-01T15:38:22.494Z"
+    },
+    "results": [
+      {
+        "candidate": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+          "mimeType": "video/webm; codecs=\"vp9, opus\"",
+          "height": 720,
+          "health": "unknown"
+        },
+        "probe": {
+          "httpStatus": 200,
+          "ok": true,
+          "playbackUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+          "finalUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+          "status": 206,
+          "contentType": "video/webm",
+          "contentLength": "1",
+          "contentRange": "bytes 0-0/17008519",
+          "acceptRanges": "bytes",
+          "cors": "*",
+          "rangeSupported": true
+        },
+        "media": {
+          "canPlayType": "probably",
+          "events": [
+            "loadedmetadata",
+            "canplay",
+            "playing"
+          ],
+          "duration": 98.019,
+          "currentTime": 11.598365,
+          "videoErrorCode": null
+        }
+      },
+      {
+        "candidate": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "mimeType": "video/webm",
+          "height": 720,
+          "health": "unknown"
+        },
+        "probe": {
+          "httpStatus": 200,
+          "ok": true,
+          "playbackUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "finalUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+          "status": 206,
+          "contentType": "video/webm",
+          "contentLength": "1",
+          "contentRange": "bytes 0-0/17008519",
+          "acceptRanges": "bytes",
+          "cors": "*",
+          "rangeSupported": true
+        },
+        "media": {
+          "canPlayType": "maybe",
+          "events": [
+            "loadedmetadata",
+            "canplay",
+            "playing"
+          ],
+          "duration": 98.019,
+          "currentTime": 11.911521,
+          "videoErrorCode": null
+        }
+      },
+      {
+        "candidate": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/Adisra_Promthep_-_Lost_Flower_%282012%29.webm.480p.vp9.webm",
+          "mimeType": "video/webm; codecs=\"vp9, opus\"",
+          "height": 480,
+          "health": "unknown"
+        },
+        "probe": {
+          "httpStatus": 200,
+          "ok": true,
+          "playbackUrl": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/Adisra_Promthep_-_Lost_Flower_%282012%29.webm.480p.vp9.webm",
+          "finalUrl": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/Adisra_Promthep_-_Lost_Flower_%282012%29.webm.480p.vp9.webm",
+          "status": 206,
+          "contentType": "video/webm",
+          "contentLength": "1",
+          "contentRange": "bytes 0-0/7014601",
+          "acceptRanges": "bytes",
+          "cors": "*",
+          "rangeSupported": true
+        },
+        "media": {
+          "canPlayType": "probably",
+          "events": [
+            "loadedmetadata",
+            "canplay",
+            "playing"
+          ],
+          "duration": 98.025,
+          "currentTime": 11.919582,
+          "videoErrorCode": null
+        }
+      },
+      {
+        "candidate": {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/Adisra_Promthep_-_Lost_Flower_%282012%29.webm.240p.vp9.webm",
+          "mimeType": "video/webm; codecs=\"vp9, opus\"",
+          "height": 240,
+          "health": "unknown"
+        },
+        "probe": {
+          "httpStatus": 200,
+          "ok": true,
+          "playbackUrl": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/Adisra_Promthep_-_Lost_Flower_%282012%29.webm.240p.vp9.webm",
+          "finalUrl": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/Adisra_Promthep_-_Lost_Flower_%282012%29.webm.240p.vp9.webm",
+          "status": 206,
+          "contentType": "video/webm",
+          "contentLength": "1",
+          "contentRange": "bytes 0-0/3372680",
+          "acceptRanges": "bytes",
+          "cors": "*",
+          "rangeSupported": true
+        },
+        "media": {
+          "canPlayType": "probably",
+          "events": [
+            "loadedmetadata",
+            "canplay",
+            "playing"
+          ],
+          "duration": 98.025,
+          "currentTime": 11.86319,
+          "videoErrorCode": null
+        }
+      }
+    ]
+  },
+  "conclusion": "The reported preview failure did not reproduce on the initial warm server: all four candidates played. The original dynamic authorization depended on a process-local discovered URL set and full-catalog discovery on a miss. Later live probes returned HTTP 429 for every Lost Flower candidate; this is transport failure, not unsupported VP9/Opus.",
+  "finalValidation": {
+    "observedAt": "2026-10-01T16:03:45.147Z",
+    "archive": {
+      "title": "Jack Frost",
+      "duration": 511.385643,
+      "currentTime": 0.82755,
+      "actualPlayback": true,
+      "cachedReload": true
+    },
+    "wikimedia": {
+      "title": "Paula Vázquez et al. - Miñocas",
+      "duration": 221.64,
+      "currentTime": 0.754429,
+      "actualPlayback": true,
+      "cachedReload": true,
+      "limitedItems": 21,
+      "status": "Partial temporary HTTP 429 throttling; Lost Flower correctly remains source-only. Not a release blocker.",
+      "retryAfter600": "Isolated mocked transport verified 600-second provider cooldown, no second Wikimedia request, and unaffected Archive playback probing."
+    },
+    "verifiedFreeCount": 36,
+    "playableFreeCount": 15,
+    "codecFiltering": "passed",
+    "unsupportedLegalItem": "View Legal Source visible; Watch Free absent",
+    "ssrf": "service tests passed for arbitrary URLs, forged legal flags, file identity and unsafe redirects",
+    "blenderPlaybackRegression": "Big Buck Bunny, Sintel and Tears of Steel passed real media playback; seek, pause, reload and saved resume passed.",
+    "candidateFallback": "Failed source, exhausted candidates, Retry and 10-second hung probe fallback passed.",
+    "qa": "14 service tests and 22 browser tests passed; production build passed.",
+    "build": "Separate npm run build passed.",
+    "applicationChanges": "No application changes needed during final validation."
+  }
+}

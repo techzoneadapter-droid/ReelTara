@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { test, expect, type Page } from "@playwright/test";
+import { mockYouTube } from "./youtube-fixture";
 const fixtureMovie = {
   id: 101,
   title: "Fixture Film",
@@ -18,12 +19,7 @@ async function fallback(page: Page) {
   await page.route("**/api/archive?**", (route) =>
     route.fulfill({ status: 503, json: {} }),
   );
-  await page.route("https://www.youtube-nocookie.com/**", (route) =>
-    route.fulfill({
-      contentType: "text/html",
-      body: "<p>Official embed fixture</p>",
-    }),
-  );
+  await mockYouTube(page);
 }
 async function live(page: Page, missing = false) {
   await page.route("**/api/tmdb?**", (route) => {
@@ -101,13 +97,15 @@ test("A: Home → Trending → Detail → trailer → close → back restores sc
   await page
     .getByRole("button", { name: "Watch Trailer", exact: true })
     .click();
-  await expect(page.getByRole("dialog")).toBeVisible();
+  await expect(page.locator(".player-screen")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Main navigation" })).toBeHidden();
   await expect(page.locator("iframe")).toHaveAttribute(
     "src",
     /youtube-nocookie.com\/embed\/uYPbbksJxIg/,
   );
-  await page.getByRole("button", { name: "Close player" }).click();
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.getByRole("button", { name: "Back to movie details" }).click();
+  await expect(page.locator(".player-screen")).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Oppenheimer", exact: true }),
   ).toBeVisible();
@@ -201,7 +199,7 @@ test("D: real HTML video controls save and resume progress; completed movies res
   await page.locator("video").evaluate((element: HTMLVideoElement) => {
     element.pause();
   });
-  await page.getByRole("button", { name: "Close player" }).click();
+  await page.getByRole("button", { name: "Back to movie details" }).click();
   await expect(
     page.getByRole("button", { name: "Resume", exact: true }),
   ).toBeVisible();
@@ -227,7 +225,9 @@ test("D: real HTML video controls save and resume progress; completed movies res
       page.locator("video").evaluate((e: HTMLVideoElement) => e.currentTime),
     )
     .toBeGreaterThan(0);
-  await page.getByRole("button", { name: "Restart from beginning" }).click();
+  await page.locator("video").evaluate((video: HTMLVideoElement) => video.pause());
+  await page.getByLabel("Player settings", { exact: true }).click();
+  await page.getByRole("button", { name: "Restart" }).click();
   expect(
     await page
       .locator("video")
@@ -237,7 +237,7 @@ test("D: real HTML video controls save and resume progress; completed movies res
     await e.play();
   });
   await page.waitForTimeout(3000);
-  await page.getByRole("button", { name: "Close player" }).click();
+  await page.getByRole("button", { name: "Back to movie details" }).click();
   await expect(
     page.getByRole("button", { name: "Watch Again", exact: true }),
   ).toBeVisible();
@@ -340,7 +340,7 @@ test("source-only films and playback errors offer a legal way back", async ({
     page.getByRole("button", { name: "Watch Free", exact: true }),
   ).toHaveCount(1);
   await expect(
-    page.getByRole("link", { name: "View Source", exact: true }).first(),
+    page.getByRole("link", { name: "View Legal Source", exact: true }).first(),
   ).toHaveAttribute("href", "https://durian.blender.org/");
   await page.getByRole("button", { name: "Back to exploring" }).click();
   await page
@@ -351,10 +351,10 @@ test("source-only films and playback errors offer a legal way back", async ({
     page.getByText("Playback unavailable. Retry or view the official source."),
   ).toBeVisible();
   await expect(
-    page.getByRole("dialog").getByRole("link", { name: "View Source" }),
+    page.locator(".player-screen").getByRole("link", { name: "View Legal Source" }),
   ).toHaveAttribute("href", "https://peach.blender.org/");
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.locator(".player-screen")).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Big Buck Bunny", exact: true }),
   ).toBeVisible();
@@ -390,4 +390,30 @@ test("provider picker groups availability and confirms the actual outbound desti
   await expect(
     page.getByRole("heading", { name: "Fixture Film", exact: true }),
   ).toBeVisible();
+});
+
+test("Dune trailer is a standalone screen; browser Back restores detail scroll and providers stay external", async ({ page }) => {
+  await fallback(page);
+  await page.goto("/");
+  await page.getByRole("button", { name: "View Dune: Part Two", exact: true }).first().click();
+  await expect(page.getByText("Loading movie details…")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Watch Free", exact: true })).toHaveCount(0);
+  await page.getByRole("button", { name: "Watch Trailer", exact: true }).focus();
+  await page.evaluate(() => window.scrollTo(0, 150));
+  const scroll = await page.evaluate(() => scrollY);
+  await page.getByRole("button", { name: "Watch Trailer", exact: true }).press("Enter");
+  await expect(page.locator(".player-screen")).toBeVisible();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Main navigation" })).toBeHidden();
+  await expect(page.locator(".player-screen iframe")).toHaveAttribute("src", /youtube-nocookie.com\/embed\/Way9Dexny3w/);
+  await expect(page.locator("video")).toHaveCount(0);
+  await page.goBack();
+  await expect(page.locator(".player-screen")).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(scroll);
+  await expect(page.getByRole("heading", { name: "Dune: Part Two", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Apple TV/ }).first()).toHaveAttribute("href", /https:\/\/tv.apple.com\//);
+  await page.goForward();
+  await expect(page.locator(".player-screen iframe")).toBeVisible();
+  await page.getByRole("button", { name: "Back to movie details" }).click();
+  await expect(page.getByRole("navigation", { name: "Main navigation" })).toBeVisible();
 });

@@ -23,6 +23,15 @@ export function useCatalog(country: Country) {
       active = false;
     };
   }, [country, revision]);
+  useEffect(() => {
+    const refresh = () => { MovieService.retry(); setRevision(v => v + 1); };
+    let debounce: ReturnType<typeof setTimeout>;
+    const updated = () => { clearTimeout(debounce); debounce = setTimeout(refresh, 250); };
+    window.addEventListener("catalog-updated", updated);
+    const timer = setInterval(refresh, 300000);
+    window.addEventListener("free-catalog-updated", refresh);
+    return () => { clearTimeout(debounce); window.removeEventListener("catalog-updated", updated); clearInterval(timer); window.removeEventListener("free-catalog-updated", refresh); };
+  }, []);
   return {
     catalog,
     loading,

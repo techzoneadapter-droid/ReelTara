@@ -1,4 +1,5 @@
-import type { Movie } from "../types/movie";
+import type { Movie, PlaybackCandidate } from "../types/movie";
+import { compatibleCandidates, playbackQuery, failed, healthy, revalidate } from "./playbackHealth";
 import { legalUrl } from "./legal";
 
 export const mediaErrorNames: Record<number, string> = {
@@ -7,7 +8,10 @@ export const mediaErrorNames: Record<number, string> = {
   3: "MEDIA_ERR_DECODE",
   4: "MEDIA_ERR_SRC_NOT_SUPPORTED",
 };
-export function playbackCandidates(movie: Movie) {
+const retryMovies = new Set<string>();
+export function resetPlaybackHealth(movie: Movie) { retryMovies.add(movie.id); (movie.playbackCandidates || playbackCandidates(movie)).forEach(c => revalidate(c.url)); }
+export function playbackCandidates(movie: Movie): (PlaybackCandidate & { priority: number })[] {
+  if (movie.playbackCandidates?.length) return compatibleCandidates(movie.playbackCandidates.filter(c => legalUrl(c.url))).map((c,i) => ({ ...c, priority: i+1 }));
   const source = movie.freeSource;
   return [
     ...new Set(
@@ -20,7 +24,7 @@ export function playbackCandidates(movie: Movie) {
       (url): url is string =>
         !!legalUrl(url) && /\.mp4$/i.test(new URL(url!).pathname),
     )
-    .map((url, index) => ({ url, mimeType: "video/mp4", priority: index + 1 }));
+    .map((url, index) => ({ url, mimeType: "video/mp4", health: "unknown" as const, priority: index + 1 }));
 }
 
 /** Owns one video's source lifecycle. Dispose cancels probes, timers and stale events. */
@@ -32,7 +36,8 @@ export function startFreePlayback(
     error: (value: string) => void;
   },
 ) {
-  const candidates = playbackCandidates(movie);
+  const candidates = compatibleCandidates(playbackCandidates(movie), video);
+  const recheck = retryMovies.delete(movie.id);
   let index = -1;
   let generation = 0;
   let disposed = false;
@@ -51,6 +56,15 @@ export function startFreePlayback(
   const log = (event: string, details: Record<string, unknown> = {}) =>
     console.info("[Free Legal playback]", {
       movie: movie.id,
+      title: movie.title,
+      sourceProvider: candidates[index]?.sourceProvider || movie.provider,
+      licenseType: movie.source?.license,
+      verifiedLegal: movie.source?.verified,
+      playable: movie.playable ?? true,
+      mimeType: candidates[index]?.mimeType,
+      quality: candidates[index]?.quality || candidates[index]?.height,
+      canPlayType: candidates[index] ? video.canPlayType(candidates[index].mimeType) : '',
+      videoErrorCode: video.error?.code ?? null,
       sourcePageUrl: movie.freeSource?.sourcePageUrl || movie.source?.sourceUrl,
       playbackUrl: candidates[index]?.url,
       event,
@@ -66,6 +80,8 @@ export function startFreePlayback(
   const fail = (reason: string) => {
     if (disposed || !active) return;
     active = false;
+    const url = candidates[index]?.url;
+    if (url) failed(url);
     log("candidate-failed", {
       reason,
       videoErrorCode: video.error?.code ?? null,
@@ -81,9 +97,11 @@ export function startFreePlayback(
     clearTimer();
     clearTimeout(seekTimer);
     controller?.abort();
+    const preservePlay = shouldPlay;
     video.pause();
+    shouldPlay = preservePlay;
     video.removeAttribute("src");
-    video.replaceChildren();
+    video.querySelectorAll("source").forEach(s => s.remove());
     video.load();
     index++;
     if (disposed) return;
@@ -103,7 +121,7 @@ export function startFreePlayback(
     controller = new AbortController();
     try {
       const response = await fetch(
-        `/api/playback?url=${encodeURIComponent(candidate.url)}`,
+        `/api/playback?${playbackQuery(candidate)}${recheck ? "&revalidate=1" : ""}`,
         {
           signal: controller.signal,
           cache: "no-store",
@@ -116,7 +134,14 @@ export function startFreePlayback(
         fail("HTTP media probe failed");
         return;
       }
+      // Use the canonical URL and MIME returned by provider verification.
+      const media = probe.candidate || candidate;
+      if (!video.canPlayType(media.mimeType)) { fail('Unsupported browser codec'); return; }
       let started = false;
+      let metadataReady = false;
+      let canPlayReady = false;
+      let didPlay = false;
+      let progressLogged = false;
       const handlers: Record<string, EventListener> = {
         loadstart: () => {
           started = true;
@@ -126,8 +151,7 @@ export function startFreePlayback(
             fail("Invalid duration");
             return;
           }
-          clearTimer();
-          callbacks.loading(false);
+          metadataReady = true;
           log("loadedmetadata", { duration: video.duration });
           if (position > 0 && position < video.duration) {
             try {
@@ -146,6 +170,9 @@ export function startFreePlayback(
             });
         },
         canplay: () => {
+          canPlayReady = metadataReady;
+          if (!canPlayReady) return;
+          healthy(candidate.url);
           clearTimer();
           callbacks.loading(false);
           log("canplay");
@@ -160,6 +187,7 @@ export function startFreePlayback(
           clearTimer();
           callbacks.loading(false);
           shouldPlay = true;
+          didPlay = true;
           log("playing", {
             currentTime: video.currentTime,
             duration: video.duration,
@@ -180,7 +208,9 @@ export function startFreePlayback(
           const advanced = video.currentTime > position;
           if (!video.seeking && video.currentTime > 0)
             position = video.currentTime;
-          if (advanced && !video.paused && video.readyState >= 3) {
+          if (advanced && didPlay && metadataReady && canPlayReady && !video.paused && video.readyState >= 3) {
+            healthy(candidate.url);
+            if (!progressLogged) { log('progress', { currentTime: video.currentTime, duration: video.duration }); progressLogged = true; }
             clearTimer();
             callbacks.loading(false);
           }
@@ -238,10 +268,12 @@ export function startFreePlayback(
           video.removeEventListener(name, handler);
         source.removeEventListener("error", handlers.error);
       };
-      source.src = candidate.url;
-      source.type = candidate.mimeType;
+      source.src = probe.playbackUrl || media.url;
+      source.type = media.mimeType;
       // With <source>, unsupported-media errors may fire only on the source element.
       source.addEventListener("error", handlers.error);
+      video.querySelectorAll("track").forEach(t => t.remove());
+      for (const caption of movie.captionTracks || []) { if (!legalUrl(caption.src)) continue; const track = document.createElement("track"); track.kind = "subtitles"; track.src = caption.src; track.srclang = caption.language; track.label = caption.label; video.append(track); }
       video.append(source);
       video.load();
     } catch (error) {
@@ -249,6 +281,7 @@ export function startFreePlayback(
         fail(error instanceof Error ? error.message : "Network failure");
     }
   }
+  log("selected-movie", { playbackCandidates: candidates });
   void next();
   return () => {
     disposed = true;
@@ -258,9 +291,11 @@ export function startFreePlayback(
     clearTimeout(seekTimer);
     controller?.abort();
     removeListeners();
+    const preservePlay = shouldPlay;
     video.pause();
+    shouldPlay = preservePlay;
     video.removeAttribute("src");
-    video.replaceChildren();
+    video.querySelectorAll("source").forEach(s => s.remove());
     video.load();
   };
 }

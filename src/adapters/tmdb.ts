@@ -8,8 +8,8 @@ import type {
 } from "../types/movie";
 import { array, num, object, request, str, AppError } from "../services/http";
 import { legalUrl, preferredTrailer } from "../services/legal";
-const endpoint = (path: string, country: Country, query = "") =>
-  `/api/tmdb?path=${encodeURIComponent(path)}&region=${country}${query ? `&query=${encodeURIComponent(query)}` : ""}`;
+const endpoint = (path: string, country: Country, query = "", page = 1) =>
+  `/api/tmdb?path=${encodeURIComponent(path)}&region=${country}&page=${page}${query ? `&query=${encodeURIComponent(query)}` : ""}`;
 const artwork = (path: unknown, size = "w500") =>
   /^\/[\w.-]+$/.test(str(path))
     ? `https://image.tmdb.org/t/p/${size}${path}`
@@ -58,7 +58,7 @@ export function mapMovie(value: unknown): Movie {
 }
 export const TmdbAdapter = {
   async genres(country: Country) {
-    const data = await request(endpoint("genre/movie/list", country), object);
+    const data = await request(endpoint("genre/movie/list", country), object, 604800000);
     if (!Array.isArray(data.genres))
       throw new AppError("invalid_response", "Genres unavailable.");
     genreList = data.genres.map((v) => {
@@ -67,8 +67,8 @@ export const TmdbAdapter = {
     });
     return genreList;
   },
-  async list(path: string, country: Country, query = "") {
-    const data = await request(endpoint(path, country, query), object);
+  async list(path: string, country: Country, query = "", page = 1) {
+    const data = await request(endpoint(path, country, query, page), object, path.includes("trending") ? 7200000 : path.includes("upcoming") ? 43200000 : 21600000);
     if (!Array.isArray(data.results))
       throw new AppError("invalid_response", "Catalog unavailable.");
     return data.results.map(mapMovie);
@@ -78,7 +78,7 @@ export const TmdbAdapter = {
       throw new AppError("movie_not_found", "Movie not found.");
     const key = id.split(":")[1];
     const [data, providersResult] = await Promise.all([
-      request(endpoint(`movie/${key}`, country), object),
+      request(endpoint(`movie/${key}`, country), object, 86400000),
       request(endpoint(`movie/${key}/watch/providers`, country), object).catch(
         () => null,
       ),
@@ -109,8 +109,10 @@ export const TmdbAdapter = {
         ? [
             {
               id: str(t.id),
-              key: str(t.key),
-              site: "YouTube" as const,
+              provider: "youtube" as const,
+              videoId: str(t.key),
+              sourceName: "YouTube",
+              sourcePageUrl: `https://www.youtube.com/watch?v=${str(t.key)}`,
               name: str(t.name),
               official: t.official === true,
               type: t.type,
@@ -159,8 +161,9 @@ export const TmdbAdapter = {
           .map((c) => c.name)
           .join(", ") || "Not listed",
       trailers,
+      trailer,
       trailerUrl: trailer
-        ? `https://www.youtube.com/watch?v=${trailer.key}`
+        ? `https://www.youtube.com/watch?v=${trailer.videoId}`
         : undefined,
       providers,
       providerStatus: !providersResult

@@ -1,3 +1,5 @@
+import { FreeCatalogService, catalogDiagnostics } from "./freeCatalog";
+import { DiscoveryCatalogAdapter } from "./discovery";
 import { movies as seeds } from "../data/movies";
 import type {
   Catalog,
@@ -8,7 +10,7 @@ import type {
 } from "../types/movie";
 import { TmdbAdapter } from "./tmdb";
 import { UserStateService } from "./userState";
-import { youtubeKey } from "./legal";
+import { preferredTrailer, youtubeKey } from "./legal";
 export interface CatalogAdapter {
   home(country: Country): Promise<Catalog>;
   search(query: string, country: Country): Promise<SearchResult>;
@@ -29,8 +31,11 @@ export const fallbackCatalog: Catalog = {
   message: "Curated catalog · Live API unavailable.",
 };
 let available = seeds;
+let freeAvailable = fallbackCatalog.free;
+let freeTask: Promise<void> | undefined;
 const homeCache = new Map<Country, { value: Catalog; expires: number }>();
-export const MovieService: CatalogAdapter & { retry(): void } = {
+export const MovieService: CatalogAdapter & { retry(): void; page(country: Country, page: number, sort: string, query?: string): Promise<Movie[]> } = {
+  async page(country, page, sort, query) { return query ? DiscoveryCatalogAdapter.search(query, country, page) : sort === "popular" ? DiscoveryCatalogAdapter.getPopular(country, page) : sort === "trending" ? DiscoveryCatalogAdapter.getTrending(country, page) : DiscoveryCatalogAdapter.getDiscover(country, page); },
   retry() {
     homeCache.clear();
   },
@@ -39,26 +44,26 @@ export const MovieService: CatalogAdapter & { retry(): void } = {
     if (cached && cached.expires > Date.now()) return cached.value;
     const genres = await TmdbAdapter.genres(country).catch(() => []);
     const results = await Promise.allSettled(
-      [
-        "trending/movie/week",
-        "movie/popular",
-        "movie/now_playing",
-        "movie/upcoming",
-      ].map((path) => TmdbAdapter.list(path, country)),
+      [DiscoveryCatalogAdapter.getTrending(country), DiscoveryCatalogAdapter.getPopular(country), DiscoveryCatalogAdapter.getNowPlaying(country), DiscoveryCatalogAdapter.getUpcoming(country)]
     );
     const lists = results.map((r) => (r.status === "fulfilled" ? r.value : []));
     const live = results.some((r) => r.status === "fulfilled");
     const partial = results.some((r) => r.status === "rejected");
+    if (!freeTask) freeTask = FreeCatalogService.load().then(items => {
+      freeAvailable = items; homeCache.clear();
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("free-catalog-updated"));
+    }).catch(() => {}).finally(() => { setTimeout(() => { freeTask = undefined; }, 300000); });
+    const free = freeAvailable;
     const result: Catalog = {
       genres,
       trending: lists[0].length ? lists[0] : fallbackCatalog.trending,
       popular: lists[1].length ? lists[1] : fallbackCatalog.popular,
       nowPlaying: lists[2],
       upcoming: lists[3],
-      free: fallbackCatalog.free,
+      free,
       movies: unique([
         ...lists.flat(),
-        ...(live ? fallbackCatalog.free : seeds),
+        ...free, ...(!live ? seeds.filter(m => !m.free) : []),
       ]),
       status: live && !partial ? "live" : "fallback",
       message: !live
@@ -68,6 +73,7 @@ export const MovieService: CatalogAdapter & { retry(): void } = {
           : undefined,
     };
     available = unique([...available, ...result.movies]);
+    Object.assign(catalogDiagnostics, { lastDiscoveryRefresh: live ? new Date().toISOString() : catalogDiagnostics.lastDiscoveryRefresh, discoveryItemCount: result.movies.filter(m => !m.free).length });
     homeCache.set(country, {
       value: result,
       expires: Date.now() + (live ? 300_000 : 30_000),
@@ -84,7 +90,7 @@ export const MovieService: CatalogAdapter & { retry(): void } = {
     ]).filter((m) => m.title.toLowerCase().includes(normalized));
     if (!normalized) return { movies: available, status: "fallback" };
     try {
-      const result = await TmdbAdapter.list("search/movie", country, query);
+      const result = await DiscoveryCatalogAdapter.search(query, country);
       available = unique([...result, ...available]).slice(0, 300);
       return {
         movies: unique([...result, ...local.filter((m) => m.free)]),
@@ -102,11 +108,14 @@ export const MovieService: CatalogAdapter & { retry(): void } = {
   async details(movie, country) {
     if (movie.origin === "tmdb" || movie.tmdbId) {
       try {
-        const live = await TmdbAdapter.details(
+        const live = await DiscoveryCatalogAdapter.getDetails(
           movie.tmdbId ? `tmdb:${movie.tmdbId}` : movie.id,
           country,
         );
-        return { ...live, id: movie.id };
+        const trailer = preferredTrailer([
+          ...(movie.trailer ? [movie.trailer] : []), ...live.trailers,
+        ]);
+        return { ...live, id: movie.id, trailer, trailerUrl: trailer?.sourcePageUrl };
       } catch (error) {
         if (movie.origin === "tmdb") throw error;
         // Curated cards retain their known metadata when live detail is unavailable.
@@ -115,7 +124,15 @@ export const MovieService: CatalogAdapter & { retry(): void } = {
     // Refresh persisted movie records with the reviewed playback registry.
     const resolved =
       seeds.find((seed) => seed.id === movie.id && seed.freeSource) || movie;
-    const key = youtubeKey(movie.trailerUrl);
+    // Only reviewed curated URLs become official fallback trailers.
+    const curated = seeds.find((seed) => seed.id === movie.id);
+    const key = youtubeKey(curated?.trailerUrl);
+    const trailer = preferredTrailer([
+      ...(movie.trailer ? [movie.trailer] : []),
+      ...(key ? [{ id: key, provider: "youtube" as const, videoId: key,
+        sourceName: "YouTube", sourcePageUrl: curated!.trailerUrl,
+        type: "Trailer" as const, official: true, name: "Official Trailer" }] : []),
+    ]);
     return {
       ...resolved,
       genres: [],
@@ -123,20 +140,14 @@ export const MovieService: CatalogAdapter & { retry(): void } = {
         cast: movie.cast.map((name, id) => ({ id, name })),
         crew: [{ id: 0, name: movie.director, job: "Director" }],
       },
-      trailers: key
-        ? [
-            {
-              id: key,
-              key,
-              site: "YouTube",
-              type: "Trailer",
-              official: true,
-              name: "Official Trailer",
-            },
-          ]
-        : [],
+      trailer,
+      trailerUrl: trailer?.sourcePageUrl,
+      trailers: trailer ? [trailer] : [],
       providers: [],
       providerStatus: "unavailable",
     };
   },
 };
+
+export const CatalogService = MovieService;
+export const SearchAdapter = { search: MovieService.search };

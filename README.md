@@ -58,3 +58,37 @@ No credentials were read during verification. Fixture tests verify the implement
 Archive metadata uses the same-origin `/api/archive` endpoint (`server/archive.mjs`, `api/archive.mjs`) with a fixed reviewed identifier allowlist and timeout. Movie bytes never pass through this endpoint. Both generic and US-ported CC BY 3.0 metadata are recognized; browser requests no longer depend on Archive metadata CORS behavior.
 
 Final live smoke check: the Archive metadata proxy returned 200, Big Buck Bunny streamed from Archive in the in-app HTML5 player for 31 seconds (596.42-second duration), and reopening resumed at 31.19 seconds. The creator CDN still returned 403 from this sandbox; Archive playback succeeded. Live TMDB returned `api_unavailable`; configure the server token before validating current regional availability. YouTube embed lifecycle is fixture-tested; live YouTube playback remains unverified.
+
+### Phase 3 catalog and player
+
+Set `TMDB_READ_ACCESS_TOKEN` in the **server deployment environment** (never a
+`VITE_` variable). TMDB development data is subject to TMDB terms; development
+access does not automatically license a monetized production release. Production
+commercial release requires appropriate data/content licensing. The
+`DiscoveryAdapter` interface keeps the provider replaceable. Availability is
+regional (IN/PH); existing JustWatch attribution remains required.
+
+Discovery uses bounded pages (20 titles, maximum 50 pages), deduplicated requests,
+timeouts, memory and browser caches, and stale revalidation. Trending caches for
+2 hours, now playing 4 hours, popular 6 hours, upcoming 12 hours, details 24 hours,
+and genres 7 days. Free adapters run in server batches, never once per card.
+Blender refreshes weekly; Archive and Commons daily; aggregate refresh is 12 hours.
+Browser catalog refresh runs every five minutes while mounted. Serverless memory
+is opportunistic; HTTP and browser caches survive navigation and cold starts.
+No paid database is required.
+
+Free sources require explicit recognized licenses and compatible media. Archive
+search is restricted to the animation collection and rejects samples/trailers;
+Commons requires creator and license metadata. Official Blender pages are checked
+for explicit per-film licenses and official media links, and are omitted if either
+is missing. A license on a source record is evidence, not a guarantee against false
+uploader claims; production catalog editorial review remains necessary.
+`/api/free-catalog` exposes actual counts, adapter outcomes, and last refresh.
+Client diagnostics are in `src/services/freeCatalog.ts`. Counts are not inflated.
+
+Direct playback has overlay controls, keyboard shortcuts (J/L, arrows, K/Space,
+F, M), touch seek, captions metadata, resume persistence and optional Wake Lock.
+YouTube uses the official API with `controls=0`, and custom controls outside the
+uncropped iframe as required by [YouTube embedding rules](https://developers.google.com/youtube/terms/required-minimum-functionality).
+Fullscreen and landscape lock depend on browser support. No YouTube media is
+scraped, downloaded, or rehosted.

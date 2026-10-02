@@ -44,7 +44,7 @@ async function play(page: Page) {
     .toBeGreaterThan(before + 0.3);
 }
 
-test("real legal MP4: metadata, playing, seek, pause, reload and 25-second resume", async ({
+test("real legal MP4: metadata, playing, seek, pause, reload and 30-second resume", async ({
   page,
 }) => {
   test.setTimeout(120_000);
@@ -60,8 +60,8 @@ test("real legal MP4: metadata, playing, seek, pause, reload and 25-second resum
   });
   await openMovie(page);
   await play(page);
-  await page.waitForTimeout(25_000);
-  await page.getByRole("button", { name: "Close player" }).click();
+  await page.waitForTimeout(30_000);
+  await page.getByRole("button", { name: "Back to movie details" }).click();
   await page.getByRole("button", { name: "Resume", exact: true }).click();
   await expect
     .poll(
@@ -69,7 +69,7 @@ test("real legal MP4: metadata, playing, seek, pause, reload and 25-second resum
         page.locator("video").evaluate((v: HTMLVideoElement) => v.currentTime),
       { timeout: 30_000 },
     )
-    .toBeGreaterThan(24);
+    .toBeGreaterThan(29);
   await play(page);
   await page.locator("video").evaluate((v: HTMLVideoElement) => {
     v.currentTime = 30;
@@ -91,15 +91,15 @@ test("real legal MP4: metadata, playing, seek, pause, reload and 25-second resum
   ).toBe(paused);
   await play(page);
   await expect(
-    page.getByRole("dialog").getByRole("link", { name: "View Source" }),
+    page.locator(".player-screen").getByRole("link", { name: "View Legal Source" }),
   ).toHaveAttribute("href", sources.bunny.sourcePageUrl);
   const [popup] = await Promise.all([
     page.waitForEvent("popup"),
-    page.getByRole("dialog").getByRole("link", { name: "View Source" }).click(),
+    page.locator(".player-screen").getByRole("link", { name: "View Legal Source" }).click(),
   ]);
   expect(popup.url()).toContain("peach.blender.org");
   await popup.close();
-  await page.getByRole("button", { name: "Close player" }).click();
+  await page.getByRole("button", { name: "Back to movie details" }).click();
   await page.reload();
   await page
     .getByRole("button", { name: "View Big Buck Bunny", exact: true })
@@ -124,6 +124,21 @@ for (const title of ["Sintel", "Tears of Steel"])
     test.setTimeout(60_000);
     await openMovie(page, title);
     await play(page);
+    if (title === "Sintel") {
+      await page.locator("video").evaluate((video: HTMLVideoElement) => { video.currentTime = 30; video.pause(); });
+      await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBe(30);
+      await play(page);
+      await page.getByRole("button", { name: "Fullscreen", exact: true }).click();
+      await expect.poll(() => page.evaluate(() => document.fullscreenElement?.classList.contains("player-screen"))).toBe(true);
+      await page.evaluate(() => document.exitFullscreen());
+      await page.screenshot({ path: ".cache/player-desktop.png" });
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect(page.getByRole("navigation", { name: "Mobile navigation" })).toBeHidden();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      await page.screenshot({ path: ".cache/player-mobile.png" });
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.screenshot({ path: ".cache/player-landscape.png" });
+    }
     console.log(
       title,
       await page
@@ -151,7 +166,7 @@ test("failed first media source falls back; exhaustion and Retry re-probe from f
   expect(
     await page.locator("video").evaluate((v: HTMLVideoElement) => v.currentSrc),
   ).toContain("BigBuckBunny_328");
-  await page.getByRole("button", { name: "Close player" }).click();
+  await page.getByRole("button", { name: "Back to movie details" }).click();
   await page.route("**/api/playback?**", (route) =>
     route.fulfill({
       json: { ok: false, status: 403, contentType: "text/html" },
