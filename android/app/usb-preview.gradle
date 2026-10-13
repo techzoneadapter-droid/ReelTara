@@ -1,0 +1,33 @@
+// The debug asset overlay is generated from the synced production config.
+// Release never reads this directory or the debug manifest/resources.
+def usbAssets = layout.buildDirectory.dir('generated/usbPreview/assets')
+def generateUsbPreviewConfig = tasks.register('generateUsbPreviewConfig') {
+    def productionConfig = file('src/main/assets/capacitor.config.json')
+    inputs.file(productionConfig)
+    outputs.dir(usbAssets)
+    doLast {
+        def config = new groovy.json.JsonSlurper().parse(productionConfig)
+        config.server = [url: 'http://localhost:5173', cleartext: true]
+        config.android = (config.android ?: [:]) + [allowMixedContent: false]
+        config.loggingBehavior = 'none'
+        def output = usbAssets.get().file('capacitor.config.json').asFile
+        output.parentFile.mkdirs()
+        output.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(config))
+    }
+}
+android.sourceSets.debug.assets.srcDir(usbAssets)
+tasks.configureEach { task ->
+    if (task.name == 'mergeDebugAssets') task.dependsOn(generateUsbPreviewConfig)
+}
+
+def verifyReleaseConfig = tasks.register('verifyReleaseConfig') {
+    doLast {
+        def config = new groovy.json.JsonSlurper().parse(file('src/main/assets/capacitor.config.json'))
+        if (config.server?.url || config.server?.cleartext || config.android?.allowMixedContent) {
+            throw new GradleException('Release cannot contain Live Reload URL, cleartext or mixed content. Run npm run android:sync with the production config.')
+        }
+    }
+}
+tasks.configureEach { task ->
+    if (task.name == 'preReleaseBuild') task.dependsOn(verifyReleaseConfig)
+}

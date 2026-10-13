@@ -10,6 +10,9 @@
     "qa": "npm run test && npm run test:e2e && npm run build",
     "test": "tsx --test tests/services.test.ts",
     "test:e2e": "node scripts/prepare-browser.mjs && TMPDIR=\"$PWD/.cache/tmp\" playwright test",
+    "android:usb": "node scripts/android-usb.mjs",
+    "android:debug": "node scripts/android-usb.mjs --build-only",
+    "android:usb:test": "node --test tests/android-usb.test.mjs",
     "android:sync": "npm run build && cap sync android",
     "android:open": "cap open android",
     "android:run": "npm run android:sync && cap run android"
@@ -34,6 +37,6 @@
     "@capacitor/android": "^7.4.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

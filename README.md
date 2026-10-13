@@ -11,6 +11,10 @@ npm run qa
 npm run build
 ```
 
+Android USB Live Preview: run `npm run android:usb` on Windows. See
+[the USB preview guide](docs/ANDROID_USB_PREVIEW.md) for device authorization,
+debug/release isolation and verification results.
+
 The app works without credentials using the existing curated catalog. For live discovery, set `TMDB_READ_ACCESS_TOKEN` in the **server process environment** before starting Vite, or in Vercel project settings. `.env.example` documents the variable; Vite deliberately does not load secrets into the client. No `VITE_` secret is used. Restart the dev server after configuring it.
 
 `api/tmdb.mjs` is a Vercel server function; `server/tmdb.mjs` shares its fixed upstream allowlist with Vite development middleware. A static-only host must provide an equivalent `/api/tmdb` endpoint; otherwise the app remains in fallback mode. `vite preview` does not run the server function. The proxy supports only public movie metadata endpoints, bounds search length, excludes adult search results, uses a server timeout and never returns its token.

@@ -9,6 +9,10 @@ import { playbackResponse } from "./server/playback.mjs";
 // @ts-ignore Shared legal catalog handler.
 import { freeCatalogResponse } from "./server/freeCatalog.mjs";
 export default defineConfig({
+  server: {
+    // Native builds/downloads are not HMR inputs and can lock files on Windows.
+    watch: { ignored: ['**/.cache/**', '**/android/**', '**/dist/**'] },
+  },
   plugins: [
     react(),
     {
