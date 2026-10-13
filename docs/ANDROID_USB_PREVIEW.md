@@ -31,6 +31,12 @@ Emulator và ADB qua Wi-Fi không được tự chọn.
 - `ANDROID_HOME`: `%LOCALAPPDATA%\Android\Sdk`; `JAVA_HOME`: thư mục JDK 21.
   Thiết lập đã thêm Java/SDK tools vào PATH cấp người dùng. Terminal đang mở
   có thể chưa nhận PATH mới; script tự tìm SDK và JDK tại vị trí chuẩn.
+- Nếu PowerShell báo `adb is not recognized`, chạy
+  `powershell -NoProfile -File scripts/setup-adb-path.ps1`. Script dùng ADB đã
+  cài, cập nhật PATH người dùng, thông báo môi trường cho Windows và bổ sung
+  khối PATH vào profile PowerShell 5/7 mà giữ nội dung hiện có. Các phiên
+  PowerShell mới nhận ADB kể cả khi VS Code vẫn giữ môi trường cũ. Thiết lập
+  workspace `.vscode/settings.json` cũng thêm Platform-Tools cho terminal mới.
 - `npm run android:debug`: build APK preview trước khi có thiết bị.
 - `npm run android:usb:test`: kiểm tra chọn thiết bị và cơ chế tránh rebuild web.
 - Khi preview đang chạy: `node scripts/check-android-hmr.mjs` kiểm tra HMR
@@ -86,6 +92,8 @@ Ngày 13/10/2026:
 - TypeScript + production web build: đạt; Capacitor sync: đạt.
 - 14 test dịch vụ và 3 test USB/fingerprint: đạt.
 - Debug APK và release APK chưa ký: build thành công.
+- Release AAB chưa ký: build thành công; assets không có URL/cleartext dev,
+  không có network security debug; manifest của tác vụ bundle tắt cleartext.
 - Kiểm tra APK thực tế: debug có URL localhost; release không có URL live,
   không có tài nguyên network security debug và `usesCleartextTraffic=false`.
 - Chạy lại `android:debug`: dùng cache, bỏ qua build/sync.

@@ -30,3 +30,23 @@ foreach ($variant in @('debug', 'release')) {
         Write-Output "PASS: $variant packaged configuration and manifest; no server credential variable in web assets."
     } finally { $archive.Dispose() }
 }
+
+# AAB uses the same release variant; its manifest is protobuf rather than APK
+# binary XML. Check the bundle's own assets/resources and the merged manifest
+# generated specifically for the release bundle task.
+$bundlePath = 'android/app/build/outputs/bundle/release/app-release.aab'
+if (Test-Path -LiteralPath $bundlePath) {
+    $archive = [IO.Compression.ZipFile]::OpenRead((Resolve-Path -LiteralPath $bundlePath).Path)
+    try {
+        $entry = $archive.GetEntry('base/assets/capacitor.config.json')
+        if (!$entry) { throw 'Release AAB missing Capacitor config' }
+        $reader = [IO.StreamReader]::new($entry.Open())
+        try { $config = $reader.ReadToEnd() | ConvertFrom-Json } finally { $reader.Dispose() }
+        if ($config.server.url -or $config.server.cleartext -or $config.android.allowMixedContent) { throw 'Release AAB contains development networking config' }
+        if ($archive.Entries | Where-Object { $_.FullName -match 'usb_network_security' }) { throw 'Release AAB includes debug network resource' }
+        $bundleManifestPath = 'android/app/build/intermediates/bundle_manifest/release/processApplicationManifestReleaseForBundle/AndroidManifest.xml'
+        $manifest = Get-Content -LiteralPath $bundleManifestPath -Raw
+        if ($manifest -notmatch 'usesCleartextTraffic="false"' -or $manifest -match 'networkSecurityConfig|com\.reeltara\.app\.debug') { throw 'Release bundle merged manifest contains debug networking config' }
+        Write-Output 'PASS: release AAB assets/resources and bundle merged manifest contain no development networking config.'
+    } finally { $archive.Dispose() }
+}
