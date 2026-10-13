@@ -1,3 +1,4 @@
+import { withAndroidBuildLock } from './android-build-lock.mjs';
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { createHash } from 'node:crypto';
@@ -54,6 +55,9 @@ async function devices() {
   return selected[0]?.status === 'device' ? selected[0] : undefined;
 }
 export async function buildDebug(previewPort = firstPreviewPort) {
+  return withAndroidBuildLock(() => buildDebugUnlocked(previewPort));
+}
+async function buildDebugUnlocked(previewPort = firstPreviewPort) {
   // A build-only preparation may have completed while this process waited USB.
   try { state = JSON.parse(readFileSync(stampPath, 'utf8')); } catch { /* Keep in-memory state. */ }
   let hash = fingerprint(previewPort);

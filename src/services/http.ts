@@ -35,10 +35,14 @@ export async function request<T>(
   ttl = 300_000,
 ): Promise<T> {
   if (!cache.has(url)) {
-    try { const saved = JSON.parse(localStorage.getItem(`reeltara-cache:${url}`) || 'null'); if (saved && typeof saved.expires === 'number' && saved.expires > Date.now() - Math.min(ttl, 86400000)) cache.set(url, saved); } catch { /* Storage optional. */ }
+    try { const saved = JSON.parse(localStorage.getItem(`reeltara-cache:${url}`) || 'null'); if (saved && typeof saved.expires === 'number' && saved.expires > Date.now() - (url.startsWith("/api/open-catalog") ? 86400000 : Math.min(ttl, 86400000))) cache.set(url, saved); } catch { /* Storage optional. */ }
   }
   const hit = cache.get(url);
   if (hit && hit.expires > Date.now()) {
+    try { return validate(hit.data); } catch { cache.delete(url); }
+  }
+  // Offline discovery can retain bounded metadata; playback/license checks never use stale results.
+  if (hit && url.startsWith('/api/open-catalog') && hit.expires + 86400000 > Date.now() && typeof navigator !== 'undefined' && !navigator.onLine) {
     try { return validate(hit.data); } catch { cache.delete(url); }
   }
   let task = pending.get(url);

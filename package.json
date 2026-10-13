@@ -14,9 +14,11 @@
     "android:usb": "node scripts/android-usb.mjs",
     "android:debug": "node scripts/android-usb.mjs --build-only",
     "android:usb:test": "node --test tests/android-usb.test.mjs",
-    "android:sync": "npm run build && cap sync android",
+    "android:sync": "node scripts/android-build.mjs sync",
     "android:open": "cap open android",
-    "android:run": "npm run android:sync && cap run android"
+    "android:run": "npm run android:sync && cap run android",
+    "android:verify": "node scripts/android-build.mjs verify",
+    "android:device:qa": "node scripts/android-device-qa.mjs"
   },
   "dependencies": {
     "lucide-react": "0.468.0",

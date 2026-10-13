@@ -40,3 +40,5 @@ Official references: [Wikidata licensing](https://www.wikidata.org/wiki/Wikidata
 - No production deployment, Play upload or main merge. Newer Android hardware and deployed HTTPS backend remain unverified.
 
 Final handoff: active USB preview is now **5188**. HMR and the real open catalog were reverified on the same Android 9 device; that refresh returned 73 open-data items. The native app was aligned once after the port change; subsequent CSS/React probe updates did not rebuild the APK. Initial DevTools checks immediately after reinstall timed out, then passed once the WebView completed startup. Release artifact isolation checks passed again.
+
+Phase 2 follow-up: low-memory Android backdrop compositing was measured and reduced without changing layout; Commons list thumbnails request 240 px (provider may normalize to 250). Wikidata's four adjacent UI pages now share a bounded 101-row cached query, retaining 25 rows per source/page. Offline discovery uses at most 24-hour stale metadata with explicit offline labeling; playback checks remain fresh. Full real-device/Play audit: [RELEASE_READINESS_PHASE2.md](RELEASE_READINESS_PHASE2.md).

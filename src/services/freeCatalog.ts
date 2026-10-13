@@ -5,7 +5,7 @@ import { movies } from '../data/movies';
 export const catalogDiagnostics = { lastDiscoveryRefresh: '', lastFreeRefresh: '', discoveryItemCount: 0, freeItemCount: 0, verifiedFreeCount: 0, playableFreeCount: 0 };
 export const FreeCatalogService = {
   async load(): Promise<Movie[]> {
-    const data = await request('/api/free-catalog?version=2', object, 300000);
+    const data = await request('/api/free-catalog?version=3', object, 300000);
     if (!Array.isArray(data.items)) throw new Error('Invalid free catalog');
     const items = (data.items as FreeLegalMovie[]).filter(m => m.verifiedLegal);
     // Do not download/decode videos while opening the catalog. The selected

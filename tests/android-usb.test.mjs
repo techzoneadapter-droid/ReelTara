@@ -118,3 +118,10 @@ test('production configuration has no live server and denies cleartext', () => {
   assert.match(gradle, /sourceSets\.debug\.assets/);
   assert.doesNotMatch(gradle, /sourceSets\.release/);
 });
+
+test('native build lock serializes build/sync writers and releases after failure', async () => {
+ const {withAndroidBuildLock}=await import('../scripts/android-build-lock.mjs');
+ const lockPath=`.cache/android-usb/lock-test-${process.pid}.lock`;let active=0,maximum=0;
+ const work=async(fail)=>withAndroidBuildLock(async()=>{active++;maximum=Math.max(maximum,active);try{await new Promise(r=>setTimeout(r,30));if(fail)throw Error('simulated build failure');return 'complete';}finally{active--; }},{lockPath,timeoutMs:3000});
+ const results=await Promise.allSettled([work(true),work(false)]);assert.equal(maximum,1);assert.equal(results[0].status,'rejected');assert.equal(results[1].value,'complete');assert.equal(active,0);
+});

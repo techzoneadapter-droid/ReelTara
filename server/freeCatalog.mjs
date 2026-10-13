@@ -19,8 +19,8 @@ export class InternetArchiveAdapter {
 }
 export class WikimediaCommonsAdapter {
   async load() {
-    return cached('commons-films', 86400000, async () => {
-      const params = new URLSearchParams({ action: 'query', format: 'json', generator: 'search', gsrsearch: 'filetype:video incategory:"Animated short films"', gsrnamespace: '6', gsrlimit: '50', prop: 'videoinfo', viprop: 'url|size|mime|extmetadata|derivatives', viurlwidth: '500' });
+    return cached('commons-films-240-v1', 86400000, async () => {
+      const params = new URLSearchParams({ action: 'query', format: 'json', generator: 'search', gsrsearch: 'filetype:video incategory:"Animated short films"', gsrnamespace: '6', gsrlimit: '50', prop: 'videoinfo', viprop: 'url|size|mime|extmetadata|derivatives', viurlwidth: '240' });
       const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`);
       return Object.values(data.query?.pages || {}).flatMap(page => {
         const info = page.videoinfo?.[0]; const meta = info?.extmetadata || {};
@@ -38,7 +38,7 @@ function bounded(promise, ms = 25000) {
   return Promise.race([promise, new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('Source timeout')), ms); })]).finally(() => clearTimeout(timer));
 }
 export async function freeCatalogResponse() {
-  const body = await cached('free-catalog', 3600000, async () => {
+  const body = await cached('free-catalog-240-v1', 3600000, async () => {
     const adapters = [new CuratedLegalAdapter(), new InternetArchiveAdapter(), new WikimediaCommonsAdapter()];
     const results = await Promise.allSettled(adapters.map(a => bounded(a.load())));
     const unique = new Map();

@@ -59,16 +59,19 @@ async function tvmaze(page, query, country, feed) {
   return {items:mapped.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE), hasMore:mapped.length>page*PAGE_SIZE};
 }
 async function wikidata(country, page, query, feed) {
+  const offset=((page-1)%4)*PAGE_SIZE;
+  const block=Math.floor((page-1)/4);
   const countryId = country === 'PH' ? 'Q928' : 'Q668';
   const term = JSON.stringify(query.toLowerCase());
   const q = `SELECT ?item ?itemLabel ?date (GROUP_CONCAT(DISTINCT ?directorLabel;separator=" · ") AS ?directors) (GROUP_CONCAT(DISTINCT ?genreLabel;separator=" · ") AS ?genres) (GROUP_CONCAT(DISTINCT ?countryLabel;separator=" · ") AS ?countries) WHERE {
-    { SELECT ?item (MIN(?released) AS ?date) WHERE { ?item wdt:P495 wd:${countryId}; wdt:P31 wd:Q11424; wdt:P577 ?released. ${query ? '?item rdfs:label ?name. FILTER(LANG(?name)="en" && CONTAINS(LCASE(STR(?name)), '+term+'))' : 'FILTER(?released >= "2020-01-01T00:00:00Z"^^xsd:dateTime)'} ${feed === "upcoming" ? `FILTER(?released > "${new Date().toISOString().slice(0,10)}T23:59:59Z"^^xsd:dateTime)` : ""} } GROUP BY ?item ORDER BY DESC(?date) ?item LIMIT ${PAGE_SIZE+1} OFFSET ${(page-1)*PAGE_SIZE} }
+    { SELECT ?item (MIN(?released) AS ?date) WHERE { ?item wdt:P495 wd:${countryId}; wdt:P31 wd:Q11424; wdt:P577 ?released. ${query ? '?item rdfs:label ?name. FILTER(LANG(?name)="en" && CONTAINS(LCASE(STR(?name)), '+term+'))' : 'FILTER(?released >= "2020-01-01T00:00:00Z"^^xsd:dateTime)'} ${feed === "upcoming" ? `FILTER(?released > "${new Date().toISOString().slice(0,10)}T23:59:59Z"^^xsd:dateTime)` : ""} } GROUP BY ?item ORDER BY DESC(?date) ?item LIMIT ${PAGE_SIZE*4+1} OFFSET ${block*PAGE_SIZE*4} }
     OPTIONAL {?item wdt:P57 ?director.} OPTIONAL {?item wdt:P136 ?genre.} OPTIONAL {?item wdt:P495 ?country.}
     SERVICE wikibase:label { bd:serviceParam wikibase:language "en". ?item rdfs:label ?itemLabel. ?director rdfs:label ?directorLabel. ?genre rdfs:label ?genreLabel. ?country rdfs:label ?countryLabel. }
   } GROUP BY ?item ?itemLabel ?date ORDER BY DESC(?date) ?item`;
-  const body = await fetchJson('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(q), 'application/sparql-results+json');
+  // Four UI pages share one bounded upstream query. No background polling or speculative downloads.
+  const body = await cached(['wd-block-v1',country,block,query,feed].join(':'),3600000,()=>fetchJson('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(q), 'application/sparql-results+json'));
   const rows = body.results?.bindings || [];
-  return {items:rows.slice(0,PAGE_SIZE).map(wdMovie).filter(Boolean), hasMore:rows.length>PAGE_SIZE};
+  return {items:rows.slice(offset,offset+PAGE_SIZE).map(wdMovie).filter(Boolean), hasMore:rows.length>offset+PAGE_SIZE};
 }
 export async function openCatalogResponse(input) {
   const p = new URL(input,'http://localhost').searchParams;

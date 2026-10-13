@@ -44,8 +44,14 @@ test('an unavailable source is not retained as a successful cached response',asy
 });
 test('Wikidata query is country-bound, groups dates before pagination and enriches CC0 text',async()=>{
  const original=globalThis.fetch;globalThis.fetch=async url=>{
-  const q=new URL(url).searchParams.get('query');assert.match(q,/wd:Q928/);assert.match(q,/GROUP BY \?item/);assert.match(q,/OFFSET 25/);assert.match(q,/wdt:P57/);
-  return {ok:true,json:async()=>({results:{bindings:[{item:{value:'http://www.wikidata.org/entity/Q12345'},itemLabel:{value:'New Philippine Film'},date:{value:'2026-10-01T00:00:00Z'},directors:{value:'Director'},genres:{value:'Drama'},countries:{value:'Philippines'}}]}})};
+  const q=new URL(url).searchParams.get('query');assert.match(q,/wd:Q928/);assert.match(q,/GROUP BY \?item/);assert.match(q,/OFFSET 0/);assert.match(q,/LIMIT 101/);assert.match(q,/wdt:P57/);
+  return {ok:true,json:async()=>({results:{bindings:Array.from({length:26},(_,i)=>({item:{value:'http://www.wikidata.org/entity/Q'+(12345+i)},itemLabel:{value:'New Philippine Film'},date:{value:'2026-10-01T00:00:00Z'},directors:{value:'Director'},genres:{value:'Drama'},countries:{value:'Philippines'}}))}})};
  };
  try{const r=await openCatalogResponse('/?source=wikidata&country=PH&page=2&query=fixture');assert.equal(r.status,200);assert.equal(r.body.items[0].director,'Director');assert.equal(r.body.items[0].source.license,'CC0');assert.equal(r.body.items[0].year,2026);}finally{globalThis.fetch=original;}
+});
+
+test('four Wikidata UI pages share one bounded request and the next block has distinct IDs',async()=>{
+ const original=globalThis.fetch;let calls=0;
+ globalThis.fetch=async url=>{calls++;const q=new URL(url).searchParams.get('query');assert.match(q,/LIMIT 101/);const base=Number(q.match(/OFFSET (\d+)/)[1]);return {ok:true,json:async()=>({results:{bindings:Array.from({length:101},(_,i)=>({item:{value:'http://www.wikidata.org/entity/Q'+(900000+base+i)},itemLabel:{value:'Batch Film '+(base+i)}}))}})};};
+ try{const ids=[];for(let page=1;page<=4;page++){const r=await openCatalogResponse('/?source=wikidata&country=IN&page='+page+'&query=batchCacheRegression');assert.equal(r.body.items.length,25);ids.push(...r.body.items.map(m=>m.id));}assert.equal(calls,1);assert.equal(new Set(ids).size,100);const next=await openCatalogResponse('/?source=wikidata&country=IN&page=5&query=batchCacheRegression');assert.equal(calls,2);assert(!ids.includes(next.body.items[0].id));}finally{globalThis.fetch=original;}
 });

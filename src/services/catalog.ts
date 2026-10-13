@@ -30,7 +30,7 @@ export const MovieService:CatalogAdapter & {retry():void;page(country:Country,pa
       const live=index.length>0||recent.length>0;
       if(!freeTask&&freeExpires<=Date.now()) freeTask=FreeCatalogService.load().then(items=>{freeAvailable=items;homeCache.clear();if(typeof window!=='undefined') window.dispatchEvent(new Event('free-catalog-updated'));}).catch(()=>{}).finally(()=>{freeTask=undefined;freeExpires=Date.now()+300000;});
       const ranked=[...index].sort((a,b)=>Number(b.id.startsWith('wikidata:'))-Number(a.id.startsWith('wikidata:'))||b.year-a.year||b.rating-a.rating);
-      const result:Catalog={genres:[],trending:live?ranked:hit?.value.trending||fallbackCatalog.trending,popular:live?ranked:hit?.value.popular||fallbackCatalog.popular,nowPlaying:recent,upcoming:results[2].status==='fulfilled'?results[2].value.movies:[],free:freeAvailable,hotTrailers:fallbackCatalog.hotTrailers,movies:unique([...index,...recent,...freeAvailable,...(!live?seeds.filter(m=>!m.free):[])]),status:live?'live':'fallback',message:!live?fallbackCatalog.message:results.some(r=>r.status==='rejected')?'Some open metadata sources are temporarily unavailable.':undefined};
+      const result:Catalog={genres:[],trending:live?ranked:hit?.value.trending||fallbackCatalog.trending,popular:live?ranked:hit?.value.popular||fallbackCatalog.popular,nowPlaying:recent,upcoming:results[2].status==='fulfilled'?results[2].value.movies:[],free:freeAvailable,hotTrailers:fallbackCatalog.hotTrailers,movies:unique([...index,...recent,...freeAvailable,...(!live?seeds.filter(m=>!m.free):[])]),status:live && (typeof navigator==='undefined'||navigator.onLine)?'live':'fallback',message:typeof navigator!=='undefined'&&!navigator.onLine&&live?'Offline. Showing cached open metadata; refresh when online.':!live?fallbackCatalog.message:results.some(r=>r.status==='rejected')?'Some open metadata sources are temporarily unavailable.':undefined};
       available=unique([...result.movies,...available]).slice(0,1500);
       Object.assign(catalogDiagnostics,{lastDiscoveryRefresh:live?new Date().toISOString():catalogDiagnostics.lastDiscoveryRefresh,discoveryItemCount:result.movies.filter(m=>!m.free).length});
       homeCache.set(country,{value:result,expires:Date.now()+(live?300000:30000)});return result;
@@ -52,4 +52,4 @@ export const MovieService:CatalogAdapter & {retry():void;page(country:Country,pa
   }
 };
 export const CatalogService=MovieService;
-export const SearchAdapter={search:MovieService.search};
+export const SearchAdapter={search:(query:string,country:Country)=>MovieService.search(query,country)};
