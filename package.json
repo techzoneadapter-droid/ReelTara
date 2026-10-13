@@ -18,7 +18,8 @@
     "android:open": "cap open android",
     "android:run": "npm run android:sync && cap run android",
     "android:verify": "node scripts/android-build.mjs verify",
-    "android:device:qa": "node scripts/android-device-qa.mjs"
+    "android:device:qa": "node scripts/android-device-qa.mjs",
+    "play:preflight": "node scripts/play-release-preflight.mjs"
   },
   "dependencies": {
     "lucide-react": "0.468.0",
