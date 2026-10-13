@@ -55,7 +55,6 @@ export async function request<T>(
           const entry = { expires: Date.now() + ttl, data: raw };
           cache.set(url, entry);
           try { localStorage.setItem(`reeltara-cache:${url}`, JSON.stringify(entry)); } catch { /* Quota or private browsing. */ }
-          if (typeof window !== "undefined") window.dispatchEvent(new Event("catalog-updated"));
           if (cache.size > 150) cache.delete(cache.keys().next().value!);
           return raw;
         } catch (error) {
