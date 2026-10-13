@@ -47,8 +47,8 @@ export const MovieService: CatalogAdapter & { retry(): void; page(country: Count
       [DiscoveryCatalogAdapter.getTrending(country), DiscoveryCatalogAdapter.getPopular(country), DiscoveryCatalogAdapter.getNowPlaying(country), DiscoveryCatalogAdapter.getUpcoming(country)]
     );
     const lists = results.map((r) => (r.status === "fulfilled" ? r.value : []));
-    const live = results.some((r) => r.status === "fulfilled");
-    const partial = results.some((r) => r.status === "rejected");
+    const live = lists.slice(0,3).some(list => list.length > 0);
+    const partial = results.slice(0,3).some((r) => r.status === "rejected");
     if (!freeTask) freeTask = FreeCatalogService.load().then(items => {
       freeAvailable = items; homeCache.clear();
       if (typeof window !== "undefined") window.dispatchEvent(new Event("free-catalog-updated"));
