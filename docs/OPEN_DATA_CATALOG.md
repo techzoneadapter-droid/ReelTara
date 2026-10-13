@@ -38,3 +38,5 @@ Official references: [Wikidata licensing](https://www.wikidata.org/wiki/Wikidata
 - Actual web streams played: Commons Miñocas, Big Buck Bunny, Sintel and Tears of Steel. Lost Flower sometimes failed its selected-source probe/decoding; the legal source fallback remained usable. Third-party availability is not guaranteed.
 - TypeScript/build, Capacitor sync and local debug APK/release APK/AAB builds passed. Packaged release assets/resources and manifests contain no live URL, cleartext development configuration or server token variable.
 - No production deployment, Play upload or main merge. Newer Android hardware and deployed HTTPS backend remain unverified.
+
+Final handoff: active USB preview is now **5188**. HMR and the real open catalog were reverified on the same Android 9 device; that refresh returned 73 open-data items. The native app was aligned once after the port change; subsequent CSS/React probe updates did not rebuild the APK. Initial DevTools checks immediately after reinstall timed out, then passed once the WebView completed startup. Release artifact isolation checks passed again.
