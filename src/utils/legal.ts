@@ -1,6 +1,8 @@
 import type { Movie, Trailer } from "../types/movie";
 import { compatibleCandidates } from "../services/playbackHealth";
 const legalDomains = [
+  "www.wikidata.org",
+  "www.tvmaze.com",
   "themoviedb.org",
   "www.themoviedb.org",
   "tv.apple.com",

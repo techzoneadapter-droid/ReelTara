@@ -1,154 +1,55 @@
-import { FreeCatalogService, catalogDiagnostics } from "./freeCatalog";
-import { DiscoveryCatalogAdapter } from "./discovery";
-import { movies as seeds } from "../data/movies";
-import type {
-  Catalog,
-  Country,
-  Movie,
-  MovieDetails,
-  SearchResult,
-} from "../types/movie";
-import { OpenCatalogAdapter } from "../adapters/openCatalog";
-import { UserStateService } from "./userState";
-import { preferredTrailer, youtubeKey } from "./legal";
-export interface CatalogAdapter {
-  home(country: Country): Promise<Catalog>;
-  search(query: string, country: Country): Promise<SearchResult>;
-  details(movie: Movie, country: Country): Promise<MovieDetails>;
-}
-const unique = (items: Movie[]) => [
-  ...new Map(items.map((m) => [m.id, m])).values(),
-];
-export const fallbackCatalog: Catalog = {
-  movies: seeds,
-  trending: seeds.filter((m) => !m.free),
-  popular: seeds.filter((m) => !m.free),
-  nowPlaying: [],
-  upcoming: [],
-  free: seeds.filter((m) => m.free),
-  genres: [],
-  status: "fallback",
-  message: "Curated catalog · Open metadata sources unavailable.",
-};
-let available = seeds;
-let freeAvailable = fallbackCatalog.free;
-let freeTask: Promise<void> | undefined;
-const homeCache = new Map<Country, { value: Catalog; expires: number }>();
-export const MovieService: CatalogAdapter & { retry(): void; page(country: Country, page: number, sort: string, query?: string): Promise<Movie[]> } = {
-  async page(country, page, sort, query) { return query ? DiscoveryCatalogAdapter.search(query, country, page) : sort === "popular" ? DiscoveryCatalogAdapter.getPopular(country, page) : sort === "trending" ? DiscoveryCatalogAdapter.getTrending(country, page) : DiscoveryCatalogAdapter.getDiscover(country, page); },
-  retry() {
-    homeCache.clear();
-  },
-  async home(country) {
-    const cached = homeCache.get(country);
-    if (cached && cached.expires > Date.now()) return cached.value;
-    const genres: Catalog["genres"] = [];
-    const results = await Promise.allSettled(
-      [DiscoveryCatalogAdapter.getTrending(country), DiscoveryCatalogAdapter.getPopular(country), DiscoveryCatalogAdapter.getNowPlaying(country), DiscoveryCatalogAdapter.getUpcoming(country)]
-    );
-    const lists = results.map((r) => (r.status === "fulfilled" ? r.value : []));
-    const live = lists.slice(0,3).some(list => list.length > 0);
-    const partial = results.slice(0,3).some((r) => r.status === "rejected");
-    if (!freeTask) freeTask = FreeCatalogService.load().then(items => {
-      freeAvailable = items; homeCache.clear();
-      if (typeof window !== "undefined") window.dispatchEvent(new Event("free-catalog-updated"));
-    }).catch(() => {}).finally(() => { setTimeout(() => { freeTask = undefined; }, 300000); });
-    const free = freeAvailable;
-    const result: Catalog = {
-      genres,
-      trending: lists[0].length ? lists[0] : fallbackCatalog.trending,
-      popular: lists[1].length ? lists[1] : fallbackCatalog.popular,
-      nowPlaying: lists[2],
-      upcoming: lists[3],
-      free,
-      movies: unique([
-        ...lists.flat(),
-        ...free, ...(!live ? seeds.filter(m => !m.free) : []),
-      ]),
-      status: live && !partial ? "live" : "fallback",
-      message: !live
-        ? "Live API unavailable. Browsing the curated catalog."
-        : partial
-          ? "Some live sections are unavailable. Curated fallback is shown where needed."
-          : undefined,
-    };
-    available = unique([...available, ...result.movies]);
-    Object.assign(catalogDiagnostics, { lastDiscoveryRefresh: live ? new Date().toISOString() : catalogDiagnostics.lastDiscoveryRefresh, discoveryItemCount: result.movies.filter(m => !m.free).length });
-    homeCache.set(country, {
-      value: result,
-      expires: Date.now() + (live ? 300_000 : 30_000),
-    });
+﻿import { FreeCatalogService, catalogDiagnostics } from './freeCatalog';
+import { movies as seeds } from '../data/movies';
+import type { Catalog, Country, Movie, MovieDetails, SearchResult, CatalogPage } from '../types/movie';
+import { OpenCatalogAdapter } from '../adapters/openCatalog';
+import { UserStateService } from './userState';
+import { preferredTrailer, youtubeKey } from './legal';
+export interface CatalogAdapter { home(country:Country):Promise<Catalog>; search(query:string,country:Country):Promise<SearchResult>; details(movie:Movie,country:Country):Promise<MovieDetails> }
+const unique = (items:Movie[]) => [...new Map(items.map(m=>[m.id,m])).values()];
+export const fallbackCatalog:Catalog = {movies:seeds,trending:seeds.filter(m=>!m.free),popular:seeds.filter(m=>!m.free),nowPlaying:[],upcoming:[],free:seeds.filter(m=>m.free),genres:[],hotTrailers:seeds.filter(m=>!m.free&&m.trailerUrl),status:'fallback',message:'Curated catalog · Open metadata sources unavailable.'};
+let available = seeds, freeAvailable = fallbackCatalog.free, freeExpires = 0;
+let freeTask:Promise<void>|undefined;
+const homeCache = new Map<Country,{value:Catalog;expires:number}>();
+const homePending = new Map<Country,Promise<Catalog>>();
+export const MovieService:CatalogAdapter & {retry():void;page(country:Country,page:number,sort:string,query?:string):Promise<Movie[]>;pageResult(country:Country,page:number,sort:string,query?:string):Promise<CatalogPage>;hotTrailers(country:Country):Promise<Movie[]>} = {
+  async pageResult(country,page,sort,query) {
+    const result = await OpenCatalogAdapter.listPage(country,page,query,sort);
+    available = unique([...result.movies,...available]).slice(0,1500);
     return result;
   },
-  async search(query, country) {
-    const normalized = query.trim().toLowerCase();
-    const user = UserStateService.snapshot();
-    const local = unique([
-      ...available,
-      ...user.watchlist.map((e) => e.movie),
-      ...user.viewed.map((e) => e.movie),
-    ]).filter((m) => m.title.toLowerCase().includes(normalized));
-    if (!normalized) return { movies: available, status: "fallback" };
-    try {
-      const result = await DiscoveryCatalogAdapter.search(query, country);
-      available = unique([...result, ...available]).slice(0, 300);
-      return {
-        movies: unique([...result, ...local.filter((m) => m.free)]),
-        status: "live",
-      };
-    } catch {
-      return {
-        movies: local,
-        status: "fallback",
-        message:
-          "Search API unavailable. Showing matching saved catalog titles.",
-      };
-    }
+  async page(country,page,sort,query) {return (await this.pageResult(country,page,sort,query)).movies;},
+  async hotTrailers() {return fallbackCatalog.hotTrailers || [];},
+  retry(){homeCache.clear();},
+  async home(country) {
+    const hit=homeCache.get(country);if(hit&&hit.expires>Date.now()) return hit.value;
+    const pending=homePending.get(country);if(pending) return pending;
+    const task=(async()=>{
+      const results=await Promise.allSettled([OpenCatalogAdapter.listPage(country),OpenCatalogAdapter.listPage(country,1,'','now_playing'),OpenCatalogAdapter.listPage(country,1,'','upcoming')]);
+      const index=results[0].status==='fulfilled'?results[0].value.movies:[];
+      const recent=results[1].status==='fulfilled'?results[1].value.movies:[];
+      const live=index.length>0||recent.length>0;
+      if(!freeTask&&freeExpires<=Date.now()) freeTask=FreeCatalogService.load().then(items=>{freeAvailable=items;homeCache.clear();if(typeof window!=='undefined') window.dispatchEvent(new Event('free-catalog-updated'));}).catch(()=>{}).finally(()=>{freeTask=undefined;freeExpires=Date.now()+300000;});
+      const ranked=[...index].sort((a,b)=>Number(b.id.startsWith('wikidata:'))-Number(a.id.startsWith('wikidata:'))||b.year-a.year||b.rating-a.rating);
+      const result:Catalog={genres:[],trending:live?ranked:hit?.value.trending||fallbackCatalog.trending,popular:live?ranked:hit?.value.popular||fallbackCatalog.popular,nowPlaying:recent,upcoming:results[2].status==='fulfilled'?results[2].value.movies:[],free:freeAvailable,hotTrailers:fallbackCatalog.hotTrailers,movies:unique([...index,...recent,...freeAvailable,...(!live?seeds.filter(m=>!m.free):[])]),status:live?'live':'fallback',message:!live?fallbackCatalog.message:results.some(r=>r.status==='rejected')?'Some open metadata sources are temporarily unavailable.':undefined};
+      available=unique([...result.movies,...available]).slice(0,1500);
+      Object.assign(catalogDiagnostics,{lastDiscoveryRefresh:live?new Date().toISOString():catalogDiagnostics.lastDiscoveryRefresh,discoveryItemCount:result.movies.filter(m=>!m.free).length});
+      homeCache.set(country,{value:result,expires:Date.now()+(live?300000:30000)});return result;
+    })();homePending.set(country,task);try{return await task;}finally{homePending.delete(country);}
   },
-  async details(movie, country) {
-    if (movie.origin === "open_data") return OpenCatalogAdapter.details(movie);
-    if (movie.origin === "tmdb" || movie.tmdbId) {
-      try {
-        const live = await DiscoveryCatalogAdapter.getDetails(
-          movie.tmdbId ? `tmdb:${movie.tmdbId}` : movie.id,
-          country,
-        );
-        const trailer = preferredTrailer([
-          ...(movie.trailer ? [movie.trailer] : []), ...live.trailers,
-        ]);
-        return { ...live, id: movie.id, trailer, trailerUrl: trailer?.sourcePageUrl };
-      } catch (error) {
-        if (movie.origin === "tmdb") throw error;
-        // Curated cards retain their known metadata when live detail is unavailable.
-      }
-    }
-    // Refresh persisted movie records with the reviewed playback registry.
-    const resolved =
-      seeds.find((seed) => seed.id === movie.id && seed.freeSource) || movie;
-    // Only reviewed curated URLs become official fallback trailers.
-    const curated = seeds.find((seed) => seed.id === movie.id);
-    const key = youtubeKey(curated?.trailerUrl);
-    const trailer = preferredTrailer([
-      ...(movie.trailer ? [movie.trailer] : []),
-      ...(key ? [{ id: key, provider: "youtube" as const, videoId: key,
-        sourceName: "YouTube", sourcePageUrl: curated!.trailerUrl,
-        type: "Trailer" as const, official: true, name: "Official Trailer" }] : []),
-    ]);
-    return {
-      ...resolved,
-      genres: [],
-      credits: {
-        cast: movie.cast.map((name, id) => ({ id, name })),
-        crew: [{ id: 0, name: movie.director, job: "Director" }],
-      },
-      trailer,
-      trailerUrl: trailer?.sourcePageUrl,
-      trailers: trailer ? [trailer] : [],
-      providers: [],
-      providerStatus: "unavailable",
-    };
+  async search(query,country) {
+    const normalized=query.trim().toLowerCase(),user=UserStateService.snapshot();
+    const local=unique([...available,...user.watchlist.map(e=>e.movie),...user.viewed.map(e=>e.movie)]).filter(m=>m.title.toLowerCase().includes(normalized));
+    if(!normalized) return {movies:available,status:'fallback'};
+    try{const result=await this.pageResult(country,1,'featured',query);return {movies:unique([...result.movies,...local.filter(m=>m.free)]),status:'live',hasMore:result.hasMore,totalPages:result.totalPages};}
+    catch{return {movies:local,status:'fallback',message:'Open search unavailable. Showing matching saved titles.'};}
   },
+  async details(movie) {
+    if(movie.origin==='open_data') return OpenCatalogAdapter.details(movie);
+    const resolved=seeds.find(s=>s.id===movie.id&&s.freeSource)||movie;
+    const curated=seeds.find(s=>s.id===movie.id),key=youtubeKey(curated?.trailerUrl);
+    const trailer=preferredTrailer([...(movie.trailer?[movie.trailer]:[]),...(key?[{id:key,provider:'youtube' as const,videoId:key,sourceName:'YouTube',sourcePageUrl:curated!.trailerUrl,type:'Trailer' as const,official:true,name:'Official Trailer'}]:[])]);
+    return {...resolved,genres:[],credits:{cast:movie.cast.map((name,id)=>({id,name})),crew:movie.director?[{id:0,name:movie.director,job:'Director'}]:[]},trailer,trailerUrl:trailer?.sourcePageUrl,trailers:trailer?[trailer]:[],providers:[],providerStatus:'unavailable'};
+  }
 };
-
-export const CatalogService = MovieService;
-export const SearchAdapter = { search: MovieService.search };
+export const CatalogService=MovieService;
+export const SearchAdapter={search:MovieService.search};

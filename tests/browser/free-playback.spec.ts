@@ -2,7 +2,7 @@ import { test, expect, type Page } from "@playwright/test";
 import sources from "../../src/data/freeSources.json" with { type: "json" };
 
 async function openMovie(page: Page, title = "Big Buck Bunny") {
-  await page.route("**/api/tmdb?**", (route) =>
+  await page.route("**/api/open-catalog?**", (route) =>
     route.fulfill({ status: 503, json: {} }),
   );
   await page.goto("/");

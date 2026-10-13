@@ -8,7 +8,7 @@ export function useCatalog(country: Country) {
   const [revision, setRevision] = useState(0);
   useEffect(() => {
     let active = true;
-    setLoading(true);
+    if (revision === 0) setLoading(true);
     MovieService.home(country)
       .then((data) => {
         if (active) setCatalog(data);
@@ -24,13 +24,20 @@ export function useCatalog(country: Country) {
     };
   }, [country, revision]);
   useEffect(() => {
-    const refresh = () => { MovieService.retry(); setRevision(v => v + 1); };
-    let debounce: ReturnType<typeof setTimeout>;
-    const updated = () => { clearTimeout(debounce); debounce = setTimeout(refresh, 250); };
-    window.addEventListener("catalog-updated", updated);
+    if (catalog.status !== 'live') return;
+    let active = true;
+    void MovieService.hotTrailers(country).then(hotTrailers => {
+      if (active) setCatalog(previous => previous.hotTrailers === hotTrailers ? previous : { ...previous, hotTrailers });
+    });
+    return () => { active = false; };
+  }, [country, catalog.status, catalog.trending]);
+  useEffect(() => {
+    const refresh = () => { if (document.visibilityState === 'visible' && navigator.onLine) setRevision(v => v + 1); };
     const timer = setInterval(refresh, 300000);
     window.addEventListener("free-catalog-updated", refresh);
-    return () => { clearTimeout(debounce); window.removeEventListener("catalog-updated", updated); clearInterval(timer); window.removeEventListener("free-catalog-updated", refresh); };
+    window.addEventListener('online', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    return () => { clearInterval(timer); window.removeEventListener("free-catalog-updated", refresh); window.removeEventListener('online', refresh); document.removeEventListener('visibilitychange', refresh); };
   }, []);
   return {
     catalog,

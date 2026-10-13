@@ -293,7 +293,7 @@ test("trailer priority requires reviewed direct sources and excludes fan uploads
 test("free catalog legal filter rejects ambiguous, noncommercial, malformed license metadata", async () => {
   const { openLicense } = await import('../server/freeCatalog.mjs');
   assert.equal(openLicense('https://creativecommons.org/licenses/by/4.0/'), true);
-  assert.equal(openLicense('https://creativecommons.org/publicdomain/mark/1.0/'), true);
+  assert.equal(openLicense('https://creativecommons.org/publicdomain/mark/1.0/'), false);
   for (const value of ['public domain', 'free movie', '', 'https://evil.test/by/4.0/', 'https://creativecommons.org/licenses/by-nc/4.0/']) assert.equal(openLicense(value), false);
 });
 
@@ -304,7 +304,7 @@ test("server catalog cache deduplicates concurrent refreshes and serves stale da
   await Promise.all([cached('test-catalog', 1, load), cached('test-catalog', 1, load)]);
   assert.equal(calls, 1);
   await new Promise(resolve => setTimeout(resolve, 5));
-  assert.deepEqual(await cached('test-catalog', 1, async () => { throw new Error('offline'); }), { title: 'verified' });
+  assert.deepEqual(await cached('test-catalog', 1, async () => { throw new Error('offline'); }, { staleMs: 100 }), { title: 'verified' });
 });
 
 test('dynamic verification derives license and file identity; never trusts client URLs or flags', async () => {
@@ -317,9 +317,9 @@ test('dynamic verification derives license and file identity; never trusts clien
   };
   const query = '/?provider=internet_archive&sourceId=dynamic-film&fileName=';
   const valid = await playbackResponse(query + 'movie.mp4', fetcher);
-  assert.equal(valid.body.playable, true);
-  assert.equal(valid.body.candidate.sourceProvider, 'internet_archive');
-  assert.equal(valid.body.playbackUrl, 'https://archive.org/download/dynamic-film/movie.mp4');
+  assert.equal(valid.status, 400);
+  assert.match(valid.body.error, /rights holder/);
+  assert(!calls.some(url=>url.includes("/download/")));
   for (const name of ['private.mp4', 'trailer.mp4', '../movie.mp4', 'missing.mp4']) assert.equal((await playbackResponse(query + encodeURIComponent(name), fetcher)).status, 400);
   meta.metadata.licenseurl = 'https://creativecommons.org/licenses/by-nc/4.0/';
   assert.equal((await playbackResponse(query + 'movie.mp4&verifiedLegal=true', fetcher)).body.ok, false);
@@ -346,4 +346,76 @@ test('Commons playback resolves canonical transcodes and rejects unsafe redirect
     assert.equal(result.body.ok, false);
     assert.equal(calls, 1);
   }
+});
+
+test('TMDB backend bounds paging, applies regional discovery, and classifies rejected credentials without reflecting them', async () => {
+  const original = globalThis.fetch;
+  const credential = 'fixture-server-credential'; // Mock fetch only; never a configured or network token.
+  let requested = new URL('https://example.invalid');
+  try {
+    globalThis.fetch = async input => {
+      requested = new URL(String(input));
+      return new Response(JSON.stringify({ page: 50, total_pages: 99, results: [{ id: 333, title: 'Fixture New Release' }] }));
+    };
+    const success = await tmdbResponse('/?path=movie/popular&region=PH&page=99.2&sort=rating', credential);
+    assert.equal(success.status, 200);
+    assert.equal(requested.pathname, '/3/discover/movie');
+    assert.equal(requested.searchParams.get('region'), 'PH');
+    assert.equal(requested.searchParams.get('with_release_type'), '2|3|4|5|6');
+    assert.equal(requested.searchParams.get('sort_by'), 'vote_average.desc');
+    assert.equal(requested.searchParams.get('page'), '50');
+    assert(!requested.href.includes(credential));
+    globalThis.fetch = async () => new Response('{}', { status: 401 });
+    const rejected = await tmdbResponse('/?path=movie/123456/videos&region=IN', credential);
+    assert.equal(rejected.status, 503);
+    assert.equal(rejected.body.error, 'tmdb_token_invalid');
+    assert(!JSON.stringify(rejected).includes(credential));
+    assert.equal((await tmdbResponse('/?path=movie/popular', '')).body.error, 'tmdb_token_missing');
+  } finally { globalThis.fetch = original; }
+});
+
+test('client pagination trusts total_pages, excludes adult entries and never marks discovery titles free', async () => {
+  const { TmdbAdapter } = await import('../src/adapters/tmdb');
+  const original = globalThis.fetch;
+  try {
+    clearCache();
+    globalThis.fetch = async () => new Response(JSON.stringify({ page: 2, total_pages: 2, total_results: 22, results: [{ id: 1, title: 'New Film' }, { id: 2, title: 'Adult', adult: true }] }));
+    const page = await TmdbAdapter.listPage('movie/upcoming', 'PH', '', 2);
+    assert.equal(page.hasMore, false);
+    assert.equal(page.totalPages, 2);
+    assert.equal(page.movies.length, 1);
+    assert.equal(page.movies[0].contentMode, 'discovery');
+    assert.notEqual(page.movies[0].free, true);
+  } finally { globalThis.fetch = original; clearCache(); }
+});
+
+test('server stale cache has a finite cutoff, rather than retaining a frozen catalog indefinitely', async () => {
+  const { cached } = await import('../server/cache.mjs');
+  await cached('bounded-stale-test', 1, async () => ({ value: 'old' }));
+  await new Promise(resolve => setTimeout(resolve, 10));
+  await assert.rejects(cached('bounded-stale-test', 1, async () => { throw new Error('offline'); }, { staleMs: 1 }), /offline/);
+});
+
+test('Retry clears persistent API cache but preserves watchlist and unrelated settings', () => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'localStorage');
+  const values = new Map([['reeltara-cache:/api/tmdb?test', '{}'], ['reeltara-user-v1', 'saved-state']]);
+  Object.defineProperty(globalThis, 'localStorage', { configurable: true, value: { get length() { return values.size; }, key: (i: number) => [...values.keys()][i], removeItem: (key: string) => values.delete(key) } });
+  try {
+    clearCache();
+    assert(!values.has('reeltara-cache:/api/tmdb?test'));
+    assert.equal(values.get('reeltara-user-v1'), 'saved-state');
+  } finally { if (descriptor) Object.defineProperty(globalThis, 'localStorage', descriptor); }
+});
+
+test('CORS allows the production Capacitor origin and rejects unknown cross-origin callers', async () => {
+  const { handleCors } = await import('../server/cors.mjs');
+  const headers = new Map();
+  let status = 0;
+  const res = { setHeader: (key: string, value: string) => headers.set(key, value), status: (value: number) => { status = value; return res; }, json: () => {}, end: () => {} };
+  assert.equal(handleCors({ method: 'GET', headers: { origin: 'https://localhost' } }, res), false);
+  assert.equal(headers.get('Access-Control-Allow-Origin'), 'https://localhost');
+  assert.equal(handleCors({ method: 'OPTIONS', headers: { origin: 'https://localhost' } }, res), true);
+  assert.equal(status, 204);
+  assert.equal(handleCors({ method: 'GET', headers: { origin: 'https://unknown.invalid' } }, res), true);
+  assert.equal(status, 403);
 });

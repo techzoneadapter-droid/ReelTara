@@ -2,12 +2,9 @@ import { test, expect } from '@playwright/test';
 test('discovery loads a second page and preserves cached responses on reload', async ({ page }) => {
   let calls = 0;
   await page.route('**/api/free-catalog', route => route.fulfill({ json: { items: [], freeItemCount: 0, playableFreeCount: 0 } }));
-  await page.route('**/api/tmdb?**', route => {
-    const url = new URL(route.request().url()); const path = url.searchParams.get('path');
-    if (path === 'genre/movie/list') return route.fulfill({ json: { genres: [] } });
-    calls++;
-    const second = url.searchParams.get('page') === '2';
-    return route.fulfill({ json: { results: Array.from({ length: 20 }, (_, i) => ({ id: i + (second ? 100 : 1), title: `${second ? 'Next' : 'First'} Film ${i}`, release_date: '2026-01-01' })) } });
+  await page.route('**/api/open-catalog?**', route => {
+    const n=Number(new URL(route.request().url()).searchParams.get('page'))||1;calls++;
+    return route.fulfill({json:{hasMore:n<2,totalPages:2,items:Array.from({length:20},(_,i)=>({id:'wikidata:Q'+(i+(n===2?100:1)),title:(n===2?'Next':'First')+' Film '+i,year:2026,genre:'Film',rating:0,duration:'Film',certificate:'',poster:'',backdrop:'',overview:'',director:'',cast:[],provider:'',providerUrl:'',origin:'open_data',contentMode:'discovery'}))}});
   });
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Discover', exact: true }).click();

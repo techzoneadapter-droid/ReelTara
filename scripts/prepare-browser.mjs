@@ -10,6 +10,13 @@ import {
 } from "node:fs";
 import { execFileSync } from "node:child_process";
 const target = ".cache/browser";
+if (process.platform === 'win32') {
+  const chrome = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+  const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+  if (!existsSync(chrome) && !existsSync(edge)) throw new Error('Windows browser missing: install Chrome or Edge from its official source.');
+  console.log('QA uses the installed Windows browser in an isolated temporary profile.');
+  process.exit(0);
+}
 mkdirSync(target, { recursive: true });
 mkdirSync(".cache/tmp", { recursive: true });
 if (!existsSync(`${target}/chromium`)) {

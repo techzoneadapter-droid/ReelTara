@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { test, expect, type Page } from "@playwright/test";
 import { mockYouTube } from "./youtube-fixture";
 async function openTrailer(page: Page) {
-  await page.route("**/api/tmdb?**", route => route.fulfill({ status: 503, json: {} }));
+  await page.route("**/api/open-catalog?**", route => route.fulfill({ status: 503, json: {} }));
   await mockYouTube(page);
   await page.goto("/");
   await page.getByRole("button", { name: "View Dune: Part Two", exact: true }).first().click();

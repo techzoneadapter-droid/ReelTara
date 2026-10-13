@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { VirtualMovieGrid } from './components/VirtualMovieGrid';
 import {
   ArrowLeft,
   ArrowRight,
@@ -67,7 +68,8 @@ export default function App() {
     UserStateService.subscribe,
     UserStateService.snapshot,
   );
-  const saved = user.watchlist.map((entry) => entry.movie.id);
+  const saved = useMemo(() => user.watchlist.map((entry) => entry.movie.id), [user.watchlist]);
+  const savedSet = useMemo(() => new Set(saved), [saved]);
   const { catalog, loading: catalogLoading, retry } = useCatalog(user.country);
   const movies = catalog.movies;
   const genres = [
@@ -100,6 +102,8 @@ export default function App() {
   const [sort, setSort] = useState("featured");
   const [heroIndex, setHeroIndex] = useState(0);
   const [online, setOnline] = useState(navigator.onLine);
+  const interaction = useRef({ selected, tab, query, genre, sort });
+  interaction.current = { selected, tab, query, genre, sort };
   const storageError = UserStateService.storageFailed();
   const [notice, setNotice] = useState("");
   const search = useMovieSearch(
@@ -223,7 +227,7 @@ export default function App() {
       ? `${selected.title} · ReelTara`
       : "ReelTara — Find your next great story";
   }, [selected]);
-  const navigate = (next: Tab, nextGenre?: string) => {
+  const navigate = (next: Tab, nextGenre?: string, nextSort?: string) => {
     if (!selected) positions.current[tab] = window.scrollY;
     setProviderPicker(null);
     trailerIntent.current = null;
@@ -240,6 +244,7 @@ export default function App() {
       setGenre(nextGenre);
       setQuery("");
     }
+    if (nextSort) setSort(nextSort);
     restorePosition(next);
   };
   const beginSearch = (value: string) => {
@@ -255,7 +260,8 @@ export default function App() {
     setSelected(null);
     setQuery(value);
   };
-  const select = (movie: Movie) => {
+  const select = useCallback((movie: Movie) => {
+    const { selected, tab, query, genre, sort } = interaction.current;
     if (!selected) positions.current[tab] = window.scrollY;
     const filters = { query, genre, sort };
     if (!selected) history.replaceState({ tab, filters }, "");
@@ -264,19 +270,19 @@ export default function App() {
     setSelected(movie);
     UserStateService.viewed(movie);
     window.scrollTo({ top: 0, behavior: "instant" });
-  };
-  const toggleSave = (movie: Movie) => {
+  }, []);
+  const toggleSave = useCallback((movie: Movie) => {
     WatchlistService.toggle(movie);
     setNotice(
       `${movie.title} ${WatchlistService.has(movie.id) ? "added to" : "removed from"} your watchlist`,
     );
-  };
+  }, []);
   const heroMovies = catalog.trending.slice(0, 3);
   const hero = heroMovies[heroIndex % heroMovies.length] || seedMovies[0];
-  const watchTrailer = (movie: Movie) => {
+  const watchTrailer = useCallback((movie: Movie) => {
     select(movie);
     trailerIntent.current = movie.id;
-  };
+  }, [select]);
   useEffect(() => {
     if (!detail || trailerIntent.current !== detail.id) return;
     trailerIntent.current = null;
@@ -301,11 +307,26 @@ export default function App() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [moreError, setMoreError] = useState("");
   const [hasMore, setHasMore] = useState(true);
+  const [browsePage, setBrowsePage] = useState<Movie[] | null>(null);
+  const [firstPageLoading, setFirstPageLoading] = useState(false);
   useEffect(() => { paginationGeneration.current++; setLoadingMore(false); setExtraMovies([]); setNextPage(2); setHasMore(true); setMoreError(""); }, [tab, sort, query, user.country]);
+  useEffect(() => {
+    let active = true;
+    setBrowsePage(null);
+    setFirstPageLoading(false);
+    if (tab !== 'discover' || query.trim()) return;
+    setFirstPageLoading(true);
+    void MovieService.pageResult(user.country, 1, sort).then(result => {
+      if (active) { setBrowsePage(result.movies); setHasMore(result.hasMore); }
+    }).catch(() => { if (active) setHasMore(false); }).finally(() => { if (active) setFirstPageLoading(false); });
+    return () => { active = false; };
+  }, [tab, sort, query, user.country, catalog.trending]);
+  useEffect(() => { if (query.trim()) setHasMore(search.hasMore === true); }, [query, search.hasMore]);
   const loadMore = async () => {
+    if (loadingMore || firstPageLoading || search.loading) return;
     const generation = paginationGeneration.current;
     setLoadingMore(true); setMoreError("");
-    try { const items = await MovieService.page(user.country, nextPage, sort, query); if (generation !== paginationGeneration.current) return; setExtraMovies(previous => [...new Map([...previous, ...items].map(m => [m.id, m])).values()]); setNextPage(n => n + 1); setHasMore(items.length >= 20 && nextPage < 50); }
+    try { const result = await MovieService.pageResult(user.country, nextPage, sort, query); if (generation !== paginationGeneration.current) return; setExtraMovies(previous => [...new Map([...previous, ...result.movies].map(m => [m.id, m])).values()]); setNextPage(result.page + 1); setHasMore(result.hasMore); }
     catch { if (generation !== paginationGeneration.current) return; setMoreError("More titles are temporarily unavailable. Please retry."); }
     finally { if (generation === paginationGeneration.current) setLoadingMore(false); }
   };
@@ -315,12 +336,16 @@ export default function App() {
       ? user.watchlist.map((entry) => entry.movie)
       : query.trim() && (tab === "search" || tab === "discover")
         ? search.movies
+        : tab === 'trailers'
+          ? catalog.hotTrailers || []
+        : tab === 'discover' && browsePage
+          ? browsePage
         : tab === "discover" && sort === "popular"
           ? catalog.popular
           : tab === "discover" && sort === "trending"
             ? catalog.trending
             : movies;
-  const filtered = [...new Map([...browse, ...extraMovies].map(m => [m.id, m])).values()]
+  const filtered = useMemo(() => [...new Map([...browse, ...extraMovies].map(m => [m.id, m])).values()]
     .filter(
       (movie) =>
         (tab !== "free" || movie.free) &&
@@ -337,7 +362,7 @@ export default function App() {
         : sort === "year"
           ? b.year - a.year
           : 0,
-    );
+    ), [browse, extraMovies, tab, saved, genre, query, sort]);
   return (
     <>
     {/* Keep the detail/catalog mounted to preserve filters and local state. */}
@@ -650,11 +675,12 @@ export default function App() {
                         <ProviderButton movie={current} />
                       )}
                       <p>
-                        Availability: JustWatch. Provider links open the
-                        official TMDB watch page.
+                        {current.origin === "open_data" ? "Open metadata does not provide streaming availability." : "Availability: JustWatch. Provider links open the official TMDB watch page."}
                       </p>
                     </div>
                   )}
+                  {current.origin === 'open_data' && <p><a href={legalUrl(current.source?.sourceUrl)} target="_blank" rel="noreferrer">{current.source?.name} (metadata) · {current.source?.license}</a></p>}
+                  {detail?.episodes?.length ? <p>{detail.episodes.length} episodes · Latest listed: {detail.episodes[detail.episodes.length-1].airdate || 'Unknown'} · <a href={legalUrl(current.source?.sourceUrl)} target="_blank" rel="noreferrer">Episode guide</a></p> : null}
                   <div className="legal-note">
                     <ShieldCheck size={22} />
                     <div>
@@ -666,7 +692,7 @@ export default function App() {
                       <p>
                         {current.free
                           ? `${current.source?.attribution || ""} · ${current.source?.license || "License not listed"}. ${canPlay(current) ? "Watch here or visit the official source." : "Legal stream unavailable in this player. Visit the source."}`
-                          : `Discovery only. Full movies play on licensed platforms. Availability for ${user.country === "IN" ? "India" : "Philippines"} is supplied by JustWatch via TMDB.`}
+                          : `Discovery only. Open metadata does not authorize full movie playback.`}
                       </p>
                     </div>
                   </div>
@@ -822,12 +848,16 @@ export default function App() {
                     title="Trending Now"
                     subtitle="The stories everyone is talking about"
                     icon={<Flame size={21} />}
-                    onMore={() => navigate("discover")}
+                    onMore={() => navigate("discover", undefined, 'trending')}
                   />
                   <div className="movie-row">
                     {cards(catalog.trending.slice(0, 6))}
                   </div>
                 </section>
+                {([['Popular', catalog.popular, 'popular'], ['Now Playing', catalog.nowPlaying, 'now_playing'], ['Upcoming', catalog.upcoming, 'upcoming']] as const).map(([title, items, section]) => items.length > 0 && <section className="section" key={section}>
+                  <SectionHeader title={title} subtitle={`Movie releases for ${user.country === 'IN' ? 'India' : 'Philippines'}`} onMore={() => navigate('discover', undefined, section)} />
+                  <div className="movie-row">{cards(items.slice(0, 6))}</div>
+                </section>)}
                 <section className="free-section section">
                   <SectionHeader
                     title="Free to Watch"
@@ -837,7 +867,7 @@ export default function App() {
                   />
                   <div className="free-grid">
                     {cards(
-                      movies.filter((movie) => movie.free),
+                      movies.filter((movie) => movie.free).slice(0, 3),
                       true,
                     )}
                   </div>
@@ -854,8 +884,9 @@ export default function App() {
                     onMore={() => navigate("trailers")}
                   />
                   <div className="trailer-row">
-                    {cards(catalog.trending.slice(0, 3), true, true)}
+                    {cards((catalog.hotTrailers || []).slice(0, 3), true, true)}
                   </div>
+                  {!catalog.hotTrailers?.length && <p className="result-count">{catalog.hotTrailers === undefined ? 'Loading official trailers…' : 'No official trailers available.'}</p>}
                 </section>
                 <section className="genre-section section">
                   <SectionHeader
@@ -1025,6 +1056,8 @@ export default function App() {
                       <>
                         <option value="trending">Trending</option>
                         <option value="popular">Popular</option>
+                        <option value="now_playing">Now Playing</option>
+                        <option value="upcoming">Upcoming</option>
                       </>
                     )}
                     <option value="rating">Highest rated</option>
@@ -1044,8 +1077,6 @@ export default function App() {
                     )}
                   </div>
                 )}
-              {(tab === "discover" || tab === "search") && hasMore && <button className="button secondary" disabled={loadingMore} onClick={() => void loadMore()}>{loadingMore ? "Loading…" : "Load more"}</button>}
-              {moreError && <p role="status">{moreError}</p>}
               <p className="result-count" aria-live="polite">
                 {filtered.length} {filtered.length === 1 ? "story" : "stories"}{" "}
                 to discover
@@ -1057,15 +1088,7 @@ export default function App() {
                   Loading results…
                 </p>
               ) : filtered.length ? (
-                <div
-                  className={`movie-grid ${tab === "free" || tab === "trailers" ? "wide-grid" : ""}`}
-                >
-                  {cards(
-                    filtered,
-                    tab === "free" || tab === "trailers",
-                    tab === "trailers",
-                  )}
-                </div>
+                <VirtualMovieGrid movies={filtered} saved={savedSet} onSelect={tab === 'trailers' ? watchTrailer : select} onSave={toggleSave} wide={tab === 'free' || tab === 'trailers'} trailer={tab === 'trailers'} />
               ) : (
                 <EmptyState
                   title={
@@ -1094,6 +1117,8 @@ export default function App() {
                   }}
                 />
               )}
+              {(tab === 'discover' || tab === 'search') && hasMore && <button className="button secondary catalog-load-more" disabled={loadingMore || firstPageLoading || search.loading} onClick={() => void loadMore()}>{loadingMore ? 'Loading…' : 'Load more'}</button>}
+              {moreError && <p role="status">{moreError}</p>}
             </div>
           )}
         </main>
@@ -1103,11 +1128,7 @@ export default function App() {
             <span>Watch freely. Discover endlessly.</span>
           </div>
           <p>
-            {catalog.status === "live"
-              ? "Movie data: TMDB · Availability: JustWatch"
-              : "Curated fallback · Sample ratings"}{" "}
-            · Availability varies by region. This product uses the TMDB API but
-            is not endorsed or certified by TMDB.
+            Metadata: <a href="https://www.wikidata.org/" target="_blank" rel="noreferrer">Wikidata (CC0)</a> · <a href="https://www.tvmaze.com/api" target="_blank" rel="noreferrer">TVmaze (CC BY-SA)</a>. Rankings reflect available metadata ratings, not real-time box office charts. Images require separate rights review.
           </p>
           <span>Made for the love of cinema.</span>
         </footer>

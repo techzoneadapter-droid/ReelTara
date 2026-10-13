@@ -15,8 +15,8 @@ export interface DiscoveryAdapter {
 export const DiscoveryCatalogAdapter: DiscoveryAdapter = {
   getTrending: async (c,p) => sorted(await OpenCatalogAdapter.list(c,p),"rating"),
   getPopular: async (c,p) => sorted(await OpenCatalogAdapter.list(c,p),"rating"),
-  getNowPlaying: async (c,p) => sorted(await OpenCatalogAdapter.list(c,p),"new"),
-  getUpcoming: async () => [], // Neither open source guarantees upcoming film releases.
+  getNowPlaying: async (c,p) => (await OpenCatalogAdapter.listPage(c,p,'','now_playing')).movies,
+  getUpcoming: async (c,p) => (await OpenCatalogAdapter.listPage(c,p,'','upcoming')).movies,
   getDiscover: (c,p) => OpenCatalogAdapter.list(c,p),
   search: (q,c,p) => OpenCatalogAdapter.list(c,p,q),
   getDetails: async (id,c) => { const results=await OpenCatalogAdapter.list(c,1); const m=results.find(x=>x.id===id); if(!m) throw new Error("movie_not_found"); return OpenCatalogAdapter.details(m); },

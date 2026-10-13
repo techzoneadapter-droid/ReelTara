@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { cached, json } from './cache.mjs';
 const registry = JSON.parse(readFileSync(new URL('../src/data/freeSources.json', import.meta.url), 'utf8'));
-import { clean, openLicense, archiveCandidates, commonsCandidates, probeMedia } from './sourceVerification.mjs';
+import { clean, openLicense, commonsCandidates } from './sourceVerification.mjs';
 export { openLicense } from './sourceVerification.mjs';
 const candidate = (url, mimeType = 'video/mp4', height) => ({ url, mimeType, height, health: 'unknown' });
 function film(data) {
@@ -13,25 +13,8 @@ export class CuratedLegalAdapter {
 }
 export class InternetArchiveAdapter {
   async load() {
-    return cached('archive-films', 86400000, async () => {
-      const query = 'mediatype:movies AND collection:animationandcartoons AND (licenseurl:"https://creativecommons.org/licenses/by/4.0/" OR licenseurl:"http://creativecommons.org/licenses/by/3.0/" OR licenseurl:"http://creativecommons.org/publicdomain/mark/1.0/")';
-      const data = await json('https://archive.org/advancedsearch.php?' + new URLSearchParams({ q: query, 'fl[]': 'identifier', rows: '60', output: 'json', sort: 'downloads desc' }));
-      const results = [];
-      const docs = data.response?.docs || [];
-      for (let i = 0; i < docs.length; i += 20) {
-        const batch = await Promise.allSettled(docs.slice(i, i + 20).map(async ({ identifier }) => {
-          if (!/^[\w.-]+$/.test(identifier)) return null;
-          const archive = await json(`https://archive.org/metadata/${identifier}`);
-          const { metadata: m } = archive;
-          const license = Array.isArray(m?.licenseurl) ? m.licenseurl[0] : m?.licenseurl;
-          if (m?.mediatype !== 'movies' || !openLicense(license) || !m.creator || /trailer|sample|home movie|test footage/i.test(m.title)) return null;
-          const media = archiveCandidates(identifier, archive).slice(0, 4);
-          return film({ id: `archive:${identifier}`, title: clean(m.title), overview: clean(m.description).slice(0, 1500), creator: clean(m.creator), year: parseInt(m.year || m.date) || undefined, sourceProvider: 'Internet Archive', sourcePageUrl: `https://archive.org/details/${identifier}`, posterUrl: `https://archive.org/services/img/${identifier}`, licenseType: 'Creative Commons', licenseUrl: license.replace(/^http:/, 'https:'), attribution: `${clean(m.title)} — ${clean(m.creator)}`, playbackCandidates: media });
-        }));
-        results.push(...batch.flatMap(r => r.status === 'fulfilled' && r.value ? [r.value] : []));
-      }
-      return results;
-    });
+    // The uploader-license search cannot establish rights. Only reviewed creator mirrors qualify.
+    return []; // Creator mirror candidates are already supplied by CuratedLegalAdapter.
   }
 }
 export class WikimediaCommonsAdapter {
@@ -65,22 +48,9 @@ export async function freeCatalogResponse() {
       if (previous) previous.playbackCandidates = [...new Map([...previous.playbackCandidates, ...item.playbackCandidates].map(c => [c.url,c])).values()]; else unique.set(key, item);
     }); });
     const items = [...unique.values()];
-    // Transport verification is separate from actual browser media health.
-    let cursor = 0;
-    await Promise.all(Array.from({ length: Math.min(4, items.length) }, async () => {
-      while (cursor < items.length) {
-        const item = items[cursor++];
-        item.playbackCandidates = item.playbackCandidates.map((c, index) => c.sourceProvider ? c : { ...c, sourceProvider: 'blender', sourceId: item.id, index, verifiedLegal: true, licenseType: item.licenseType, licenseUrl: item.licenseUrl, attribution: item.attribution });
-        item.playable = false;
-        for (const c of item.playbackCandidates) {
-          const probe = await probeMedia({ ...c, sourceProvider: new URL(c.url).hostname === 'archive.org' ? 'internet_archive' : c.sourceProvider });
-          c.transportVerified = probe.ok;
-          c.probe = probe;
-          if (probe.ok) { item.playable = true; break; }
-        }
-      }
-    }));
-    return { items, lastFreeRefresh: new Date().toISOString(), freeItemCount: items.length, verifiedFreeCount: items.filter(i => i.verifiedLegal).length, playableFreeCount: items.filter(i => i.playable).length, sources: results.map((r,i) => ({ adapter: adapters[i].constructor.name, count: r.status === 'fulfilled' ? r.value.length : 0, status: r.status })) };
+    // Legal candidates are not evidence of browser playback; probe only the selected film.
+    items.forEach(item=>{ item.playable=item.playbackCandidates.length>0; });
+    return { items, lastFreeRefresh: new Date().toISOString(), freeItemCount: items.length, verifiedFreeCount: items.filter(i => i.verifiedLegal).length, playableFreeCount: 0, sources: results.map((r,i) => ({ adapter: adapters[i].constructor.name, count: r.status === 'fulfilled' ? r.value.length : 0, status: r.status })) };
   });
   return { status: 200, body };
 }

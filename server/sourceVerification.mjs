@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 export const registry = JSON.parse(readFileSync(new URL('../src/data/freeSources.json', import.meta.url), 'utf8'));
 export const clean = value => String(value || '').replace(/<[^>]*>/g, '').trim();
-export const openLicense = value => /^https?:\/\/(?:www\.)?creativecommons\.org\/(?:licenses\/(?:by|by-sa)\/[1-4]\.0(?:\/[a-z]{2})?|publicdomain\/(?:zero|mark)\/1\.0)\/?$/i.test(String(value || ''));
+export const openLicense = value => /^https?:\/\/(?:www\.)?creativecommons\.org\/(?:licenses\/(?:by|by-sa)\/[1-4]\.0(?:\/[a-z]{2})?|publicdomain\/zero\/1\.0)\/?$/i.test(String(value || ''));
 const hosts = {
   internet_archive: host => host === 'archive.org' || /^(?:[a-z0-9-]+\.)+archive\.org$/.test(host),
   wikimedia: host => ['commons.wikimedia.org', 'upload.wikimedia.org'].includes(host),
@@ -32,6 +32,9 @@ async function metadata(url, provider, fetcher) {
   return response.json();
 }
 export function archiveCandidates(identifier, data) {
+  // An arbitrary uploader's license label is insufficient evidence of commercial rights.
+  const approved = Object.values(registry).some(s => [s.playbackUrl,...s.fallbackPlaybackUrls].some(url => {try{return new URL(url).hostname==='archive.org' && new URL(url).pathname.split('/')[2]===identifier;}catch{return false;}}));
+  if(!approved) throw new Error('Archive rights holder has not been reviewed');
   const m = data.metadata;
   const license = Array.isArray(m?.licenseurl) ? m.licenseurl.find(openLicense) : m?.licenseurl;
   if (m?.mediatype !== 'movies' || m.is_dark || data.is_dark || m['access-restricted-item'] === 'true' || m['access-restricted-item'] === true || !openLicense(license) || !m.creator) throw new Error('Unverified Archive license or identity');

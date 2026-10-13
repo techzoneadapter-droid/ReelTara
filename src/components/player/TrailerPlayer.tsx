@@ -42,16 +42,27 @@ export function TrailerPlayer({ movie, onClose }: { movie: Movie; onClose: () =>
     let active = true;
     let failed = false;
     let instance: YouTubePlayer | undefined;
+    let embed: HTMLIFrameElement | undefined;
     const fail = (message: string) => { if (active) { failed = true; setState("error"); setReady(false); setError(message); } };
     const timer = setTimeout(() => fail("Trailer is taking too long to load. Retry or open the original source."), 20000);
     const element = document.createElement("div");
     mount.current.append(element);
     void loadYouTubeAPI().then(api => {
       if (!active || failed) return;
-      instance = new api.Player(element, {
+      // Give the initial navigation its referrer policy, rather than waiting
+      // until onReady after YouTube has already loaded an automatically-made frame.
+      embed = document.createElement('iframe');
+      embed.title = `${movie.title} official trailer`;
+      embed.referrerPolicy = 'strict-origin-when-cross-origin';
+      embed.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      embed.allowFullscreen = true;
+      const variables = { controls: 0, playsinline: 1, rel: 0, enablejsapi: 1, autoplay: 1, origin: location.origin };
+      embed.src = `https://www.youtube-nocookie.com/embed/${trailer.videoId}?${new URLSearchParams(Object.entries(variables).map(([key, value]) => [key, String(value)]))}`;
+      element.replaceWith(embed);
+      instance = new api.Player(embed, {
         host: "https://www.youtube-nocookie.com",
         videoId: trailer.videoId!,
-        playerVars: { controls: 0, playsinline: 1, rel: 0, enablejsapi: 1, autoplay: 1, origin: location.origin },
+        playerVars: variables,
         events: {
           onReady: ({ target }) => {
             if (!active || failed) return;
@@ -80,12 +91,14 @@ export function TrailerPlayer({ movie, onClose }: { movie: Movie; onClose: () =>
       const iframe = instance.getIframe();
       iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
       iframe.allowFullscreen = true;
+      iframe.referrerPolicy = "strict-origin-when-cross-origin";
     }).catch(() => { clearTimeout(timer); fail("Could not connect to the trailer source. Retry or open the original source."); });
     return () => {
       active = false;
       clearTimeout(timer);
       youtube.current = null;
       instance?.destroy();
+      embed?.remove();
       element.remove();
     };
   }, [movie.id, movie.title, trailer, allowed, attempt, sync]);

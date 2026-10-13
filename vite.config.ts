@@ -10,6 +10,8 @@ import { playbackResponse } from "./server/playback.mjs";
 import { freeCatalogResponse } from "./server/freeCatalog.mjs";
 // @ts-ignore Server-side open-data metadata handler.
 import { openCatalogResponse } from "./server/openCatalog.mjs";
+// @ts-ignore Node-only environment loader.
+import { serverToken } from "./server/environment.mjs";
 export default defineConfig({
   server: {
     // Native builds/downloads are not HMR inputs and can lock files on Windows.
@@ -36,9 +38,10 @@ export default defineConfig({
           res.end(JSON.stringify(result.body));
         });
         server.middlewares.use("/api/tmdb", async (req, res) => {
-          const result = await tmdbResponse(req.url);
+          const result = await tmdbResponse(req.url, serverToken(server.config.mode));
           res.statusCode = result.status;
           res.setHeader("Content-Type", "application/json");
+          res.setHeader("Cache-Control", "no-store");
           res.end(JSON.stringify(result.body));
         });
       },

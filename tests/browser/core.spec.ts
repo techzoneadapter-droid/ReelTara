@@ -12,7 +12,7 @@ const fixtureMovie = {
   backdrop_path: null,
 };
 async function fallback(page: Page) {
-  await page.route("**/api/tmdb?**", (route) =>
+  await page.route("**/api/open-catalog?**", (route) =>
     route.fulfill({ status: 503, json: { error: "api_unavailable" } }),
   );
   await page.route("**/api/playback?**", route => route.fulfill({ json: { ok: true, status: 206, contentType: "video/mp4" } }));
@@ -21,58 +21,10 @@ async function fallback(page: Page) {
   );
   await mockYouTube(page);
 }
-async function live(page: Page, missing = false) {
-  await page.route("**/api/tmdb?**", (route) => {
-    const url = new URL(route.request().url());
-    const path = url.searchParams.get("path");
-    let json: unknown;
-    if (path === "genre/movie/list")
-      json = { genres: [{ id: 18, name: "Drama" }] };
-    else if (path?.endsWith("/watch/providers"))
-      json = {
-        results: missing
-          ? {}
-          : {
-              IN: {
-                link: "https://www.themoviedb.org/movie/101/watch?locale=IN",
-                flatrate: [{ provider_id: 1, provider_name: "India Provider" }],
-              },
-              PH: {
-                link: "https://www.themoviedb.org/movie/101/watch?locale=PH",
-                rent: [
-                  { provider_id: 2, provider_name: "Philippines Provider" },
-                ],
-              },
-            },
-      };
-    else if (path === "movie/101")
-      json = {
-        ...fixtureMovie,
-        runtime: 120,
-        genres: [{ id: 18, name: "Drama" }],
-        credits: {
-          cast: [{ id: 1, name: "Actor" }],
-          crew: [{ id: 2, name: "Director", job: "Director" }],
-        },
-        videos: {
-          results: missing
-            ? []
-            : [
-                {
-                  id: "trailer",
-                  key: "abcdefghijk",
-                  site: "YouTube",
-                  official: true,
-                  type: "Trailer",
-                  name: "Official Trailer",
-                },
-              ],
-        },
-      };
-    else json = { results: [fixtureMovie] };
-    return route.fulfill({ json });
-  });
+async function live(page:Page, missing=false) {
+  await page.route('**/api/open-catalog?**',route=>route.fulfill({json:{items:[{id:'wikidata:Q101',title:'Fixture Film',year:2026,releaseDate:'2026-01-02',genre:'Drama',rating:0,duration:'Film',certificate:'',poster:'',backdrop:'',overview:'A test film overview.',director:'Director',cast:[],provider:'',providerUrl:'https://www.wikidata.org/wiki/Q101',origin:'open_data',contentMode:'discovery',source:{name:'Wikidata',sourceUrl:'https://www.wikidata.org/wiki/Q101',licenseUrl:'https://creativecommons.org/publicdomain/zero/1.0/',license:'CC0',attribution:'Wikidata',verified:false}}],hasMore:false,totalPages:1}}));
 }
+
 test("A: Home → Trending → Detail → trailer → close → back restores scroll", async ({
   page,
 }) => {
@@ -81,7 +33,7 @@ test("A: Home → Trending → Detail → trailer → close → back restores sc
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
   await expect(
-    page.getByText("Live API unavailable. Browsing the curated catalog."),
+    page.getByText("Curated catalog · Open metadata sources unavailable."),
   ).toBeVisible();
   await page.screenshot({ path: ".cache/home-desktop.png", fullPage: true });
   await page
@@ -242,34 +194,10 @@ test("D: real HTML video controls save and resume progress; completed movies res
     page.getByRole("button", { name: "Watch Again", exact: true }),
   ).toBeVisible();
 });
-test("E/F: IN and PH providers follow persisted preference", async ({
-  page,
-}) => {
-  await live(page);
-  await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Fixture Film", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Explore the story" }).click();
-  await expect(
-    page.getByRole("link", { name: "India Provider · subscription" }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Your profile", exact: true }).click();
-  await page.getByLabel("Country", { exact: true }).selectOption("PH");
-  await page
-    .getByRole("navigation", { name: "Main navigation" })
-    .getByRole("button", { name: "Home", exact: true })
-    .click();
-  await expect(page.getByRole("heading", { name: "Fixture Film", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Explore the story" }).click();
-  await expect(
-    page.getByRole("link", { name: "Philippines Provider · rent" }),
-  ).toHaveAttribute("href", /locale=PH/);
-  await expect(
-    page.getByRole("link", { name: "India Provider · subscription" }),
-  ).toHaveCount(0);
-  await page.reload();
-  await page.getByRole("button", { name: "Your profile", exact: true }).click();
-  await expect(page.getByLabel("Country", { exact: true })).toHaveValue("PH");
+test('IN and PH preference persists without inventing provider availability',async({page})=>{
+  await live(page);await page.goto('/');await page.getByRole('button',{name:'Your profile',exact:true}).click();await page.getByLabel('Country',{exact:true}).selectOption('PH');await page.reload();await page.getByRole('button',{name:'Your profile',exact:true}).click();await expect(page.getByLabel('Country',{exact:true})).toHaveValue('PH');
 });
+
 test("G/H: malformed API and absent artwork/trailer/providers remain usable", async ({
   page,
 }) => {
@@ -283,11 +211,11 @@ test("G/H: malformed API and absent artwork/trailer/providers remain usable", as
     page.getByText("Trailer unavailable", { exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByText("No providers listed for this country."),
+    page.getByText("Provider availability unavailable."),
   ).toBeVisible();
   await expect(page.locator(".detail-poster .image-fallback")).toBeVisible();
   await page.getByRole("button", { name: "Back to exploring" }).click();
-  await page.route("**/api/tmdb?**", (route) =>
+  await page.route("**/api/open-catalog?**", (route) =>
     route.fulfill({ json: { unexpected: true } }),
   );
   await page
@@ -295,7 +223,7 @@ test("G/H: malformed API and absent artwork/trailer/providers remain usable", as
     .fill("Fixture");
   await expect(
     page.getByText(
-      "Search API unavailable. Showing matching saved catalog titles.",
+      "Open search unavailable. Showing matching saved titles.",
     ),
   ).toBeVisible();
   expect(errors).toEqual([]);
@@ -360,36 +288,8 @@ test("source-only films and playback errors offer a legal way back", async ({
   ).toBeVisible();
 });
 
-test("provider picker groups availability and confirms the actual outbound destination", async ({
-  page,
-}) => {
-  await live(page);
-  await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Fixture Film", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Explore the story" }).click();
-  await expect(page.getByText("Loading movie details…")).toHaveCount(0);
-  await page
-    .getByRole("button", { name: "Where to Watch", exact: true })
-    .click();
-  const picker = page.getByRole("dialog", {
-    name: "Where to Watch",
-    exact: true,
-  });
-  await expect(
-    picker.getByRole("heading", { name: "Streaming", exact: true }),
-  ).toBeVisible();
-  await picker
-    .getByRole("button", { name: "India Provider · subscription" })
-    .click();
-  await expect(picker.getByText(/You'll continue to TMDB/)).toBeVisible();
-  await expect(
-    picker.getByRole("link", { name: "Continue to availability page" }),
-  ).toHaveAttribute("href", /locale=IN/);
-  await expect(page.locator("video")).toHaveCount(0);
-  await picker.getByRole("button", { name: "Close providers" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Fixture Film", exact: true }),
-  ).toBeVisible();
+test('open metadata does not advertise unverified streaming providers',async({page})=>{
+  await live(page);await page.goto('/');await page.getByRole('button',{name:'Explore the story'}).click();await expect(page.getByText('Provider availability unavailable.')).toBeVisible();await expect(page.locator('video')).toHaveCount(0);await expect(page.getByText('Wikidata (metadata) · CC0')).toHaveCount(1);
 });
 
 test("Dune trailer is a standalone screen; browser Back restores detail scroll and providers stay external", async ({ page }) => {

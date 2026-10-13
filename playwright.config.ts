@@ -1,5 +1,6 @@
 import chromium from "@sparticuz/chromium";
 import { resolve } from "node:path";
+import { existsSync } from 'node:fs';
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/browser",
@@ -10,8 +11,8 @@ export default defineConfig({
     viewport: { width: 1440, height: 900 },
     headless: true,
     launchOptions: {
-      executablePath: resolve(".cache/browser/chromium"),
-      args: chromium.args.filter(
+      executablePath: process.platform === 'win32' ? (existsSync('C:/Program Files/Google/Chrome/Application/chrome.exe') ? 'C:/Program Files/Google/Chrome/Application/chrome.exe' : 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe') : resolve(".cache/browser/chromium"),
+      args: process.platform === 'win32' ? [] : chromium.args.filter(
         (arg) =>
           ![
             "--disable-web-security",
@@ -20,7 +21,7 @@ export default defineConfig({
             "--disable-site-isolation-trials",
           ].includes(arg),
       ),
-      env: {
+      env: process.platform === 'win32' ? undefined : {
         LD_LIBRARY_PATH: resolve(".cache/browser/lib"),
         FONTCONFIG_PATH: resolve(".cache/browser"),
         TMPDIR: resolve(".cache/tmp"),
@@ -28,7 +29,7 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: "npm run dev -- --port 4174",
+    command: "npm run dev -- --port 4174 --strictPort",
     url: "http://127.0.0.1:4174",
     reuseExistingServer: false,
   },

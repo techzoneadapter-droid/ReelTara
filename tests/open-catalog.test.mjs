@@ -21,3 +21,31 @@ test('invalid source is rejected without network activity', async () => {
   const result = await openCatalogResponse('/api/open-catalog?source=invalid');
   assert.equal(result.status,400);
 });
+
+test('all TV search results can be paged; images and playback rights are never inferred', async () => {
+  const original=globalThis.fetch;
+  globalThis.fetch=async()=>({ok:true,json:async()=>Array.from({length:76},(_,i)=>({id:880000+i,name:'Paged Show '+i,genres:['Drama'],image:{medium:'https://static.tvmaze.com/unreviewed.jpg'}}))});
+  try {
+    const a=await openCatalogResponse('/?source=tvmaze&query=pagination-fixture&page=1');
+    const b=await openCatalogResponse('/?source=tvmaze&query=pagination-fixture&page=2');
+    const d=await openCatalogResponse('/?source=tvmaze&query=pagination-fixture&page=4');
+    assert.equal(a.body.items.length,25);assert.equal(b.body.items.length,25);assert.equal(d.body.items.length,1);assert.equal(d.body.hasMore,false);
+    assert(!a.body.items.some(x=>b.body.items.some(y=>x.id===y.id)));
+    assert(a.body.items.every(m=>!m.poster&&!m.backdrop&&!m.source.verified&&!m.free));
+  }finally{globalThis.fetch=original;}
+});
+test('an unavailable source is not retained as a successful cached response',async()=>{
+  const original=globalThis.fetch;globalThis.fetch=async()=>{throw new Error('temporary outage');};
+  try {
+    assert.equal((await openCatalogResponse('/?source=tvmaze&query=retry-fixture')).status,502);
+    globalThis.fetch=async()=>({ok:true,json:async()=>[{show:{id:990001,name:'Recovered Show'}}]});
+    const recovered=await openCatalogResponse('/?source=tvmaze&query=retry-fixture');assert.equal(recovered.status,200);assert.equal(recovered.body.items[0].title,'Recovered Show');
+  }finally{globalThis.fetch=original;}
+});
+test('Wikidata query is country-bound, groups dates before pagination and enriches CC0 text',async()=>{
+ const original=globalThis.fetch;globalThis.fetch=async url=>{
+  const q=new URL(url).searchParams.get('query');assert.match(q,/wd:Q928/);assert.match(q,/GROUP BY \?item/);assert.match(q,/OFFSET 25/);assert.match(q,/wdt:P57/);
+  return {ok:true,json:async()=>({results:{bindings:[{item:{value:'http://www.wikidata.org/entity/Q12345'},itemLabel:{value:'New Philippine Film'},date:{value:'2026-10-01T00:00:00Z'},directors:{value:'Director'},genres:{value:'Drama'},countries:{value:'Philippines'}}]}})};
+ };
+ try{const r=await openCatalogResponse('/?source=wikidata&country=PH&page=2&query=fixture');assert.equal(r.status,200);assert.equal(r.body.items[0].director,'Director');assert.equal(r.body.items[0].source.license,'CC0');assert.equal(r.body.items[0].year,2026);}finally{globalThis.fetch=original;}
+});

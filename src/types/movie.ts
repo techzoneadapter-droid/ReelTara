@@ -84,6 +84,7 @@ export type Movie = {
   origin: "tmdb" | "curated" | "archive" | "open_data";
 };
 export type MovieDetails = Movie & {
+  episodes?: {id:number;name:string;season:number;number:number;airdate:string;runtime?:number}[];
   genres: Genre[];
   credits: { cast: CastMember[]; crew: CrewMember[] };
   trailers: Trailer[];
@@ -95,7 +96,10 @@ export type SearchResult = {
   movies: Movie[];
   status: DataStatus;
   message?: string;
+  hasMore?: boolean;
+  totalPages?: number;
 };
+export type CatalogPage = { movies: Movie[]; page: number; totalPages: number; totalResults: number; hasMore: boolean };
 export type Catalog = SearchResult & {
   trending: Movie[];
   popular: Movie[];
@@ -103,6 +107,7 @@ export type Catalog = SearchResult & {
   upcoming: Movie[];
   free: Movie[];
   genres: Genre[];
+  hotTrailers?: Movie[];
 };
 export type WatchlistEntry = { movie: Movie; addedAt: number };
 export type WatchHistory = { movie: Movie; viewedAt: number };

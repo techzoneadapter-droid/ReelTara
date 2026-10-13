@@ -122,3 +122,9 @@ Ngày 13/10/2026:
 
 Kiểm tra lại APK sau build bằng `powershell -File scripts/check-android-apks.ps1`.
 Hỗ trợ minSdk không thay thế kiểm thử thực tế trên thiết bị.
+
+## Open catalog verification — 2026-10-13
+
+Default discovery now uses Wikidata/TVmaze, without a TMDB token. Actual IN/PH API pages, current episode schedules and search were verified through the USB development backend. See `docs/OPEN_DATA_CATALOG.md`.
+
+The active preview selected **5189** because 5188 was already occupied; the listener and reverse mapping on 5188 were preserved. On SM-T385K / Android 9 / API 28 / WebView 101, CSS HMR and React Fast Refresh passed without full reload, APK rebuild or runtime errors during the probe. The real YouTube Dune trailer reached `playing` in the Android WebView with controls outside the iframe. These results supersede the earlier fallback-only observation above. Newer Android devices and the deployed production backend have not been tested.

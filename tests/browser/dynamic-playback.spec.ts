@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 
 async function freeCatalog(page: Page) {
-  await page.route('**/api/tmdb?**', route => route.fulfill({ status: 503, json: {} }));
+  await page.route('**/api/open-catalog?**', route => route.fulfill({ status: 503, json: {} }));
   await page.goto('/');
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Free to Watch' }).click();
 }
@@ -19,7 +19,7 @@ async function actualPlayback(page: Page) {
   await expect.poll(() => page.locator('video').evaluate((v: HTMLVideoElement) => v.currentTime)).toBeGreaterThan(before + 0.3);
   return page.locator('video').evaluate((v: HTMLVideoElement) => ({ duration: v.duration, currentTime: v.currentTime, source: v.currentSrc }));
 }
-for (const [provider, preferredTitle] of [['Internet Archive', 'Jack Frost'], ['Wikimedia Commons', 'Paula Vázquez et al. - Miñocas']]) {
+for (const [provider, preferredTitle] of [['Wikimedia Commons', 'Paula Vázquez et al. - Miñocas']]) {
   test(`dynamic ${provider}: verified discovery, actual playback and cached reload`, async ({ page }) => {
     test.setTimeout(180000);
     const events: unknown[] = [];
@@ -29,6 +29,7 @@ for (const [provider, preferredTitle] of [['Internet Archive', 'Jack Frost'], ['
     const available = catalog.items.filter((m: { sourceProvider: string; playable: boolean }) => m.sourceProvider === provider && m.playable);
     expect(available.length, `${provider} must discover a transport-verified film`).toBeGreaterThan(0);
     const title = (available.find((m: {title: string}) => m.title === preferredTitle) || available[0]).title;
+    await page.locator('.page-pad input').fill(title);
     await expect(page.getByRole('button', { name: `View ${title}`, exact: true })).toBeVisible({ timeout: 120000 });
     await page.getByRole('button', { name: `View ${title}`, exact: true }).click();
     await expect(page.getByRole('button', { name: 'Watch Free', exact: true })).toBeVisible();
@@ -37,6 +38,8 @@ for (const [provider, preferredTitle] of [['Internet Archive', 'Jack Frost'], ['
     console.log('DYNAMIC_EVENTS', JSON.stringify(events));
     await page.getByRole('button', { name: 'Back to movie details' }).click();
     await page.reload();
+    await page.getByRole('navigation', {name:'Main navigation'}).getByRole('button',{name:'Free to Watch'}).click();
+    await page.locator('.page-pad input').fill(title);
     await expect(page.getByRole('button', { name: `View ${title}`, exact: true }).first()).toBeVisible({ timeout: 120000 });
     await expect.poll(() => page.evaluate(async () => {
       // @ts-ignore Vite serves the module for browser-side diagnostics.
@@ -75,16 +78,26 @@ test('unsupported legal media stays in catalog with View Legal Source, and codec
   expect(results.revalidated).toBe(true);
 });
 
-test('Lost Flower exposes Watch Free only after verified browser playback health', async ({ page }) => {
+test('Lost Flower verifies playback on demand after licensed catalog discovery', async ({ page }) => {
   test.setTimeout(150000);
   await freeCatalog(page);
   const title = 'Adisra Promthep - Lost Flower (2012)';
+  // Virtualized offscreen cards are intentionally unmounted. Filter the local
+  // legal catalog instead of requiring every remote movie in the DOM.
+  await page.locator('.page-pad input').fill('Lost Flower');
   await expect(page.getByRole('button', { name: `View ${title}`, exact: true })).toBeVisible({ timeout: 120000 });
   await page.getByRole('button', { name: `View ${title}`, exact: true }).click();
   const watch = page.getByRole('button', { name: 'Watch Free', exact: true });
   if (await watch.count()) {
     await watch.click();
-    console.log('LOST_FLOWER_PLAYBACK', await actualPlayback(page));
+    await page.waitForFunction(() => {
+      const video = document.querySelector('video');
+      return (video && Number.isFinite(video.duration) && video.duration > 0) || !!document.querySelector('.playback-error');
+    }, undefined, { timeout: 35000 });
+    if (await page.locator('.playback-error').count()) {
+      await expect(page.locator('.playback-error').getByRole('link', { name: 'View Legal Source', exact: true })).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:Adisra_Promthep_-_Lost_Flower_(2012).webm');
+      console.log('LOST_FLOWER_SOURCE_ONLY: on-demand decoding/probe failed; official source remains available.');
+    } else console.log('LOST_FLOWER_PLAYBACK', await actualPlayback(page));
   } else {
     await expect(page.getByRole('link', { name: 'View Legal Source', exact: true }).first()).toHaveAttribute('href', 'https://commons.wikimedia.org/wiki/File:Adisra_Promthep_-_Lost_Flower_(2012).webm');
     console.log('LOST_FLOWER_SOURCE_ONLY: no verified browser-compatible healthy candidate');

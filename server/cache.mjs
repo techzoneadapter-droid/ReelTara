@@ -1,7 +1,7 @@
 import { providerFetch } from './sourceVerification.mjs';
 const values = new Map();
 const pending = new Map();
-export async function cached(key, ttl, loader) {
+export async function cached(key, ttl, loader, { staleMs = ttl } = {}) {
   const hit = values.get(key);
   const refresh = () => {
     if (!pending.has(key)) {
@@ -10,7 +10,7 @@ export async function cached(key, ttl, loader) {
     }
     return pending.get(key);
   };
-  if (hit) { if (hit.expires < Date.now()) void refresh().catch(() => {}); return hit.value; }
+  if (hit && hit.expires + staleMs > Date.now()) { if (hit.expires <= Date.now()) void refresh().catch(() => {}); return hit.value; }
   return refresh();
 }
 export async function json(url) {

@@ -5,16 +5,24 @@ import type {
   MovieDetails,
   StreamingProvider,
   Trailer,
+  CatalogPage,
 } from "../types/movie";
 import { array, num, object, request, str, AppError } from "../services/http";
 import { legalUrl, preferredTrailer } from "../services/legal";
-const endpoint = (path: string, country: Country, query = "", page = 1) =>
-  `/api/tmdb?path=${encodeURIComponent(path)}&region=${country}&page=${page}${query ? `&query=${encodeURIComponent(query)}` : ""}`;
+const endpoint = (path: string, country: Country, query = "", page = 1, sort = "featured") =>
+  `/api/tmdb?path=${encodeURIComponent(path)}&region=${country}&page=${page}&sort=${sort}${query ? `&query=${encodeURIComponent(query)}` : ""}`;
 const artwork = (path: unknown, size = "w500") =>
   /^\/[\w.-]+$/.test(str(path))
     ? `https://image.tmdb.org/t/p/${size}${path}`
     : "";
 let genreList: Genre[] = [];
+export function mapTrailers(value: unknown): Trailer[] {
+  return array(value).flatMap(v => {
+    const t = object(v);
+    return t.site === 'YouTube' && t.official === true && (t.type === 'Trailer' || t.type === 'Teaser') && /^[\w-]{11}$/.test(str(t.key))
+      ? [{ id: str(t.id), provider: 'youtube' as const, videoId: str(t.key), sourceName: 'YouTube', sourcePageUrl: `https://www.youtube.com/watch?v=${str(t.key)}`, name: str(t.name), official: true, type: t.type as 'Trailer' | 'Teaser' }] : [];
+  });
+}
 const genreName = (value: unknown) =>
   str(value) === "Science Fiction" ? "Sci-Fi" : str(value);
 export function mapMovie(value: unknown): Movie {
@@ -67,11 +75,28 @@ export const TmdbAdapter = {
     });
     return genreList;
   },
-  async list(path: string, country: Country, query = "", page = 1) {
-    const data = await request(endpoint(path, country, query, page), object, path.includes("trending") ? 7200000 : path.includes("upcoming") ? 43200000 : 21600000);
+  async listPage(path: string, country: Country, query = "", page = 1, sort = "featured"): Promise<CatalogPage> {
+    const data = await request(endpoint(path, country, query, page, sort), value => {
+      const data = object(value);
+      if (!Array.isArray(data.results)) throw new AppError('invalid_response', 'Catalog unavailable.');
+      data.results.filter(v => object(v).adult !== true).forEach(mapMovie);
+      return data;
+    }, 300000);
     if (!Array.isArray(data.results))
       throw new AppError("invalid_response", "Catalog unavailable.");
-    return data.results.map(mapMovie);
+    const movies = data.results.filter(v => object(v).adult !== true).map(mapMovie);
+    const current = num(data.page) || page;
+    const totalPages = Math.min(50, num(data.total_pages) || (movies.length >= 20 ? 50 : current));
+    return { movies, page: current, totalPages, totalResults: num(data.total_results) || movies.length, hasMore: current < totalPages && movies.length > 0 };
+  },
+  async list(path: string, country: Country, query = "", page = 1) {
+    return (await TmdbAdapter.listPage(path, country, query, page)).movies;
+  },
+  async videos(movie: Movie, country: Country): Promise<Movie> {
+    if (!movie.tmdbId) return movie;
+    const data = await request(endpoint(`movie/${movie.tmdbId}/videos`, country), object, 1800000);
+    const trailer = preferredTrailer(mapTrailers(data.results));
+    return { ...movie, trailer, trailerUrl: trailer?.sourcePageUrl };
   },
   async details(id: string, country: Country): Promise<MovieDetails> {
     if (!/^tmdb:\d+$/.test(id))
@@ -100,26 +125,7 @@ export const TmdbAdapter = {
       const c = object(v);
       return { id: num(c.id), name: str(c.name), job: str(c.job) };
     });
-    const trailers: Trailer[] = array(
-      object(data.videos || {}).results,
-    ).flatMap((v) => {
-      const t = object(v);
-      return t.site === "YouTube" &&
-        (t.type === "Trailer" || t.type === "Teaser")
-        ? [
-            {
-              id: str(t.id),
-              provider: "youtube" as const,
-              videoId: str(t.key),
-              sourceName: "YouTube",
-              sourcePageUrl: `https://www.youtube.com/watch?v=${str(t.key)}`,
-              name: str(t.name),
-              official: t.official === true,
-              type: t.type,
-            },
-          ]
-        : [];
-    });
+    const trailers = mapTrailers(object(data.videos || {}).results);
     const region = object(
       object(providersResult?.results || {})[country] || {},
     );

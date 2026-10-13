@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { memo, useEffect, useState, type ReactNode } from "react";
 import {
   ArrowUpRight,
   Check,
@@ -163,6 +163,10 @@ export function MovieImage({
           src={src}
           alt={title}
           loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={eager ? 'high' : 'auto'}
+          srcSet={src.includes('image.tmdb.org/t/p/w500/') ? `${src.replace('/w500/', '/w185/')} 185w, ${src.replace('/w500/', '/w342/')} 342w, ${src} 500w` : undefined}
+          sizes="(max-width: 600px) 46vw, (max-width: 1100px) 28vw, 220px"
           onLoad={() => setLoaded(true)}
           onError={() => setFailed(true)}
         />
@@ -170,7 +174,7 @@ export function MovieImage({
     </div>
   );
 }
-export function MovieCard({
+export const MovieCard = memo(function MovieCard({
   movie,
   onSelect,
   saved,
@@ -234,7 +238,7 @@ export function MovieCard({
       </p>
     </article>
   );
-}
+});
 export function EmptyState({
   title,
   text,
