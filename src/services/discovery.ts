@@ -1,5 +1,6 @@
 import type { Country, Movie, MovieDetails, StreamingProvider, Trailer } from "../types/movie";
-import { TmdbAdapter } from "../adapters/tmdb";
+import { OpenCatalogAdapter } from "../adapters/openCatalog";
+const sorted = (list:Movie[], sort:"new"|"rating") => [...list].sort((a,b)=>sort==="new"?(b.year-a.year):(b.rating-a.rating));
 export interface DiscoveryAdapter {
   getTrending(country: Country, page?: number): Promise<Movie[]>;
   getPopular(country: Country, page?: number): Promise<Movie[]>;
@@ -12,13 +13,13 @@ export interface DiscoveryAdapter {
   getProviders(id: string, country: Country): Promise<StreamingProvider[]>;
 }
 export const DiscoveryCatalogAdapter: DiscoveryAdapter = {
-  getTrending: (c, p) => TmdbAdapter.list("trending/movie/week", c, "", p),
-  getPopular: (c, p) => TmdbAdapter.list("movie/popular", c, "", p),
-  getNowPlaying: (c, p) => TmdbAdapter.list("movie/now_playing", c, "", p),
-  getUpcoming: (c, p) => TmdbAdapter.list("movie/upcoming", c, "", p),
-  getDiscover: (c, p) => TmdbAdapter.list("discover/movie", c, "", p),
-  search: (q, c, p) => TmdbAdapter.list("search/movie", c, q, p),
-  getDetails: TmdbAdapter.details,
-  getVideos: async (id, c) => (await TmdbAdapter.details(id, c)).trailers,
-  getProviders: async (id, c) => (await TmdbAdapter.details(id, c)).providers,
+  getTrending: async (c,p) => sorted(await OpenCatalogAdapter.list(c,p),"rating"),
+  getPopular: async (c,p) => sorted(await OpenCatalogAdapter.list(c,p),"rating"),
+  getNowPlaying: async (c,p) => sorted(await OpenCatalogAdapter.list(c,p),"new"),
+  getUpcoming: async () => [], // Neither open source guarantees upcoming film releases.
+  getDiscover: (c,p) => OpenCatalogAdapter.list(c,p),
+  search: (q,c,p) => OpenCatalogAdapter.list(c,p,q),
+  getDetails: async (id,c) => { const results=await OpenCatalogAdapter.list(c,1); const m=results.find(x=>x.id===id); if(!m) throw new Error("movie_not_found"); return OpenCatalogAdapter.details(m); },
+  getVideos: async () => [],
+  getProviders: async () => [],
 };
