@@ -1,12 +1,12 @@
-import { createServer } from 'vite';
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { adb, cap, gradle, run, root } from './android-tools.mjs';
+import { firstPreviewPort, previewUrl, startPreviewServer, reverseMappings } from './android-preview-port.mjs';
 
 const app = 'com.reeltara.app.debug';
-const port = 5173;
+let port = firstPreviewPort;
 const apk = join(root, 'android/app/build/outputs/apk/debug/app-debug.apk');
 const stampPath = '.cache/android-usb/state.json';
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -19,8 +19,9 @@ function save() { mkdirSync('.cache/android-usb', { recursive: true }); writeFil
 export function parseDevices(output) {
   return output.split(/\r?\n/).map(line => line.trim().split(/\s+/)).filter(([serial, status]) => serial && ['device', 'unauthorized', 'offline'].includes(status)).map(([serial, status, ...info]) => ({ serial, status, usb: info.some(x => x.startsWith('usb:')) || (!serial.startsWith('emulator-') && !serial.includes(':')) }));
 }
-export function fingerprint() {
+export function fingerprint(previewPort = firstPreviewPort) {
   const hash = createHash('sha256');
+  hash.update(previewUrl(previewPort));
   const skip = new Set(['build', '.gradle', '.idea', 'public']);
   const walk = path => {
     if (!existsSync(path)) return;
@@ -52,18 +53,18 @@ async function devices() {
   if (selected[0]?.status === 'unauthorized') throw new Error('Mở khóa Android và xác nhận “Allow USB debugging”, rồi chạy lại npm run android:usb.');
   return selected[0]?.status === 'device' ? selected[0] : undefined;
 }
-export async function buildDebug() {
+export async function buildDebug(previewPort = firstPreviewPort) {
   // A build-only preparation may have completed while this process waited USB.
   try { state = JSON.parse(readFileSync(stampPath, 'utf8')); } catch { /* Keep in-memory state. */ }
-  let hash = fingerprint();
+  let hash = fingerprint(previewPort);
   const apkHash = existsSync(apk) ? createHash('sha256').update(readFileSync(apk)).digest('hex') : undefined;
   if (!apkHash || state.build !== hash || state.apk !== apkHash) {
     console.log('[Native] Đồng bộ và build debug APK (không build lại khi sửa React/CSS).');
     await run(process.execPath, ['node_modules/typescript/bin/tsc', '-b']);
     await run(process.execPath, ['node_modules/vite/bin/vite.js', 'build'], { extraEnv: { VITE_PUBLIC_API_BASE_URL: '' } });
     await cap('sync', 'android');
-    await gradle('assembleDebug', '--console=plain');
-    hash = fingerprint();
+    await gradle('assembleDebug', '--console=plain', `-PusbPreviewPort=${previewPort}`);
+    hash = fingerprint(previewPort);
     state.build = hash;
     state.apk = createHash('sha256').update(readFileSync(apk)).digest('hex');
     save();
@@ -72,13 +73,39 @@ export async function buildDebug() {
   }
   return hash;
 }
+async function mappingsFor(device) {
+  return reverseMappings(await run(adb, ['-s', device.serial, 'reverse', '--list'], { capture: true }));
+}
+function excludedMappings(mappings) {
+  return new Set([...mappings].filter(([remote, local]) => local !== `tcp:${remote}`).map(([remote]) => remote));
+}
+function saveSession() {
+  mkdirSync('.cache/android-usb', { recursive: true });
+  writeFileSync('.cache/android-usb/session.json', JSON.stringify({ pid: process.pid, port, url: previewUrl(port) }));
+}
+async function forward(device) {
+  const mappings = await mappingsFor(device);
+  if (mappings.has(port)) {
+    if (mappings.get(port) !== `tcp:${port}`) throw new Error(`ADB reverse tcp:${port} thuộc ánh xạ khác; không ghi đè.`);
+    return;
+  }
+  await run(adb, ['-s', device.serial, 'reverse', '--no-rebind', `tcp:${port}`, `tcp:${port}`], { capture: true });
+}
 async function connect(device) {
   const cmd = (...args) => run(adb, ['-s', device.serial, ...args], { capture: true });
   const api = Number(await cmd('shell', 'getprop', 'ro.build.version.sdk'));
   if (api < 23) throw new Error(`Android API ${api} thấp hơn minSdk 23.`);
   console.log(`[USB] ${device.serial}, Android API ${api}`);
-  await cmd('reverse', `tcp:${port}`, `tcp:${port}`);
-  const hash = await buildDebug();
+  const mappings = await mappingsFor(device);
+  if (mappings.has(port) && mappings.get(port) !== `tcp:${port}`) {
+    const previous = server;
+    ({ server, port } = await startPreviewServer({ excluded: excludedMappings(mappings) }));
+    await previous.close();
+    saveSession();
+    console.log(`[Vite] ${previewUrl(port)}; tránh ánh xạ USB đang được sử dụng.`);
+  }
+  await forward(device);
+  const hash = await buildDebug(port);
   // Android versions differ: pm path may exit 1 when the package is absent.
   const installed = await cmd('shell', 'pm', 'path', app).catch(() => '');
   const info = installed.includes('package:') ? await cmd('shell', 'dumpsys', 'package', app) : '';
@@ -105,8 +132,9 @@ async function main() {
   });
   await run(adb, ['start-server'], { capture: true });
   const initial = await devices(); // Authorization errors before starting Vite.
-  server = await createServer({ server: { host: '127.0.0.1', port, strictPort: true, hmr: { host: 'localhost', clientPort: port } }, define: { 'import.meta.env.VITE_PUBLIC_API_BASE_URL': JSON.stringify('') } });
-  await server.listen();
+  const excluded = initial ? excludedMappings(await mappingsFor(initial)) : new Set();
+  ({ server, port } = await startPreviewServer({ excluded }));
+  saveSession();
   console.log(`[Vite] http://localhost:${port}; API chạy trên backend Vite của laptop.`);
   if (!initial) console.log('[USB] Chưa có thiết bị. Cắm USB, bật USB debugging và mở khóa Android. Đang chờ…');
   let active;
@@ -118,12 +146,15 @@ async function main() {
       if (!device) {
         if (active) console.log('[USB] Mất kết nối. Đang chờ cắm lại…');
         active = undefined;
-      } else if (active !== device.serial || fingerprint() !== nativeHash) {
+      } else if (active !== device.serial || fingerprint(port) !== nativeHash) {
         nativeHash = await connect(device);
         active = device.serial;
       } else {
         // Restore forwarding even if ADB was restarted while USB stayed connected.
-        await run(adb, ['-s', device.serial, 'reverse', `tcp:${port}`, `tcp:${port}`], { capture: true });
+        const mappings = await mappingsFor(device);
+        if (mappings.has(port) && mappings.get(port) !== `tcp:${port}`) {
+          nativeHash = await connect(device);
+        } else await forward(device);
       }
       lastError = undefined;
     } catch (error) {

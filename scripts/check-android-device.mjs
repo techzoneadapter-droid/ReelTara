@@ -9,11 +9,13 @@ const devices = parseDevices(await run(adb, ['devices', '-l'], { capture: true }
 const device = process.env.ANDROID_SERIAL ? devices.find(d => d.serial === process.env.ANDROID_SERIAL) : devices.length === 1 ? devices[0] : undefined;
 assert(device, 'Select one authorized USB device with ANDROID_SERIAL');
 const cmd = (...args) => run(adb, ['-s', device.serial, ...args], { capture: true });
+const { url: previewUrl } = JSON.parse(readFileSync('.cache/android-usb/session.json', 'utf8'));
 const pid = (await cmd('shell', 'pidof', 'com.reeltara.app.debug')).trim();
 assert(/^\d+$/.test(pid), 'ReelTara debug is not running');
-await cmd('forward', 'tcp:9223', `localabstract:webview_devtools_remote_${pid}`);
-const targets = await (await fetch('http://127.0.0.1:9223/json/list')).json();
-const target = targets.find(t => t.url === 'http://localhost:5173/');
+// Ask ADB for a free DevTools port instead of rebinding another app's port.
+const devtoolsPort = await cmd('forward', 'tcp:0', `localabstract:webview_devtools_remote_${pid}`);
+const targets = await (await fetch(`http://127.0.0.1:${devtoolsPort}/json/list`)).json();
+const target = targets.find(t => t.url === `${previewUrl}/`);
 assert(target, 'No ReelTara Live Reload target found');
 const ws = new WebSocket(target.webSocketDebuggerUrl);
 let id = 0;
@@ -50,7 +52,8 @@ async function waitFor(expression) {
 const suffixes = new Map();
 const append = (path, text) => { suffixes.set(path, text); appendFileSync(path, text); };
 const apk = 'android/app/build/outputs/apk/debug/app-debug.apk';
-const before = { hash: fingerprint(), apkMtime: statSync(apk).mtimeMs };
+const port = Number(new URL(previewUrl).port);
+const before = { hash: fingerprint(port), apkMtime: statSync(apk).mtimeMs };
 try {
   await cdp('Runtime.enable');
   const initial = await evaluate(`({title: document.title, text: document.body.innerText.slice(0, 250), timeOrigin: performance.timeOrigin, url: location.href, ua: navigator.userAgent})`);
@@ -62,7 +65,7 @@ try {
   append('src/App.tsx', '\n// USB React Refresh verification: removed after test\n');
   await waitFor(`window.__usbProbeEvents.some(event => event.updates?.some(update => update.path === '/src/App.tsx'))`);
   assert.equal(await evaluate('performance.timeOrigin'), initial.timeOrigin, 'React change reloaded the WebView');
-  assert.equal(fingerprint(), before.hash, 'Web changes triggered native fingerprint');
+  assert.equal(fingerprint(port), before.hash, 'Web changes triggered native fingerprint');
   assert.equal(statSync(apk).mtimeMs, before.apkMtime, 'APK was rebuilt for web changes');
   assert.deepEqual(errors, []);
   const result = { checkedAt: new Date().toISOString(), model: await cmd('shell', 'getprop', 'ro.product.model'), android: await cmd('shell', 'getprop', 'ro.build.version.release'), api: await cmd('shell', 'getprop', 'ro.build.version.sdk'), url: initial.url, userAgent: initial.ua, cssHmr: true, reactRefresh: true, fullReload: false, apkRebuilt: false, runtimeErrorsDuringProbe: errors };
@@ -77,5 +80,5 @@ try {
     writeFileSync(path, current.replace(text, ''));
   }
   ws.close();
-  await cmd('forward', '--remove', 'tcp:9223');
+  await cmd('forward', '--remove', `tcp:${devtoolsPort}`);
 }

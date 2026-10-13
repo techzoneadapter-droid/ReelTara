@@ -6,8 +6,11 @@ Trong VS Code, chạy từ thư mục ReelTara:
 npm run android:usb
 ```
 
-Lệnh chờ thiết bị USB, chạy Vite tại `http://localhost:5173`, thiết lập
-`adb reverse tcp:5173 tcp:5173`, build/cài APK debug khi cần và tự mở ứng dụng.
+Lệnh chờ thiết bị USB, ưu tiên Vite tại `http://localhost:5188`. Nếu cổng bận,
+tự thử các cổng tiếp theo đến 5199, không dừng tiến trình đang chiếm cổng.
+Vite bind thành công trước khi chọn cổng, nên không có khoảng trống giữa kiểm
+tra và sử dụng. Cùng cổng được dùng cho HMR, `adb reverse tcp:PORT tcp:PORT`
+và URL Capacitor của APK debug; script build/cài khi cần và tự mở ứng dụng.
 Giữ terminal chạy. Lưu React/TypeScript để Fast Refresh cập nhật; CSS dùng HMR.
 Không build APK cho mỗi lần sửa web. Rút/cắm lại USB: script khôi phục forwarding
 và mở lại ứng dụng, giữ dữ liệu của bản debug.
@@ -50,14 +53,20 @@ Emulator và ADB qua Wi-Fi không được tự chọn.
 Script theo dõi source/config native, cấu hình Capacitor, phiên bản và mã Android
 của plugin. Khi chúng thay đổi, tự sync/build/cài lại. Sau khi thêm plugin, chạy
 `npm install` để cập nhật lockfile. Không chạy hai phiên preview hoặc build/sync
-đồng thời trên cùng thư mục. Nếu cổng 5173 đang bị chiếm, script báo lỗi rõ ràng.
+đồng thời trên cùng thư mục. Nếu toàn bộ 5188–5199 bận, script báo lỗi và giữ
+nguyên các tiến trình hiện có. ADB reverse dùng `--no-rebind` khi tạo ánh xạ,
+không ghi đè ánh xạ tới cổng khác của dự án khác. Cổng thực tế hiển thị trong
+terminal và `.cache/android-usb/session.json` (không commit).
+Đổi cổng làm thay đổi native config nên cần build/cài APK debug một lần;
+các thay đổi React/CSS sau đó tiếp tục dùng HMR, không rebuild APK.
 Lỗi Gradle/cài đặt trên thiết bị đang kết nối sẽ dừng thay vì lặp build liên tục.
 
 ## Debug và release
 
 Debug dùng `com.reeltara.app.debug`, tách khỏi `com.reeltara.app` của release.
 `usb-preview.gradle` tạo asset Capacitor riêng trong thư mục build cho **debug**,
-có `server.url=http://localhost:5173`. Manifest/network security debug chỉ cho
+có `server.url=http://localhost:PORT`, PORT trong 5188–5199. Gradle nhận cổng qua
+`-PusbPreviewPort=PORT`; giá trị mặc định 5188. Manifest/network security debug chỉ cho
 HTTP tới localhost/127.0.0.1; mixed content vẫn tắt. Native logging thường xuyên
 tắt; Vite, Gradle, ADB và lỗi script hiện ở terminal. Xem lỗi native khi cần:
 
@@ -90,7 +99,9 @@ SDK packages cài bằng công cụ Google. Yêu cầu nền tảng theo
 Ngày 13/10/2026:
 
 - TypeScript + production web build: đạt; Capacitor sync: đạt.
-- 14 test dịch vụ và 3 test USB/fingerprint: đạt.
+- 14 test dịch vụ và 8 test USB/fingerprint/chọn cổng: đạt. Test với Vite thật
+  giữ một dịch vụ thử nghiệm trên 5188, xác nhận preview chuyển cổng và dịch vụ
+  trên 5188 vẫn phản hồi bình thường.
 - Debug APK và release APK chưa ký: build thành công.
 - Release AAB chưa ký: build thành công; assets không có URL/cleartext dev,
   không có network security debug; manifest của tác vụ bundle tắt cleartext.
@@ -101,9 +112,9 @@ Ngày 13/10/2026:
   và backend cùng origin: đạt.
 - Thiết bị thật: Samsung Galaxy Tab A (2017), SM-T385K, Android **9 / API 28**,
   WebView Chrome **101.0.4951.61**. APK cài/mở thành công, ReelTara hiển thị tại
-  `http://localhost:5173/`. CSS HMR và React Fast Refresh đạt, không full reload,
+  `http://localhost:5188/`. CSS HMR và React Fast Refresh đạt, không full reload,
   không rebuild APK; không có lỗi runtime trong probe.
-- Người dùng rút/cắm lại cáp USB: script phát hiện mất kết nối, tự khôi phục
+- Trong lần thiết lập ban đầu, người dùng rút/cắm lại cáp USB: script phát hiện mất kết nối, tự khôi phục
   reverse, dùng lại APK cache, không cài lại và tự mở ReelTara. Đã kiểm chứng.
 - Android mới hơn 9: chưa có thiết bị để kiểm chứng. Online API/trailer/playback
   production chưa kiểm chứng với backend triển khai; tablet đang hiển thị catalog

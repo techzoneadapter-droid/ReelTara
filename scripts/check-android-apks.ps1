@@ -13,7 +13,12 @@ foreach ($variant in @('debug', 'release')) {
         $manifest = (& $aaptPath dump xmltree $apkPath --file AndroidManifest.xml) -join "`n"
         if ($LASTEXITCODE -ne 0) { throw 'aapt2 manifest inspection failed' }
         if ($variant -eq 'debug') {
-            if ($config.server.url -ne 'http://localhost:5173') { throw 'Debug APK lost Live Reload URL' }
+            if ($config.server.url -notmatch '^http://localhost:(518[8-9]|519[0-9])$') { throw 'Debug APK lost Live Reload URL' }
+            $sessionPath = '.cache/android-usb/session.json'
+            if (Test-Path -LiteralPath $sessionPath) {
+                $session = Get-Content -LiteralPath $sessionPath -Raw | ConvertFrom-Json
+                if ($config.server.url -ne $session.url) { throw 'Debug APK URL differs from the active Vite preview port' }
+            }
             if ($manifest -notmatch 'com\.reeltara\.app\.debug') { throw 'Debug package is not isolated' }
             if (!$archive.GetEntry('res/xml/usb_network_security.xml')) { throw 'Debug missing network security policy' }
         } else {

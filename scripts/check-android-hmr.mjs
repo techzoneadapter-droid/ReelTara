@@ -1,7 +1,7 @@
 // Integration smoke check against the running USB preview server, without Android.
 import assert from 'node:assert/strict';
-import { writeFileSync, unlinkSync } from 'node:fs';
-const base = 'http://localhost:5173';
+import { readFileSync, writeFileSync, unlinkSync } from 'node:fs';
+const { url: base } = JSON.parse(readFileSync('.cache/android-usb/session.json', 'utf8'));
 const path = 'src/__usb-hmr-probe.css';
 const messages = [];
 let ws;
@@ -13,7 +13,7 @@ try {
   const app = await fetch(`${base}/src/App.tsx`);
   assert.equal(app.status, 200);
   assert.match(await app.text(), /\$RefreshReg\$/);
-  ws = new WebSocket('ws://localhost:5173', 'vite-hmr');
+  ws = new WebSocket(base.replace('http:', 'ws:'), 'vite-hmr');
   ws.addEventListener('message', event => messages.push(JSON.parse(event.data)));
   await new Promise((resolve, reject) => {
     const timeout = setTimeout(() => reject(new Error('HMR WebSocket timed out')), 5000);
