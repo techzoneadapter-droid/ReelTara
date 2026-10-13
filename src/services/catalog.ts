@@ -8,7 +8,7 @@ import type {
   MovieDetails,
   SearchResult,
 } from "../types/movie";
-import { TmdbAdapter } from "./tmdb";
+import { OpenCatalogAdapter } from "../adapters/openCatalog";
 import { UserStateService } from "./userState";
 import { preferredTrailer, youtubeKey } from "./legal";
 export interface CatalogAdapter {
@@ -28,7 +28,7 @@ export const fallbackCatalog: Catalog = {
   free: seeds.filter((m) => m.free),
   genres: [],
   status: "fallback",
-  message: "Curated catalog · Live API unavailable.",
+  message: "Curated catalog · Open metadata sources unavailable.",
 };
 let available = seeds;
 let freeAvailable = fallbackCatalog.free;
@@ -42,7 +42,7 @@ export const MovieService: CatalogAdapter & { retry(): void; page(country: Count
   async home(country) {
     const cached = homeCache.get(country);
     if (cached && cached.expires > Date.now()) return cached.value;
-    const genres = await TmdbAdapter.genres(country).catch(() => []);
+    const genres: Catalog["genres"] = [];
     const results = await Promise.allSettled(
       [DiscoveryCatalogAdapter.getTrending(country), DiscoveryCatalogAdapter.getPopular(country), DiscoveryCatalogAdapter.getNowPlaying(country), DiscoveryCatalogAdapter.getUpcoming(country)]
     );
@@ -106,6 +106,7 @@ export const MovieService: CatalogAdapter & { retry(): void; page(country: Count
     }
   },
   async details(movie, country) {
+    if (movie.origin === "open_data") return OpenCatalogAdapter.details(movie);
     if (movie.origin === "tmdb" || movie.tmdbId) {
       try {
         const live = await DiscoveryCatalogAdapter.getDetails(
