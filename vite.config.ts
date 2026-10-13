@@ -8,6 +8,8 @@ import { archiveResponse } from "./server/archive.mjs";
 import { playbackResponse } from "./server/playback.mjs";
 // @ts-ignore Shared legal catalog handler.
 import { freeCatalogResponse } from "./server/freeCatalog.mjs";
+// @ts-ignore Server-side open-data metadata handler.
+import { openCatalogResponse } from "./server/openCatalog.mjs";
 export default defineConfig({
   server: {
     // Native builds/downloads are not HMR inputs and can lock files on Windows.
@@ -18,6 +20,7 @@ export default defineConfig({
     {
       name: "tmdb-server-proxy",
       configureServer(server) {
+        server.middlewares.use("/api/open-catalog", async (req,res) => { const result = await openCatalogResponse(req.url); res.statusCode=result.status; res.setHeader("Content-Type","application/json"); res.end(JSON.stringify(result.body)); });
         server.middlewares.use("/api/free-catalog", async (_req, res) => { const result = await freeCatalogResponse(); res.setHeader("Content-Type", "application/json"); res.end(JSON.stringify(result.body)); });
         server.middlewares.use("/api/playback", async (req, res) => {
           const result = await playbackResponse(req.url);
