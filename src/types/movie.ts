@@ -81,7 +81,7 @@ export type Movie = {
   source?: FreeStreamingSource;
   freeSource?: FreeSource;
   genreIds?: number[];
-  origin: "tmdb" | "curated" | "archive";
+  origin: "tmdb" | "curated" | "archive" | "open_data";
 };
 export type MovieDetails = Movie & {
   genres: Genre[];
