@@ -1,22 +1,7 @@
 ﻿import { cached } from './cache.mjs';
+import {attachArtwork} from './artwork.mjs';
 const PAGE_SIZE = 25;
-const queues = new Map(), cooldowns = new Map();
-async function fetchJson(url, accept = 'application/json') {
-  const host = new URL(url).hostname;
-  const previous = queues.get(host) || Promise.resolve();
-  const task = previous.catch(() => {}).then(async () => {
-    if ((cooldowns.get(host) || 0) > Date.now()) throw new Error('source_rate_limited');
-    const response = await fetch(url, { headers: { Accept: accept, 'User-Agent': 'ReelTara/0.1 (https://github.com/techzoneadapter-droid/ReelTara)' }, signal: AbortSignal.timeout(20000) });
-    if (response.status === 429) {
-      cooldowns.set(host, Date.now() + Math.max(60, Number(response.headers?.get('retry-after')) || 60) * 1000);
-    }
-    if (!response.ok) throw new Error('source_' + response.status);
-    return response.json();
-  });
-  const tail = task.then(() => new Promise(resolve => setTimeout(resolve, host === 'query.wikidata.org' ? 1000 : 550)), () => {});
-  queues.set(host, tail);
-  return task;
-}
+import {fetchJson} from './catalogFetch.mjs';
 const clean = text => String(text || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 const tvMovie = item => {
   const s = item.show || item._embedded?.show || item;
@@ -25,7 +10,7 @@ const tvMovie = item => {
     genre: (s.genres || []).join(' · ') || 'TV Series', rating: Number(s.rating?.average) || 0, runtime: s.runtime || s.averageRuntime || undefined, duration: s.averageRuntime ? s.averageRuntime + 'm' : 'TV Series', certificate: '',
     // API metadata licensing does not establish the rights of poster photographs.
     poster: '', backdrop: '', overview: clean(s.summary), director: '', cast: [], provider: '', providerUrl: s.url || '', origin: 'open_data', contentMode: 'discovery',
-    latestEpisodeDate: item.airdate || '',
+    latestEpisodeDate: item.airdate || '', artworkImdb:s.externals?.imdb,
     source: {name:'TVmaze', sourceUrl:s.url || 'https://www.tvmaze.com/', licenseUrl:'https://www.tvmaze.com/api', license:'CC BY-SA', attribution:'TVmaze (metadata)', verified:false}
   };
 };
@@ -35,7 +20,7 @@ const wdMovie = b => {
   const date = String(b.date?.value || '').slice(0,10);
   return { id:'wikidata:'+qid, title:b.itemLabel.value, originalTitle:b.itemLabel.value, releaseDate:date, year:Number(date.slice(0,4)) || 0,
     genre:b.genres?.value || 'Film', rating:0, duration:'Film', certificate:'', poster:'', backdrop:'', overview:'Film metadata from Wikidata.', director:b.directors?.value || '', countryOfOrigin:b.countries?.value || '', cast:[], provider:'', providerUrl:'https://www.wikidata.org/wiki/'+qid,
-    origin:'open_data', contentMode:'discovery', source:{name:'Wikidata',sourceUrl:'https://www.wikidata.org/wiki/'+qid,licenseUrl:'https://creativecommons.org/publicdomain/zero/1.0/',license:'CC0',attribution:'Wikidata',verified:false}
+    artworkFile:b.image?.value||'', origin:'open_data', contentMode:'discovery', source:{name:'Wikidata',sourceUrl:'https://www.wikidata.org/wiki/'+qid,licenseUrl:'https://creativecommons.org/publicdomain/zero/1.0/',license:'CC0',attribution:'Wikidata',verified:false}
   };
 };
 async function tvmaze(page, query, country, feed) {
@@ -53,25 +38,26 @@ async function tvmaze(page, query, country, feed) {
     const providerPage = Math.floor((page-1)/10), offset = ((page-1)%10)*PAGE_SIZE;
     rows = await cached('tv-index:'+providerPage, 86400000, async () => {try{return await fetchJson('https://api.tvmaze.com/shows?page='+providerPage);}catch(e){if(e.message==='source_404')return [];throw e;}});
     const items = rows.slice(offset, offset+PAGE_SIZE).map(tvMovie).filter(Boolean);
-    return {items, hasMore:rows.length>0};
+    return {items:await attachArtwork(items), hasMore:rows.length>0};
   }
   const mapped = [...new Map(rows.map(tvMovie).filter(Boolean).map(m=>[m.id,m])).values()];
-  return {items:mapped.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE), hasMore:mapped.length>page*PAGE_SIZE};
+  return {items:await attachArtwork(mapped.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE)), hasMore:mapped.length>page*PAGE_SIZE};
 }
 async function wikidata(country, page, query, feed) {
   const offset=((page-1)%4)*PAGE_SIZE;
   const block=Math.floor((page-1)/4);
   const countryId = country === 'PH' ? 'Q928' : 'Q668';
   const term = JSON.stringify(query.toLowerCase());
-  const q = `SELECT ?item ?itemLabel ?date (GROUP_CONCAT(DISTINCT ?directorLabel;separator=" · ") AS ?directors) (GROUP_CONCAT(DISTINCT ?genreLabel;separator=" · ") AS ?genres) (GROUP_CONCAT(DISTINCT ?countryLabel;separator=" · ") AS ?countries) WHERE {
+  let q = `SELECT ?item ?itemLabel ?date (SAMPLE(?art) AS ?image) (GROUP_CONCAT(DISTINCT ?directorLabel;separator=" · ") AS ?directors) (GROUP_CONCAT(DISTINCT ?genreLabel;separator=" · ") AS ?genres) (GROUP_CONCAT(DISTINCT ?countryLabel;separator=" · ") AS ?countries) WHERE {
     { SELECT ?item (MIN(?released) AS ?date) WHERE { ?item wdt:P495 wd:${countryId}; wdt:P31 wd:Q11424; wdt:P577 ?released. ${query ? '?item rdfs:label ?name. FILTER(LANG(?name)="en" && CONTAINS(LCASE(STR(?name)), '+term+'))' : 'FILTER(?released >= "2020-01-01T00:00:00Z"^^xsd:dateTime)'} ${feed === "upcoming" ? `FILTER(?released > "${new Date().toISOString().slice(0,10)}T23:59:59Z"^^xsd:dateTime)` : ""} } GROUP BY ?item ORDER BY DESC(?date) ?item LIMIT ${PAGE_SIZE*4+1} OFFSET ${block*PAGE_SIZE*4} }
-    OPTIONAL {?item wdt:P57 ?director.} OPTIONAL {?item wdt:P136 ?genre.} OPTIONAL {?item wdt:P495 ?country.}
+    OPTIONAL {?item wdt:P57 ?director.} OPTIONAL {?item wdt:P136 ?genre.} OPTIONAL {?item wdt:P495 ?country.} OPTIONAL {?item wdt:P18 ?art.}
     SERVICE wikibase:label { bd:serviceParam wikibase:language "en". ?item rdfs:label ?itemLabel. ?director rdfs:label ?directorLabel. ?genre rdfs:label ?genreLabel. ?country rdfs:label ?countryLabel. }
   } GROUP BY ?item ?itemLabel ?date ORDER BY DESC(?date) ?item`;
+  if(feed==='recent')q=q.replace('wdt:P577 ?released.',`wdt:P577 ?released. FILTER(?released <= "${new Date().toISOString().slice(0,10)}T23:59:59Z"^^xsd:dateTime)`);
   // Four UI pages share one bounded upstream query. No background polling or speculative downloads.
-  const body = await cached(['wd-block-v1',country,block,query,feed].join(':'),3600000,()=>fetchJson('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(q), 'application/sparql-results+json'));
+  const body = await cached(['wd-art-block-v2',country,block,query,feed].join(':'),3600000,()=>fetchJson('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(q), 'application/sparql-results+json'));
   const rows = body.results?.bindings || [];
-  return {items:rows.slice(offset,offset+PAGE_SIZE).map(wdMovie).filter(Boolean), hasMore:rows.length>offset+PAGE_SIZE};
+  return {items:await attachArtwork(rows.slice(offset,offset+PAGE_SIZE).map(wdMovie).filter(Boolean)), hasMore:rows.length>offset+PAGE_SIZE};
 }
 export async function openCatalogResponse(input) {
   const p = new URL(input,'http://localhost').searchParams;
@@ -92,7 +78,7 @@ export async function openCatalogResponse(input) {
   const query = (p.get('query')||'').trim().slice(0,60), feed = ['recent','upcoming'].includes(p.get('feed')) ? p.get('feed') : 'index';
   if (!['all','tvmaze','wikidata'].includes(source)) return {status:400,body:{error:'invalid_source'}};
   try {
-    const body = await cached(['open-v2',source,country,page,query,feed].join(':'), query || feed === 'recent' ? 900000 : 3600000, async()=>{
+    const body = await cached(['open-art-v2',source,country,page,query,feed].join(':'), query || feed === 'recent' ? 900000 : 3600000, async()=>{
       const names = source === 'all' ? ['wikidata','tvmaze'] : [source];
       const parts = await Promise.allSettled(names.map(name => name === 'tvmaze' ? tvmaze(page,query,country,feed) : wikidata(country,page,query,feed)));
       if (parts.every(p=>p.status === 'rejected')) throw new Error('sources_unavailable');

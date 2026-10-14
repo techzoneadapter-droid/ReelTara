@@ -11,6 +11,7 @@ import {
 import { thumbnailCandidates, PLACEHOLDER_THUMBNAIL, firstThumbnailIndex, rememberBrokenThumbnail } from "../utils/thumbnails";
 import type { Movie } from "../types/movie";
 import { legalUrl } from "../services/legal";
+import {reviewedArtwork} from '../utils/artwork';
 
 export function BrandLogo({ icon = false }: { icon?: boolean }) {
   return icon ? (
@@ -103,6 +104,7 @@ export function ProviderButton({
   );
 }
 export function RatingBadge({ rating }: { rating: number }) {
+  if(!Number.isFinite(rating)||rating<=0)return null;
   return (
     <span className="rating">
       <Star size={12} fill="currentColor" /> <b>{rating.toFixed(1)}</b>
@@ -210,7 +212,7 @@ export const MovieCard = memo(function MovieCard({
         {movie.title}
       </button>
       <p>
-        {movie.year}
+        {movie.year || 'Year unavailable'}
         <span>•</span>
         {movie.genre}
         {trailer && (
@@ -219,9 +221,17 @@ export const MovieCard = memo(function MovieCard({
           </>
         )}
       </p>
+      <ArtworkCredit movie={movie}/>
     </article>
   );
 });
+export function ArtworkCredit({movie}:{movie:Movie}) {
+ const a=reviewedArtwork(movie.artwork);if(!a)return null;
+ return <small className="artwork-credit" title={a.attribution+' · '+a.modification}>
+  Image: <a href={a.sourcePageUrl} target="_blank" rel="noopener noreferrer">{a.attribution}</a>{' · '}
+  <a href={a.licenseUrl} target="_blank" rel="noopener noreferrer">{a.licenseType||'License'}</a>
+ </small>;
+}
 export function EmptyState({
   title,
   text,

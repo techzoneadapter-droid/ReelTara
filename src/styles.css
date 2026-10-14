@@ -1923,3 +1923,11 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 .detail-visual {position:relative;isolation:isolate;overflow:hidden;}
 .detail-art {position:absolute;inset:0;z-index:-1;pointer-events:none;}
 .detail-art::after {content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0b1020 3%,#0b102040 100%);}
+.cinematic-art {animation:cinematic-fade 180ms ease-out;}
+@keyframes cinematic-fade {from{opacity:.55}to{opacity:.86}}
+.hero-content > p {display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.artwork-credit {display:block;font-size:10px;line-height:1.5;color:#a9b4ca;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;margin-top:5px;}
+.artwork-credit a {color:inherit;text-decoration:underline;text-underline-offset:2px;}
+.artwork-summary {font-size:12px;line-height:1.6;color:#a9b4ca;margin:20px 0;}
+@media(prefers-reduced-motion:reduce){.cinematic-art{animation:none;}}
+:root[data-low-memory-android="true"] .cinematic-art {animation:none;}

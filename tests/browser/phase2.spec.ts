@@ -4,7 +4,7 @@ test('offline metadata stays bounded and labelled; reconnect refreshes real cata
  let calls=0, generation='Cached title';
  await page.route('**/api/free-catalog**',r=>r.fulfill({json:{items:[]}}));
  await page.route('**/api/open-catalog?**',r=>{calls++;return r.fulfill({json:{items:[item(generation)],hasMore:false,totalPages:1}});});
- await page.goto('/',{waitUntil:'domcontentloaded'});await expect(page.getByRole('heading',{name:'Cached title',exact:true})).toBeVisible();
+ await page.goto('/',{waitUntil:'domcontentloaded'});await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Discover',exact:true}).click();await expect(page.getByRole('button',{name:'View Cached title',exact:true}).first()).toBeVisible();
  await page.evaluate(async()=>{
   // @ts-ignore Vite test imports the real service module.
   const m=await import('/src/services/catalog.ts');window.__qaCatalog=m.MovieService;

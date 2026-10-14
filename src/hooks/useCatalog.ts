@@ -33,11 +33,16 @@ export function useCatalog(country: Country) {
   }, [country, catalog.status, catalog.trending]);
   useEffect(() => {
     const refresh = () => { if (document.visibilityState === 'visible' && navigator.onLine) setRevision(v => v + 1); };
+    const freeUpdated=(event:Event)=>{
+      const free=(event as CustomEvent).detail;
+      if(Array.isArray(free))setCatalog(previous=>({...previous,free,movies:[...previous.movies.filter(m=>!m.free),...free]}));
+      refresh();
+    };
     const timer = setInterval(refresh, 300000);
-    window.addEventListener("free-catalog-updated", refresh);
+    window.addEventListener("free-catalog-updated", freeUpdated);
     window.addEventListener('online', refresh);
     document.addEventListener('visibilitychange', refresh);
-    return () => { clearInterval(timer); window.removeEventListener("free-catalog-updated", refresh); window.removeEventListener('online', refresh); document.removeEventListener('visibilitychange', refresh); };
+    return () => { clearInterval(timer); window.removeEventListener("free-catalog-updated", freeUpdated); window.removeEventListener('online', refresh); document.removeEventListener('visibilitychange', refresh); };
   }, []);
   return {
     catalog,

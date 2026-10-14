@@ -1,5 +1,6 @@
 ﻿import type {Movie} from '../types/movie';
 import {validTrailer,youtubeKey} from './legal';
+import {reviewedArtwork} from './artwork';
 export const PLACEHOLDER_THUMBNAIL='/brand/thumbnail-placeholder.svg';
 const hosts=new Set(['image.tmdb.org','i.ytimg.com','thumb.wikimedia.org','upload.wikimedia.org','static.tvmaze.com']);
 export function safeThumbnail(value?:string):string|undefined {
@@ -8,6 +9,10 @@ export function safeThumbnail(value?:string):string|undefined {
  try{const u=new URL(value);if(u.protocol==='https:'&&!u.username&&!u.password&&!u.port&&hosts.has(u.hostname))return u.href;}catch{}
 }
 export function thumbnailCandidates(movie?:Movie,preferred?:string,trailer=false):string[]{
+ if(movie&&(movie.origin==='open_data'||movie.artwork)&&!reviewedArtwork(movie.artwork)) {
+  // Saved/cached records must pass the same image-rights boundary as fresh API data.
+  preferred='';movie={...movie,poster:'',backdrop:''};
+ }
  const key=movie?.trailer?.provider==='youtube'&&validTrailer(movie.trailer)?movie.trailer.videoId:movie?.origin==='curated'?youtubeKey(movie.trailerUrl):undefined;
  const youtube=key&&/^[\w-]{11}$/.test(key)?`https://i.ytimg.com/vi/${key}/hqdefault.jpg`:undefined;
  // Open metadata adapters withhold unreviewed artwork; never fabricate provider poster URLs.

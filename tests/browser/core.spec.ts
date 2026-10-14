@@ -25,10 +25,13 @@ async function live(page:Page, missing=false) {
   await page.route('**/api/open-catalog?**',route=>route.fulfill({json:{items:[{id:'wikidata:Q101',title:'Fixture Film',year:2026,releaseDate:'2026-01-02',genre:'Drama',rating:0,duration:'Film',certificate:'',poster:'',backdrop:'',overview:'A test film overview.',director:'Director',cast:[],provider:'',providerUrl:'https://www.wikidata.org/wiki/Q101',origin:'open_data',contentMode:'discovery',source:{name:'Wikidata',sourceUrl:'https://www.wikidata.org/wiki/Q101',licenseUrl:'https://creativecommons.org/publicdomain/zero/1.0/',license:'CC0',attribution:'Wikidata',verified:false}}],hasMore:false,totalPages:1}}));
 }
 
-test("A: Home → Trending → Detail → trailer → close → back restores scroll", async ({
+test("A: Home → Discover → Detail → trailer → close → back restores scroll", async ({
   page,
 }) => {
   await fallback(page);
+  // This case isolates curated trailer navigation. Live free discovery is tested separately.
+  await page.route('**/api/free-catalog**',r=>r.fulfill({json:{items:[]}}));
+  await page.route('https://fonts.googleapis.com/**',r=>r.fulfill({contentType:'text/css',body:''}));
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
@@ -36,9 +39,9 @@ test("A: Home → Trending → Detail → trailer → close → back restores sc
     page.getByText("Curated catalog · Open metadata sources unavailable."),
   ).toBeVisible();
   await page.screenshot({ path: ".cache/home-desktop.png", fullPage: true });
-  await page
-    .getByRole("heading", { name: "Trending Now" })
-    .scrollIntoViewIfNeeded();
+  await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Discover',exact:true}).click();
+  await page.evaluate(()=>window.scrollTo(0,100));
+  const browseScroll=await page.evaluate(()=>window.scrollY);
   await page
     .getByRole("button", { name: "View Oppenheimer", exact: true })
     .first()
@@ -62,9 +65,8 @@ test("A: Home → Trending → Detail → trailer → close → back restores sc
     page.getByRole("heading", { name: "Oppenheimer", exact: true }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Back to exploring" }).click();
-  await expect(
-    page.getByRole("heading", { name: "Trending Now" }),
-  ).toBeVisible();
+  await expect(page.locator('[data-catalog-total]')).toBeVisible();
+  await expect.poll(async()=>Math.abs(await page.evaluate(()=>window.scrollY)-browseScroll)).toBeLessThanOrEqual(2);
   expect(errors).toEqual([]);
 });
 test("B/C: debounced search survives detail/back and watchlist survives reload", async ({
@@ -205,8 +207,8 @@ test("G/H: malformed API and absent artwork/trailer/providers remain usable", as
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Fixture Film", exact: true })).toBeVisible();
-  await page.getByRole("button", { name: "Explore the story" }).click();
+  await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Discover',exact:true}).click();
+  await page.getByRole('button',{name:'View Fixture Film',exact:true}).first().click();
   await expect(
     page.getByText("Trailer unavailable", { exact: true }),
   ).toBeVisible();
@@ -289,7 +291,7 @@ test("source-only films and playback errors offer a legal way back", async ({
 });
 
 test('open metadata does not advertise unverified streaming providers',async({page})=>{
-  await live(page);await page.goto('/');await page.getByRole('button',{name:'Explore the story'}).click();await expect(page.getByText('Provider availability unavailable.')).toBeVisible();await expect(page.locator('video')).toHaveCount(0);await expect(page.getByText('Wikidata (metadata) · CC0')).toHaveCount(1);
+  await live(page);await page.goto('/');await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Discover',exact:true}).click();await page.getByRole('button',{name:'View Fixture Film',exact:true}).first().click();await expect(page.getByText('Provider availability unavailable.')).toBeVisible();await expect(page.locator('video')).toHaveCount(0);await expect(page.getByText('Wikidata (metadata) · CC0')).toHaveCount(1);
 });
 
 test("Dune trailer is a standalone screen; browser Back restores detail scroll and providers stay external", async ({ page }) => {

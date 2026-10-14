@@ -13,7 +13,8 @@ const homeCache = new Map<Country,{value:Catalog;expires:number}>();
 const homePending = new Map<Country,Promise<Catalog>>();
 export const MovieService:CatalogAdapter & {retry():void;page(country:Country,page:number,sort:string,query?:string):Promise<Movie[]>;pageResult(country:Country,page:number,sort:string,query?:string):Promise<CatalogPage>;hotTrailers(country:Country):Promise<Movie[]>} = {
   async pageResult(country,page,sort,query) {
-    const result = await OpenCatalogAdapter.listPage(country,page,query,sort);
+    const region=sort==='country_IN'?'IN':sort==='country_PH'?'PH':country;
+    const result = await OpenCatalogAdapter.listPage(region,page,query,sort);
     available = unique([...result.movies,...available]).slice(0,1500);
     return result;
   },
@@ -24,13 +25,18 @@ export const MovieService:CatalogAdapter & {retry():void;page(country:Country,pa
     const hit=homeCache.get(country);if(hit&&hit.expires>Date.now()) return hit.value;
     const pending=homePending.get(country);if(pending) return pending;
     const task=(async()=>{
-      const results=await Promise.allSettled([OpenCatalogAdapter.listPage(country),OpenCatalogAdapter.listPage(country,1,'','now_playing'),OpenCatalogAdapter.listPage(country,1,'','upcoming')]);
+      if(!freeTask&&freeExpires<=Date.now()) freeTask=FreeCatalogService.load().then(items=>{freeAvailable=items;homeCache.clear();if(typeof window!=='undefined') window.dispatchEvent(new CustomEvent('free-catalog-updated',{detail:items}));}).catch(()=>{}).finally(()=>{freeTask=undefined;freeExpires=Date.now()+300000;});
+
+      const results=await Promise.allSettled([OpenCatalogAdapter.listPage(country),OpenCatalogAdapter.listPage(country,1,'','now_playing'),OpenCatalogAdapter.listPage(country,1,'','upcoming'),OpenCatalogAdapter.listPage(country==='IN'?'PH':'IN')]);
       const index=results[0].status==='fulfilled'?results[0].value.movies:[];
       const recent=results[1].status==='fulfilled'?results[1].value.movies:[];
       const live=index.length>0||recent.length>0;
-      if(!freeTask&&freeExpires<=Date.now()) freeTask=FreeCatalogService.load().then(items=>{freeAvailable=items;homeCache.clear();if(typeof window!=='undefined') window.dispatchEvent(new Event('free-catalog-updated'));}).catch(()=>{}).finally(()=>{freeTask=undefined;freeExpires=Date.now()+300000;});
+      const other=results[3].status==='fulfilled'?results[3].value.movies:[];
       const ranked=[...index].sort((a,b)=>Number(b.id.startsWith('wikidata:'))-Number(a.id.startsWith('wikidata:'))||b.year-a.year||b.rating-a.rating);
       const result:Catalog={genres:[],trending:live?ranked:hit?.value.trending||fallbackCatalog.trending,popular:live?ranked:hit?.value.popular||fallbackCatalog.popular,nowPlaying:recent,upcoming:results[2].status==='fulfilled'?results[2].value.movies:[],free:freeAvailable,hotTrailers:fallbackCatalog.hotTrailers,movies:unique([...index,...recent,...freeAvailable,...(!live?seeds.filter(m=>!m.free):[])]),status:live && (typeof navigator==='undefined'||navigator.onLine)?'live':'fallback',message:typeof navigator!=='undefined'&&!navigator.onLine&&live?'Offline. Showing cached open metadata; refresh when online.':!live?fallbackCatalog.message:results.some(r=>r.status==='rejected')?'Some open metadata sources are temporarily unavailable.':undefined};
+      result.india=(country==='IN'?index:other).filter(m=>m.id.startsWith('wikidata:'));
+      result.philippines=(country==='PH'?index:other).filter(m=>m.id.startsWith('wikidata:'));
+      result.series=unique([...index,...recent]).filter(m=>m.id.startsWith('tvmaze:'));
       available=unique([...result.movies,...available]).slice(0,1500);
       Object.assign(catalogDiagnostics,{lastDiscoveryRefresh:live?new Date().toISOString():catalogDiagnostics.lastDiscoveryRefresh,discoveryItemCount:result.movies.filter(m=>!m.free).length});
       homeCache.set(country,{value:result,expires:Date.now()+(live?300000:30000)});return result;

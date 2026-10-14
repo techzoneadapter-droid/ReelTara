@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { VirtualMovieGrid } from './components/VirtualMovieGrid';
+import {reviewedArtwork,artworkCounts} from './utils/artwork';
 import {
   ArrowLeft,
   ArrowRight,
@@ -42,6 +43,7 @@ import type {
 } from "./types/movie";
 import {
   BrandLogo,
+  ArtworkCredit,
   EmptyState,
   MovieCard,
   MovieImage,
@@ -281,13 +283,14 @@ export default function App() {
   // into the full-bleed hero. Only use locally available, reviewed free-film
   // artwork here; the latest Wikidata/TVmaze titles still appear in discovery.
   const heroMovies = useMemo(() => {
-    const featured = catalog.free.filter(movie =>
-      movie.source?.verified && Boolean(movie.backdrop || movie.poster)
-    );
+    const featured = [...catalog.free,...movies].filter(movie => reviewedArtwork(movie.artwork));
+    const editorial=['commons:118777687','commons:120543302','commons:106322221','commons:149208741','commons:82808773'];
+    featured.sort((a,b)=>(editorial.includes(a.id)?editorial.indexOf(a.id):99)-(editorial.includes(b.id)?editorial.indexOf(b.id):99));
     return (featured.length ? featured : seedMovies.filter(movie =>
       movie.free && Boolean(movie.backdrop || movie.poster)
-    )).slice(0, 3);
-  }, [catalog.free]);
+    )).filter((movie,index,all)=>all.findIndex(m=>m.id===movie.id)===index).slice(0, 5);
+  }, [catalog.free,movies]);
+  const homeArtwork=useMemo(()=>artworkCounts([...movies,...catalog.india||[],...catalog.philippines||[]]),[movies,catalog.india,catalog.philippines]);
   const hero = heroMovies[heroIndex % Math.max(1, heroMovies.length)] || seedMovies[0];
   const watchTrailer = useCallback((movie: Movie) => {
     select(movie);
@@ -538,6 +541,7 @@ export default function App() {
                       <p>{current.originalTitle}</p>
                     )}
                   <Metadata movie={current} />
+                  <ArtworkCredit movie={current}/>
                   <div className="hero-buttons">
                     {current.contentMode === "free_legal" ? (
                       canPlay(current) ? (
@@ -722,11 +726,11 @@ export default function App() {
           ) : tab === "home" ? (
             <>
               <section className={`hero hero-${hero.id}`}>
-                <div className="hero-art"><MovieImage src={hero.backdrop} movie={hero} title={hero.title} eager decorative/></div>
+                <div className="hero-art cinematic-art" key={hero.id}><MovieImage src={hero.backdrop} movie={hero} title={hero.title} eager decorative/></div>
                 <div className="hero-overlay" />
                 <div className="hero-content">
                   <span className="hero-label">
-                    <span /> FEATURED FREE CINEMA{" "}
+                    <span /> FEATURED CINEMA{" "}
                     <span className="label-divider">/</span> DISCOVER SOMETHING WORTH WATCHING
                   </span>
                   {hero.id === "dune" ? (
@@ -743,13 +747,14 @@ export default function App() {
                       : "A STORY WORTH DISCOVERING"}
                   </div>
                   <Metadata movie={hero} />
-                  <p>{hero.overview}</p>
+                  <p>{hero.overview || 'An independently made film from an open cinema collection. Explore its story and original source.'}</p>
+                  <ArtworkCredit movie={hero}/>
                   <div className="hero-buttons">
-                    <PrimaryButton onClick={() => watchTrailer(hero)}>
+                    <button className="button primary" disabled={!hero.trailer&&!hero.trailerUrl} title={!hero.trailer&&!hero.trailerUrl?'No reviewed trailer is available for this film':undefined} onClick={() => watchTrailer(hero)}>
                       <Play size={16} fill="currentColor" />
                       Watch Trailer
-                    </PrimaryButton>
-                    <ProviderButton movie={hero} onClick={() => select(hero)} />
+                    </button>
+                    <SecondaryButton onClick={() => select(hero)}>Explore Movie <ArrowRight size={16}/></SecondaryButton>
                     <SecondaryButton
                       onClick={() => toggleSave(hero)}
                       pressed={saved.includes(hero.id)}
@@ -772,8 +777,7 @@ export default function App() {
                 </div>
                 <div className="hero-bottom">
                   <span>
-                    <ShieldCheck size={13} /> Discover here. Watch on official
-                    platforms.
+                    <ShieldCheck size={13} /> Editorial selection. Discover from the source.
                   </span>
                   <div className="hero-pagination">
                     {heroMovies.map((movie, index) => (
@@ -849,18 +853,20 @@ export default function App() {
                 </div>
                 <section className="section">
                   <SectionHeader
-                    title="Trending Now"
-                    subtitle="The stories everyone is talking about"
+                    title="Featured Today"
+                    subtitle="An editorial selection — not a popularity ranking"
                     icon={<Flame size={21} />}
                     onMore={() => navigate("discover", undefined, 'trending')}
                   />
                   <div className="movie-row">
-                    {cards(catalog.trending.slice(0, 6))}
+                    {cards([...heroMovies,...catalog.trending.filter(m=>!heroMovies.some(h=>h.id===m.id))].slice(0,6))}
                   </div>
                 </section>
-                {([['Popular', catalog.popular, 'popular'], ['Now Playing', catalog.nowPlaying, 'now_playing'], ['Upcoming', catalog.upcoming, 'upcoming']] as const).map(([title, items, section]) => items.length > 0 && <section className="section" key={section}>
-                  <SectionHeader title={title} subtitle={`Movie releases for ${user.country === 'IN' ? 'India' : 'Philippines'}`} onMore={() => navigate('discover', undefined, section)} />
+                <p className="artwork-summary" data-artwork-total={homeArtwork.total}>Available artwork: {homeArtwork.licensed} licensed image sources · {homeArtwork.local} existing local images · {homeArtwork.placeholder} default artwork. Image source credits are shown with each film.</p>
+                {([['New Releases', catalog.nowPlaying.filter(m=>m.id.startsWith('wikidata:')&&m.releaseDate&&m.releaseDate<=new Date().toISOString().slice(0,10)), 'now_playing'], ['Films from India', catalog.india||[], 'country_IN'], ['Films from the Philippines', catalog.philippines||[], 'country_PH'], ['Series to Explore', catalog.series||[], 'series'], ['Upcoming', catalog.upcoming, 'upcoming']] as const).map(([title, items, section]) => <section className="section" key={title}>
+                  <SectionHeader title={title} subtitle={title==='Films from India'?'Wikidata film metadata · India':title==='Films from the Philippines'?'Wikidata film metadata · Philippines':title==='Series to Explore'?'TVmaze series metadata · Source credits included':'Release-date metadata, not box-office rankings'} onMore={() => navigate('discover', undefined, section)} />
                   <div className="movie-row">{cards(items.slice(0, 6))}</div>
+                  {!items.length&&<p className="result-count">No confirmed entries available from the current sources.</p>}
                 </section>)}
                 <section className="free-section section">
                   <SectionHeader
@@ -882,7 +888,7 @@ export default function App() {
                 </section>
                 <section className="section">
                   <SectionHeader
-                    title="Hot Trailers"
+                    title="Official Trailers"
                     subtitle="A little preview of your next obsession"
                     icon={<Play size={19} />}
                     onMore={() => navigate("trailers")}
@@ -1058,9 +1064,12 @@ export default function App() {
                     <option value="featured">Featured</option>
                     {tab === "discover" && (
                       <>
-                        <option value="trending">Trending</option>
-                        <option value="popular">Popular</option>
-                        <option value="now_playing">Now Playing</option>
+                        <option value="trending">Editorial picks</option>
+                        <option value="popular">Explore catalog</option>
+                        <option value="now_playing">Recent releases</option>
+                        <option value="country_IN">Films from India</option>
+                        <option value="country_PH">Films from the Philippines</option>
+                        <option value="series">Series to explore</option>
                         <option value="upcoming">Upcoming</option>
                       </>
                     )}
@@ -1188,7 +1197,7 @@ function Metadata({ movie }: { movie: Movie }) {
   return (
     <div className="meta">
       <RatingBadge rating={movie.rating} />
-      <span>{movie.year}</span>
+      <span>{movie.year || 'Year unavailable'}</span>
       <span>{movie.duration}</span>
       <span className="certificate">{movie.certificate}</span>
     </div>

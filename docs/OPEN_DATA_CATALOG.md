@@ -3,15 +3,23 @@
 Run `npm run android:usb`, then `npm run catalog:verify`. No TMDB account, API key or paid subscription is required for the default discovery engine.
 
 - Wikidata structured metadata is CC0. Country-bound queries prioritize India (Q668) and Philippines (Q928), return release dates, director, genres and countries, and group duplicate release statements before pagination. Search is scoped to the selected country. Upcoming dates are database statements, not a guarantee of theatrical release or current popularity.
-- TVmaze public metadata is CC BY-SA. Source links and attribution are displayed in the existing footer and detail view. Show descriptions are stripped of markup. Posters/backdrops are withheld: API metadata licensing alone does not establish photograph rights.
+- TVmaze public metadata is CC BY-SA. Source links and attribution are displayed in the footer and detail view. Show descriptions are stripped of markup. Raw TVmaze poster photographs remain withheld: metadata licensing does not establish image rights. Exact IMDb identifiers can link a show to Wikidata P18; that particular Commons file must then pass the per-file artwork checks.
 - Each catalog page contains up to 25 items per source; 50 pages support hundreds of titles. TVmaze's 250-ID index pages are consumed in ten chunks, including sparse pages. A missing provider page ends pagination. Page count 50 is a safety ceiling, not a claimed exact total.
 - Current TV episodes come from the selected-country schedule plus global streaming schedule. Episode lists/cast load only when a TV show is selected. Global programs are not claimed to originate in India or Philippines.
 - Index/query responses cache for one hour/15 minutes; TV index batches cache for one day. Concurrent loads deduplicate; source calls are serialized with spacing, 20-second timeouts and 429 cooldown. Errors are not cached as successful catalogs. Partial success keeps usable data. The app refreshes visible online sessions every five minutes; it does not run a background paid job.
-- Trending/Popular retain existing UI but rank available metadata ratings; these are not box-office charts. Now Playing includes current TV schedules and recent film metadata, not independently verified cinema availability. Hot Trailers uses the reviewed official YouTube registry; there is no invented automatic trailer lookup. The app does not depend on legacy TMDB endpoints.
+- Home labels are editorial: Featured Today, New Releases, India, Philippines, Series to Explore, legal free films and Official Trailers. They are not popularity or box-office statistics. Recent film dates are bounded to today in the source query before pagination. Dates remain database statements, not independently verified cinema availability. Official trailers use the reviewed YouTube registry; there is no invented automatic trailer lookup or TMDB dependency.
 
 ## Full-movie rights boundary
 
 Discovery metadata never permits full playback. `free`, `verifiedLegal`, media URLs and unreviewed images supplied by discovery are removed by the client adapter.
+
+## Licensed artwork
+
+server/artwork.mjs resolves exact Wikidata P18 filenames (and exact IMDb-linked entities for TVmaze) through Commons imageinfo. Source file page, author, CC0/CC BY/CC BY-SA URL and absence of stated restrictions are required. Missing, NC/ND, ambiguous or unsafe sources are rejected. Metadata/rights cache lasts at most 24 hours; expired image evidence is rejected by the frontend even in a saved record. Image permission never authorizes full-film playback.
+
+Commons video thumbnails inherit the verified metadata of their particular file. Listing thumbnails stay around 250–320 px; provider-issued larger frames are used only for the active hero/details. Credits and license links appear on cards, hero and details. The UI reports available licensed sources, existing local images (separate from verified licenses) and default artwork. These counts describe source availability; actual successful image decode is measured separately by QA.
+
+Run node scripts/verify-artwork.mjs for live catalog/image HTTP evidence and node scripts/check-cinematic-device.mjs for connected USB UI decode/screenshot checks. Both save ignored evidence under .cache/phase4. The latter requires npm run android:usb and one authorized USB device (or ANDROID_SERIAL).
 
 The original Blender creator registry provides reviewed open films. Wikimedia candidates require a specific CC0/CC BY/CC BY-SA license URL, artist credit, no stated restrictions and canonical media identity. License and file identity are rechecked at playback. Public-domain marks and NC/ND licenses are excluded from automatic admission. Source attribution/license links remain visible.
 

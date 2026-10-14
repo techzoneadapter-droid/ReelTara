@@ -8,7 +8,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   await page.route('https://image.tmdb.org/**', route => route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="500" height="750"><rect width="500" height="750" fill="#182030"/></svg>' }));
   await page.route('**/api/open-catalog?**',route=>{
     const number=Number(new URL(route.request().url()).searchParams.get('page'))||1;
-    calls.set(String(number),(calls.get(String(number))||0)+1);
+    const key=new URL(route.request().url()).searchParams.get('country')+':'+number;calls.set(key,(calls.get(key)||0)+1);
     return route.fulfill({json:{page:number,totalPages:25,hasMore:number<25,items:Array.from({length:20},(_,i)=>({id:'wikidata:Q'+((number-1)*20+i+1),title:'Catalog Film '+((number-1)*20+i+1),year:2026,genre:'Action',rating:0,duration:'Film',certificate:'',poster:'',backdrop:'',overview:'',director:'',cast:[],provider:'',providerUrl:'',origin:'open_data',contentMode:'discovery'}))}});
   });
   await page.goto('/', {waitUntil:'domcontentloaded'});
@@ -26,8 +26,8 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
   await expect(page.getByRole('button', { name: 'View Catalog Film 500', exact: true })).toBeVisible();
   expect(await grid.locator('.movie-card').count()).toBeLessThan(80);
-  expect(calls.get('1')).toBeLessThanOrEqual(3);
-  expect(calls.get('25')).toBe(1);
+  expect(calls.get('IN:1')).toBeLessThanOrEqual(3);
+  expect(calls.get('IN:25')).toBe(1);
   await expect(grid.locator('img[src^="https://"]')).toHaveCount(0); // Unverified open-data images are withheld.
   console.log('CATALOG_PERFORMANCE_FIXTURE', { total: 500, mountedCards: await grid.locator('.movie-card').count(), viewport: viewport.width, pagesRequested: 25, lastPageReached: true });
 });

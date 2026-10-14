@@ -51,6 +51,7 @@ export type FreeStreamingSource = {
   archiveId?: string;
 };
 export type Movie = {
+  artwork?: Artwork;
   playable?: boolean;
   verifiedLegal?: boolean;
   captionTracks?: CaptionTrack[];
@@ -83,6 +84,7 @@ export type Movie = {
   genreIds?: number[];
   origin: "tmdb" | "curated" | "archive" | "open_data";
 };
+export type Artwork={posterUrl:string;backdropUrl:string;sourcePageUrl:string;licenseUrl:string;licenseType:string;attribution:string;credit?:string;licenseVerified:boolean;checkedAt:string;modification:string};
 export type MovieDetails = Movie & {
   episodes?: {id:number;name:string;season:number;number:number;airdate:string;runtime?:number}[];
   genres: Genre[];
@@ -101,6 +103,9 @@ export type SearchResult = {
 };
 export type CatalogPage = { movies: Movie[]; page: number; totalPages: number; totalResults: number; hasMore: boolean };
 export type Catalog = SearchResult & {
+  india?:Movie[];
+  philippines?:Movie[];
+  series?:Movie[];
   trending: Movie[];
   popular: Movie[];
   nowPlaying: Movie[];
