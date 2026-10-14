@@ -277,8 +277,18 @@ export default function App() {
       `${movie.title} ${WatchlistService.has(movie.id) ? "added to" : "removed from"} your watchlist`,
     );
   }, []);
-  const heroMovies = catalog.trending.slice(0, 3);
-  const hero = heroMovies[heroIndex % heroMovies.length] || seedMovies[0];
+  // Open-data titles often lack artwork: never promote an empty-image record
+  // into the full-bleed hero. Only use locally available, reviewed free-film
+  // artwork here; the latest Wikidata/TVmaze titles still appear in discovery.
+  const heroMovies = useMemo(() => {
+    const featured = catalog.free.filter(movie =>
+      movie.source?.verified && Boolean(movie.backdrop || movie.poster)
+    );
+    return (featured.length ? featured : seedMovies.filter(movie =>
+      movie.free && Boolean(movie.backdrop || movie.poster)
+    )).slice(0, 3);
+  }, [catalog.free]);
+  const hero = heroMovies[heroIndex % Math.max(1, heroMovies.length)] || seedMovies[0];
   const watchTrailer = useCallback((movie: Movie) => {
     select(movie);
     trailerIntent.current = movie.id;
@@ -716,8 +726,8 @@ export default function App() {
                 <div className="hero-overlay" />
                 <div className="hero-content">
                   <span className="hero-label">
-                    <span /> THE SPOTLIGHT{" "}
-                    <span className="label-divider">/</span> HANDPICKED FOR YOU
+                    <span /> FEATURED FREE CINEMA{" "}
+                    <span className="label-divider">/</span> DISCOVER SOMETHING WORTH WATCHING
                   </span>
                   {hero.id === "dune" ? (
                     <h1 className="dune-title">
