@@ -1,0 +1,1608 @@
+{
+  "baselineRevision": "c3852af",
+  "candidate": "Phase 5 changes included with this report",
+  "overall": "FAIL",
+  "unit": {
+    "pass": 36,
+    "fail": 0
+  },
+  "fullBrowser": {
+    "total": 32,
+    "pass": 31,
+    "fail": 1
+  },
+  "latestSintelRecheck": {
+    "pass": 0,
+    "fail": 1,
+    "note": "Initial playback succeeds; playback after seeking to 30s times out; still not cleared"
+  },
+  "failures": [
+    {
+      "case": "free-playback-real-legal-MP4-Sintel-plays",
+      "error": "```\nError: expect(received).toBe(expected) // Object.is equality\n\nExpected: true\nReceived: false\n\nCall Log:\n- Timeout 65000ms exceeded while waiting on the predicate\n```"
+    }
+  ],
+  "android": {
+    "checkedAt": "2026-10-14T15:40:46.628Z",
+    "model": "SM-T385K",
+    "android": "9",
+    "url": "http://localhost:5188",
+    "coverage": "Available artwork: 24 licensed image sources · 3 existing local images · 105 default artwork. Image source credits are shown with each film.",
+    "hero": [
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/960px--Adisra_Promthep_-_Lost_Flower_%282012%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 960,
+        "height": 540,
+        "complete": true,
+        "kind": "source"
+      }
+    ],
+    "nextHero": [
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Philip_Piaget_-_Urraca_%282011%29.webm/500px--Philip_Piaget_-_Urraca_%282011%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 500,
+        "height": 281,
+        "complete": true,
+        "kind": "source"
+      }
+    ],
+    "heroRotation": [
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/960px--Adisra_Promthep_-_Lost_Flower_%282012%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 960,
+        "height": 540,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Philip_Piaget_-_Urraca_%282011%29.webm/500px--Philip_Piaget_-_Urraca_%282011%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 500,
+        "height": 281,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/The_Day_I_Helped_Save_The_World.webm/960px--The_Day_I_Helped_Save_The_World.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 960,
+        "height": 540,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Rensaven_-_Seaside_%282024%29.webm/500px--Rensaven_-_Seaside_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 500,
+        "height": 281,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Kara_Fern_-_Interview%2C_The.webm/500px--Kara_Fern_-_Interview%2C_The.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 500,
+        "height": 367,
+        "complete": true,
+        "kind": "source"
+      }
+    ],
+    "discover": {
+      "featured": {
+        "total": 50,
+        "sourceIds": [
+          "wikidata:Q139928926",
+          "wikidata:Q131178539",
+          "wikidata:Q141539509",
+          "wikidata:Q135196186",
+          "wikidata:Q138307614",
+          "wikidata:Q140159384",
+          "wikidata:Q141475414",
+          "wikidata:Q141257412",
+          "wikidata:Q141431154",
+          "wikidata:Q129255849",
+          "wikidata:Q141118646",
+          "wikidata:Q141682656",
+          "wikidata:Q123740702",
+          "wikidata:Q138716562",
+          "wikidata:Q135094933",
+          "wikidata:Q138527176",
+          "wikidata:Q140836374",
+          "wikidata:Q140472994",
+          "wikidata:Q140700539",
+          "wikidata:Q140942126",
+          "wikidata:Q141519091",
+          "wikidata:Q140373840",
+          "wikidata:Q140933712",
+          "wikidata:Q140938371",
+          "wikidata:Q140964265",
+          "tvmaze:1",
+          "tvmaze:2",
+          "tvmaze:3",
+          "tvmaze:4",
+          "tvmaze:5",
+          "tvmaze:6",
+          "tvmaze:7",
+          "tvmaze:8",
+          "tvmaze:9",
+          "tvmaze:10",
+          "tvmaze:11",
+          "tvmaze:12",
+          "tvmaze:13",
+          "tvmaze:14",
+          "tvmaze:15",
+          "tvmaze:16",
+          "tvmaze:18",
+          "tvmaze:19",
+          "tvmaze:20",
+          "tvmaze:21",
+          "tvmaze:22",
+          "tvmaze:23",
+          "tvmaze:24",
+          "tvmaze:25",
+          "tvmaze:26"
+        ],
+        "mounted": [
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          }
+        ],
+        "decoded": 8,
+        "placeholders": 8
+      },
+      "country_IN": {
+        "total": 25,
+        "sourceIds": [
+          "wikidata:Q139928926",
+          "wikidata:Q131178539",
+          "wikidata:Q141539509",
+          "wikidata:Q135196186",
+          "wikidata:Q138307614",
+          "wikidata:Q140159384",
+          "wikidata:Q141475414",
+          "wikidata:Q141257412",
+          "wikidata:Q141431154",
+          "wikidata:Q129255849",
+          "wikidata:Q141118646",
+          "wikidata:Q141682656",
+          "wikidata:Q123740702",
+          "wikidata:Q138716562",
+          "wikidata:Q135094933",
+          "wikidata:Q138527176",
+          "wikidata:Q140836374",
+          "wikidata:Q140472994",
+          "wikidata:Q140700539",
+          "wikidata:Q140942126",
+          "wikidata:Q141519091",
+          "wikidata:Q140373840",
+          "wikidata:Q140933712",
+          "wikidata:Q140938371",
+          "wikidata:Q140964265"
+        ],
+        "mounted": [
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          }
+        ],
+        "decoded": 8,
+        "placeholders": 8
+      },
+      "country_PH": {
+        "total": 25,
+        "sourceIds": [
+          "wikidata:Q141125829",
+          "wikidata:Q137204785",
+          "wikidata:Q138412186",
+          "wikidata:Q136675517",
+          "wikidata:Q136992540",
+          "wikidata:Q132456675",
+          "wikidata:Q137432257",
+          "wikidata:Q138336382",
+          "wikidata:Q136290236",
+          "wikidata:Q136498727",
+          "wikidata:Q136437155",
+          "wikidata:Q136656943",
+          "wikidata:Q135710989",
+          "wikidata:Q140447858",
+          "wikidata:Q133852600",
+          "wikidata:Q132491948",
+          "wikidata:Q137859144",
+          "wikidata:Q131981301",
+          "wikidata:Q132159989",
+          "wikidata:Q131745444",
+          "wikidata:Q131624236",
+          "wikidata:Q137860064",
+          "wikidata:Q127596335",
+          "wikidata:Q127596336",
+          "wikidata:Q129084689"
+        ],
+        "mounted": [
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          },
+          {
+            "src": "http://localhost:5188/brand/thumbnail-placeholder.svg",
+            "width": 600,
+            "height": 900,
+            "complete": true,
+            "kind": "placeholder"
+          }
+        ],
+        "decoded": 8,
+        "placeholders": 8
+      }
+    },
+    "decodedLicensed": 23,
+    "images": [
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm/250px--Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 167,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Kara_Fern_-_Interview%2C_The.webm/250px--Kara_Fern_-_Interview%2C_The.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 183,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/The_Day_I_Helped_Save_The_World.webm/250px--The_Day_I_Helped_Save_The_World.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/250px--Adisra_Promthep_-_Lost_Flower_%282012%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Philip_Piaget_-_Urraca_%282011%29.webm/250px--Philip_Piaget_-_Urraca_%282011%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/Fox_Dark_-_Cat_%282017%29.webm/250px--Fox_Dark_-_Cat_%282017%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Ivonne_Castillo_and_Javier_Hern%C3%A1ndez_-_Obsolete_%282023%29.webm/250px--Ivonne_Castillo_and_Javier_Hern%C3%A1ndez_-_Obsolete_%282023%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Eni_Tali%C4%87_-_ACAB_%282019%29.webm/250px--Eni_Tali%C4%87_-_ACAB_%282019%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Emma_Rose_Marshall_-_Notre_Jeu_-_Cave_Flower%2C_The_%282024%29.webm/250px--Emma_Rose_Marshall_-_Notre_Jeu_-_Cave_Flower%2C_The_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Natasha_Nayo_-_Beyond_the_Walls_%282015%29.webm/250px--Natasha_Nayo_-_Beyond_the_Walls_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Kagan_Marks_-_Jen_and_Gen_%282014%29.webm/250px--Kagan_Marks_-_Jen_and_Gen_%282014%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/David_Romero_-_Nightmare%2C_The_%282013%29.webm/250px--David_Romero_-_Nightmare%2C_The_%282013%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Destiny_Zukevich_et_al._-_Jeremy_%282024%29.webm/250px--Destiny_Zukevich_et_al._-_Jeremy_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Aline_Dykmans_-_Sheep_Possible_%282015%29.webm/250px--Aline_Dykmans_-_Sheep_Possible_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Matthew_Yang_-_You_Imagined_%282013%29.webm/250px--Matthew_Yang_-_You_Imagined_%282013%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Katherine_Chi_-_Telescope_%282015%29.webm/250px--Katherine_Chi_-_Telescope_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Rensaven_-_Seaside_%282024%29.webm/250px--Rensaven_-_Seaside_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/RavenRugosa_-_Understories_%282025%29.ogv/250px--RavenRugosa_-_Understories_%282025%29.ogv.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/The_Animated_Sign.webm/250px--The_Animated_Sign.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 187,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Il_segno_animato.webm/250px--Il_segno_animato.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 187,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/%28OO%29_-_Animation_Short_Film_%282017%29.webm/250px--%28OO%29_-_Animation_Short_Film_%282017%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Afternoon_Class_-_Animation_Short_Film_%282014%29.webm/250px--Afternoon_Class_-_Animation_Short_Film_%282014%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      },
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Award_Winning_Animated_Short_Film_-_Koji.webm/250px--Award_Winning_Animated_Short_Film_-_Koji.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "height": 141,
+        "complete": true,
+        "kind": "source"
+      }
+    ],
+    "detail": [
+      {
+        "src": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm/960px--Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 960,
+        "height": 640,
+        "complete": true,
+        "kind": "source"
+      }
+    ],
+    "trailer": [
+      {
+        "src": "https://i.ytimg.com/vi/Way9Dexny3w/hqdefault.jpg",
+        "width": 480,
+        "height": 360,
+        "complete": true,
+        "kind": "youtube"
+      },
+      {
+        "src": "https://i.ytimg.com/vi/uYPbbksJxIg/hqdefault.jpg",
+        "width": 480,
+        "height": 360,
+        "complete": true,
+        "kind": "youtube"
+      },
+      {
+        "src": "https://i.ytimg.com/vi/RlbR5N6veqw/hqdefault.jpg",
+        "width": 480,
+        "height": 360,
+        "complete": true,
+        "kind": "youtube"
+      },
+      {
+        "src": "https://i.ytimg.com/vi/zSWdZVtXT7E/hqdefault.jpg",
+        "width": 480,
+        "height": 360,
+        "complete": true,
+        "kind": "youtube"
+      }
+    ],
+    "imageErrors": []
+  },
+  "web": {
+    "checkedAt": "2026-10-14T15:40:43.480Z",
+    "hero": {
+      "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/960px--Adisra_Promthep_-_Lost_Flower_%282012%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "width": 960,
+      "height": 540
+    },
+    "heroRotation": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/960px--Adisra_Promthep_-_Lost_Flower_%282012%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 960,
+        "height": 540
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Philip_Piaget_-_Urraca_%282011%29.webm/500px--Philip_Piaget_-_Urraca_%282011%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 500,
+        "height": 281
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/The_Day_I_Helped_Save_The_World.webm/960px--The_Day_I_Helped_Save_The_World.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 960,
+        "height": 540
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Rensaven_-_Seaside_%282024%29.webm/500px--Rensaven_-_Seaside_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 500,
+        "height": 281
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Kara_Fern_-_Interview%2C_The.webm/500px--Kara_Fern_-_Interview%2C_The.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 500,
+        "height": 367
+      }
+    ],
+    "coverage": "Available artwork: 24 licensed image sources · 3 existing local images · 105 default artwork. Image source credits are shown with each film.",
+    "discovery": {
+      "featured": {
+        "total": 50,
+        "mounted": 20,
+        "placeholders": 20,
+        "sourceIds": [
+          "wikidata:Q139928926",
+          "wikidata:Q131178539",
+          "wikidata:Q141539509",
+          "wikidata:Q135196186",
+          "wikidata:Q138307614",
+          "wikidata:Q140159384",
+          "wikidata:Q141475414",
+          "wikidata:Q141257412",
+          "wikidata:Q141431154",
+          "wikidata:Q129255849",
+          "wikidata:Q141118646",
+          "wikidata:Q141682656",
+          "wikidata:Q123740702",
+          "wikidata:Q138716562",
+          "wikidata:Q135094933",
+          "wikidata:Q138527176",
+          "wikidata:Q140836374",
+          "wikidata:Q140472994",
+          "wikidata:Q140700539",
+          "wikidata:Q140942126",
+          "wikidata:Q141519091",
+          "wikidata:Q140373840",
+          "wikidata:Q140933712",
+          "wikidata:Q140938371",
+          "wikidata:Q140964265",
+          "tvmaze:1",
+          "tvmaze:2",
+          "tvmaze:3",
+          "tvmaze:4",
+          "tvmaze:5",
+          "tvmaze:6",
+          "tvmaze:7",
+          "tvmaze:8",
+          "tvmaze:9",
+          "tvmaze:10",
+          "tvmaze:11",
+          "tvmaze:12",
+          "tvmaze:13",
+          "tvmaze:14",
+          "tvmaze:15",
+          "tvmaze:16",
+          "tvmaze:18",
+          "tvmaze:19",
+          "tvmaze:20",
+          "tvmaze:21",
+          "tvmaze:22",
+          "tvmaze:23",
+          "tvmaze:24",
+          "tvmaze:25",
+          "tvmaze:26"
+        ]
+      },
+      "country_IN": {
+        "total": 25,
+        "mounted": 20,
+        "placeholders": 20,
+        "sourceIds": [
+          "wikidata:Q139928926",
+          "wikidata:Q131178539",
+          "wikidata:Q141539509",
+          "wikidata:Q135196186",
+          "wikidata:Q138307614",
+          "wikidata:Q140159384",
+          "wikidata:Q141475414",
+          "wikidata:Q141257412",
+          "wikidata:Q141431154",
+          "wikidata:Q129255849",
+          "wikidata:Q141118646",
+          "wikidata:Q141682656",
+          "wikidata:Q123740702",
+          "wikidata:Q138716562",
+          "wikidata:Q135094933",
+          "wikidata:Q138527176",
+          "wikidata:Q140836374",
+          "wikidata:Q140472994",
+          "wikidata:Q140700539",
+          "wikidata:Q140942126",
+          "wikidata:Q141519091",
+          "wikidata:Q140373840",
+          "wikidata:Q140933712",
+          "wikidata:Q140938371",
+          "wikidata:Q140964265"
+        ]
+      },
+      "country_PH": {
+        "total": 25,
+        "mounted": 20,
+        "placeholders": 20,
+        "sourceIds": [
+          "wikidata:Q141125829",
+          "wikidata:Q137204785",
+          "wikidata:Q138412186",
+          "wikidata:Q136675517",
+          "wikidata:Q136992540",
+          "wikidata:Q132456675",
+          "wikidata:Q137432257",
+          "wikidata:Q138336382",
+          "wikidata:Q136290236",
+          "wikidata:Q136498727",
+          "wikidata:Q136437155",
+          "wikidata:Q136656943",
+          "wikidata:Q135710989",
+          "wikidata:Q140447858",
+          "wikidata:Q133852600",
+          "wikidata:Q132491948",
+          "wikidata:Q137859144",
+          "wikidata:Q131981301",
+          "wikidata:Q132159989",
+          "wikidata:Q131745444",
+          "wikidata:Q131624236",
+          "wikidata:Q137860064",
+          "wikidata:Q127596335",
+          "wikidata:Q127596336",
+          "wikidata:Q129084689"
+        ]
+      }
+    },
+    "imageErrors": [],
+    "decodedLicensed": 23,
+    "images": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm/250px--Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Paula Vázquez et al. - Miñocas"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Kara_Fern_-_Interview%2C_The.webm/250px--Kara_Fern_-_Interview%2C_The.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Kara Fern - Interview, The"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/The_Day_I_Helped_Save_The_World.webm/250px--The_Day_I_Helped_Save_The_World.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View The Day I Helped Save The World"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/250px--Adisra_Promthep_-_Lost_Flower_%282012%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Adisra Promthep - Lost Flower (2012)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Philip_Piaget_-_Urraca_%282011%29.webm/250px--Philip_Piaget_-_Urraca_%282011%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Philip Piaget - Urraca (2011)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/Fox_Dark_-_Cat_%282017%29.webm/250px--Fox_Dark_-_Cat_%282017%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Fox Dark - Cat (2017)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Ivonne_Castillo_and_Javier_Hern%C3%A1ndez_-_Obsolete_%282023%29.webm/250px--Ivonne_Castillo_and_Javier_Hern%C3%A1ndez_-_Obsolete_%282023%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Ivonne Castillo and Javier Hernández - Obsolete (2023)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Eni_Tali%C4%87_-_ACAB_%282019%29.webm/250px--Eni_Tali%C4%87_-_ACAB_%282019%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Eni Talić - ACAB (2019)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Emma_Rose_Marshall_-_Notre_Jeu_-_Cave_Flower%2C_The_%282024%29.webm/250px--Emma_Rose_Marshall_-_Notre_Jeu_-_Cave_Flower%2C_The_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Emma Rose Marshall - Notre Jeu - Cave Flower, The (2024)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Natasha_Nayo_-_Beyond_the_Walls_%282015%29.webm/250px--Natasha_Nayo_-_Beyond_the_Walls_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Natasha Nayo - Beyond the Walls (2015)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Kagan_Marks_-_Jen_and_Gen_%282014%29.webm/250px--Kagan_Marks_-_Jen_and_Gen_%282014%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Kagan Marks - Jen and Gen (2014)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/David_Romero_-_Nightmare%2C_The_%282013%29.webm/250px--David_Romero_-_Nightmare%2C_The_%282013%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View David Romero - Nightmare, The (2013)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Destiny_Zukevich_et_al._-_Jeremy_%282024%29.webm/250px--Destiny_Zukevich_et_al._-_Jeremy_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Destiny Zukevich et al. - Jeremy (2024)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Aline_Dykmans_-_Sheep_Possible_%282015%29.webm/250px--Aline_Dykmans_-_Sheep_Possible_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Aline Dykmans - Sheep Possible (2015)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Matthew_Yang_-_You_Imagined_%282013%29.webm/250px--Matthew_Yang_-_You_Imagined_%282013%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Matthew Yang - You Imagined (2013)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Katherine_Chi_-_Telescope_%282015%29.webm/250px--Katherine_Chi_-_Telescope_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Katherine Chi - Telescope (2015)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Rensaven_-_Seaside_%282024%29.webm/250px--Rensaven_-_Seaside_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Rensaven - Seaside (2024)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/RavenRugosa_-_Understories_%282025%29.ogv/250px--RavenRugosa_-_Understories_%282025%29.ogv.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View RavenRugosa - Understories (2025)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/The_Animated_Sign.webm/250px--The_Animated_Sign.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View The Animated Sign"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Il_segno_animato.webm/250px--Il_segno_animato.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Il segno animato"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/%28OO%29_-_Animation_Short_Film_%282017%29.webm/250px--%28OO%29_-_Animation_Short_Film_%282017%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View (OO) - Animation Short Film (2017)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Afternoon_Class_-_Animation_Short_Film_%282014%29.webm/250px--Afternoon_Class_-_Animation_Short_Film_%282014%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Afternoon Class - Animation Short Film (2014)"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Award_Winning_Animated_Short_Film_-_Koji.webm/250px--Award_Winning_Animated_Short_Film_-_Koji.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "width": 250,
+        "title": "View Award Winning Animated Short Film - Koji"
+      }
+    ],
+    "errors": []
+  },
+  "hmr": {
+    "checkedAt": "2026-10-14T15:44:53.340Z",
+    "model": "SM-T385K",
+    "android": "9",
+    "api": "28",
+    "url": "http://localhost:5188/",
+    "userAgent": "Mozilla/5.0 (Linux; Android 9; SM-T385K Build/PPR1.180610.011; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36",
+    "cssHmr": true,
+    "reactRefresh": true,
+    "fullReload": false,
+    "apkRebuilt": false,
+    "runtimeErrorsDuringProbe": []
+  },
+  "licensed": {
+    "checkedAt": "2026-10-14T15:41:22.511Z",
+    "mode": "real free catalog and image HTTP responses; UI decode measured separately",
+    "total": 26,
+    "licensed": 23,
+    "available": 23,
+    "failed": 0,
+    "items": [
+      {
+        "id": "commons:76416208",
+        "title": "Paula Vázquez et al. - Miñocas",
+        "source": "https://commons.wikimedia.org/wiki/File:Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Paula Vázquez et al.",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm/250px--Paula_V%C3%A1zquez_et_al._-_Mi%C3%B1ocas.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:82808773",
+        "title": "Kara Fern - Interview, The",
+        "source": "https://commons.wikimedia.org/wiki/File:Kara_Fern_-_Interview,_The.webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Kara Fern (ZimtHaus)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Kara_Fern_-_Interview%2C_The.webm/250px--Kara_Fern_-_Interview%2C_The.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:118777687",
+        "title": "Adisra Promthep - Lost Flower (2012)",
+        "source": "https://commons.wikimedia.org/wiki/File:Adisra_Promthep_-_Lost_Flower_(2012).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Adisra Promthep (Peach)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/Adisra_Promthep_-_Lost_Flower_%282012%29.webm/250px--Adisra_Promthep_-_Lost_Flower_%282012%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:106322221",
+        "title": "The Day I Helped Save The World",
+        "source": "https://commons.wikimedia.org/wiki/File:The_Day_I_Helped_Save_The_World.webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Gary Mirabelle",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/The_Day_I_Helped_Save_The_World.webm/250px--The_Day_I_Helped_Save_The_World.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:120543302",
+        "title": "Philip Piaget - Urraca (2011)",
+        "source": "https://commons.wikimedia.org/wiki/File:Philip_Piaget_-_Urraca_(2011).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Philip Piaget",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Philip_Piaget_-_Urraca_%282011%29.webm/250px--Philip_Piaget_-_Urraca_%282011%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:138263998",
+        "title": "Fox Dark - Cat (2017)",
+        "source": "https://commons.wikimedia.org/wiki/File:Fox_Dark_-_Cat_(2017).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Fox Dark",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3f/Fox_Dark_-_Cat_%282017%29.webm/250px--Fox_Dark_-_Cat_%282017%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:143148567",
+        "title": "Ivonne Castillo and Javier Hernández - Obsolete (2023)",
+        "source": "https://commons.wikimedia.org/wiki/File:Ivonne_Castillo_and_Javier_Hern%C3%A1ndez_-_Obsolete_(2023).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Ivonne Castillo and Javier Hernández (Virtual Isopad Productions); edited by Jayvee Enaguas (The Harvett Vault)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Ivonne_Castillo_and_Javier_Hern%C3%A1ndez_-_Obsolete_%282023%29.webm/250px--Ivonne_Castillo_and_Javier_Hern%C3%A1ndez_-_Obsolete_%282023%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:144859221",
+        "title": "Eni Talić - ACAB (2019)",
+        "source": "https://commons.wikimedia.org/wiki/File:Eni_Tali%C4%87_-_ACAB_(2019).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Eni Talić (YT: 1, 2)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Eni_Tali%C4%87_-_ACAB_%282019%29.webm/250px--Eni_Tali%C4%87_-_ACAB_%282019%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:145063858",
+        "title": "Emma Rose Marshall - Notre Jeu - Cave Flower, The (2024)",
+        "source": "https://commons.wikimedia.org/wiki/File:Emma_Rose_Marshall_-_Notre_Jeu_-_Cave_Flower,_The_(2024).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Emma Rose Marshall and Leroux van Diemen (Spunkyrose Studio)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/20/Emma_Rose_Marshall_-_Notre_Jeu_-_Cave_Flower%2C_The_%282024%29.webm/250px--Emma_Rose_Marshall_-_Notre_Jeu_-_Cave_Flower%2C_The_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:146002164",
+        "title": "Natasha Nayo - Beyond the Walls (2015)",
+        "source": "https://commons.wikimedia.org/wiki/File:Natasha_Nayo_-_Beyond_the_Walls_(2015).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Natasha Nayo (Starcre8tor) (VM, YT)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Natasha_Nayo_-_Beyond_the_Walls_%282015%29.webm/250px--Natasha_Nayo_-_Beyond_the_Walls_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:146376230",
+        "title": "Kagan Marks - Jen and Gen (2014)",
+        "source": "https://commons.wikimedia.org/wiki/File:Kagan_Marks_-_Jen_and_Gen_(2014).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Kagan Marks",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/Kagan_Marks_-_Jen_and_Gen_%282014%29.webm/250px--Kagan_Marks_-_Jen_and_Gen_%282014%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:146447955",
+        "title": "David Romero - Nightmare, The (2013)",
+        "source": "https://commons.wikimedia.org/wiki/File:David_Romero_-_Nightmare,_The_(2013).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Kevin MacLeod",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/11/David_Romero_-_Nightmare%2C_The_%282013%29.webm/250px--David_Romero_-_Nightmare%2C_The_%282013%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:146708460",
+        "title": "Destiny Zukevich et al. - Jeremy (2024)",
+        "source": "https://commons.wikimedia.org/wiki/File:Destiny_Zukevich_et_al._-_Jeremy_(2024).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Destiny Zukevich (destinykawaii) et al.",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ef/Destiny_Zukevich_et_al._-_Jeremy_%282024%29.webm/250px--Destiny_Zukevich_et_al._-_Jeremy_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:146789463",
+        "title": "Aline Dykmans - Sheep Possible (2015)",
+        "source": "https://commons.wikimedia.org/wiki/File:Aline_Dykmans_-_Sheep_Possible_(2015).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Aline Dykmans",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1e/Aline_Dykmans_-_Sheep_Possible_%282015%29.webm/250px--Aline_Dykmans_-_Sheep_Possible_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:146912889",
+        "title": "Matthew Yang - You Imagined (2013)",
+        "source": "https://commons.wikimedia.org/wiki/File:Matthew_Yang_-_You_Imagined_(2013).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Matthew Yang",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f4/Matthew_Yang_-_You_Imagined_%282013%29.webm/250px--Matthew_Yang_-_You_Imagined_%282013%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:147007275",
+        "title": "Katherine Chi - Telescope (2015)",
+        "source": "https://commons.wikimedia.org/wiki/File:Katherine_Chi_-_Telescope_(2015).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Katherine Chi",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c2/Katherine_Chi_-_Telescope_%282015%29.webm/250px--Katherine_Chi_-_Telescope_%282015%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:149208741",
+        "title": "Rensaven - Seaside (2024)",
+        "source": "https://commons.wikimedia.org/wiki/File:Rensaven_-_Seaside_(2024).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Rensaven",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/Rensaven_-_Seaside_%282024%29.webm/250px--Rensaven_-_Seaside_%282024%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:165057593",
+        "title": "RavenRugosa - Understories (2025)",
+        "source": "https://commons.wikimedia.org/wiki/File:RavenRugosa_-_Understories_(2025).ogv",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "ravenRugosa (theCorvidHive)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/RavenRugosa_-_Understories_%282025%29.ogv/250px--RavenRugosa_-_Understories_%282025%29.ogv.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:187686048",
+        "title": "Il segno animato",
+        "source": "https://commons.wikimedia.org/wiki/File:Il_segno_animato.webm",
+        "license": "https://creativecommons.org/licenses/by-sa/4.0",
+        "attribution": "Simonsegni (Stefano Simonetti)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e1/Il_segno_animato.webm/250px--Il_segno_animato.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:187686046",
+        "title": "The Animated Sign",
+        "source": "https://commons.wikimedia.org/wiki/File:The_Animated_Sign.webm",
+        "license": "https://creativecommons.org/licenses/by-sa/4.0",
+        "attribution": "Simonsegni (Stefano Simonetti)",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5c/The_Animated_Sign.webm/250px--The_Animated_Sign.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:197148047",
+        "title": "(OO) - Animation Short Film (2017)",
+        "source": "https://commons.wikimedia.org/wiki/File:(OO)_-_Animation_Short_Film_(2017).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Osro",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/10/%28OO%29_-_Animation_Short_Film_%282017%29.webm/250px--%28OO%29_-_Animation_Short_Film_%282017%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:197148187",
+        "title": "Afternoon Class - Animation Short Film (2014)",
+        "source": "https://commons.wikimedia.org/wiki/File:Afternoon_Class_-_Animation_Short_Film_(2014).webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Osro",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Afternoon_Class_-_Animation_Short_Film_%282014%29.webm/250px--Afternoon_Class_-_Animation_Short_Film_%282014%29.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      },
+      {
+        "id": "commons:197148274",
+        "title": "Award Winning Animated Short Film - Koji",
+        "source": "https://commons.wikimedia.org/wiki/File:Award_Winning_Animated_Short_Film_-_Koji.webm",
+        "license": "https://creativecommons.org/licenses/by/3.0",
+        "attribution": "Zean",
+        "poster": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/Award_Winning_Animated_Short_Film_-_Koji.webm/250px--Award_Winning_Animated_Short_Film_-_Koji.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+        "status": 200,
+        "contentType": "image/jpeg",
+        "ok": true
+      }
+    ]
+  },
+  "backend": {
+    "checkedAt": "2026-10-14T15:41:22.887Z",
+    "mode": "development loopback; does not verify deployed HTTPS",
+    "origin": "http://localhost:5188",
+    "checks": [
+      {
+        "name": "health",
+        "status": "PASS",
+        "http": 200
+      },
+      {
+        "name": "IN real film metadata",
+        "status": "PASS",
+        "http": 200,
+        "count": 25
+      },
+      {
+        "name": "PH real film metadata",
+        "status": "PASS",
+        "http": 200,
+        "count": 25
+      },
+      {
+        "name": "free catalog",
+        "status": "PASS",
+        "http": 200,
+        "count": 26
+      },
+      {
+        "name": "unreviewed playback rejected",
+        "status": "PASS",
+        "http": 400
+      },
+      {
+        "name": "native preflight",
+        "status": "PASS",
+        "http": 204
+      },
+      {
+        "name": "unknown origin denied",
+        "status": "PASS",
+        "http": 403
+      },
+      {
+        "name": "unsupported method denied",
+        "status": "PASS",
+        "http": 405
+      }
+    ]
+  },
+  "native": {
+    "typecheck": "PASS",
+    "webBuild": "PASS",
+    "capacitorSync": "PASS",
+    "debugBuild": "PASS",
+    "tasks": 86,
+    "executed": 24,
+    "upToDate": 62,
+    "jsKiB": 286.46,
+    "jsGzipKiB": 89.5
+  },
+  "usbTests": {
+    "pass": 8,
+    "fail": 0,
+    "skip": 1,
+    "reason": "Existing listener on 5188 preserved"
+  },
+  "preflight": {
+    "pass": 2,
+    "blocked": 7
+  },
+  "sintelDiagnostic": {
+    "checkedAt": "2026-10-14T15:09:31.456Z",
+    "video": {
+      "src": "https://dn601208.us.archive.org/0/items/Sintel/sintel-2048-stereo.mp4",
+      "error": null,
+      "duration": null,
+      "currentTime": 0,
+      "readyState": 0,
+      "networkState": 0
+    },
+    "logs": [
+      {
+        "ms": 1736,
+        "failed": "http://localhost:5188/api/playback?url=https%3A%2F%2Farchive.org%2Fdownload%2FSintel%2Fsintel-2048-stereo_512kb.mp4",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "ms": 1745,
+        "movie": "sintel",
+        "title": "Sintel",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "canPlayType": "",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://durian.blender.org/",
+        "event": "selected-movie",
+        "playbackCandidates": [
+          {
+            "url": "https://archive.org/download/Sintel/sintel-2048-stereo_512kb.mp4",
+            "mimeType": "video/mp4",
+            "health": "unknown",
+            "priority": 1
+          },
+          {
+            "url": "https://archive.org/download/Sintel/sintel-2048-stereo.mp4",
+            "mimeType": "video/mp4",
+            "health": "unknown",
+            "priority": 2
+          }
+        ]
+      },
+      {
+        "ms": 1745,
+        "movie": "sintel",
+        "title": "Sintel",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "canPlayType": "",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://durian.blender.org/",
+        "event": "selected-movie",
+        "playbackCandidates": [
+          {
+            "url": "https://archive.org/download/Sintel/sintel-2048-stereo_512kb.mp4",
+            "mimeType": "video/mp4",
+            "health": "unknown",
+            "priority": 1
+          },
+          {
+            "url": "https://archive.org/download/Sintel/sintel-2048-stereo.mp4",
+            "mimeType": "video/mp4",
+            "health": "unknown",
+            "priority": 2
+          }
+        ]
+      },
+      {
+        "ms": 5740,
+        "movie": "sintel",
+        "title": "Sintel",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://durian.blender.org/",
+        "playbackUrl": "https://archive.org/download/Sintel/sintel-2048-stereo_512kb.mp4",
+        "event": "probe",
+        "ok": true,
+        "finalUrl": "https://dn601208.us.archive.org/0/items/Sintel/sintel-2048-stereo_512kb.mp4",
+        "status": 206,
+        "contentType": "video/mp4",
+        "contentLength": "1",
+        "contentRange": "bytes 0-0/77410288",
+        "rangeSupported": true,
+        "retryAfter": null,
+        "candidate": {
+          "sourceProvider": "internet_archive",
+          "sourceId": "sintel",
+          "url": "https://archive.org/download/Sintel/sintel-2048-stereo_512kb.mp4",
+          "mimeType": "video/mp4",
+          "verifiedLegal": true,
+          "licenseType": "CC BY 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+          "attribution": "© 2010 Blender Foundation · durian.blender.org",
+          "health": "unknown"
+        }
+      },
+      {
+        "ms": 15755,
+        "failed": "https://dn601208.us.archive.org/0/items/Sintel/sintel-2048-stereo_512kb.mp4",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "ms": 15757,
+        "movie": "sintel",
+        "title": "Sintel",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://durian.blender.org/",
+        "playbackUrl": "https://archive.org/download/Sintel/sintel-2048-stereo_512kb.mp4",
+        "event": "candidate-failed",
+        "reason": "Media load/buffering timeout (10s)",
+        "videoErrorName": null,
+        "videoErrorMessage": null
+      },
+      {
+        "ms": 17772,
+        "movie": "sintel",
+        "title": "Sintel",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://durian.blender.org/",
+        "playbackUrl": "https://archive.org/download/Sintel/sintel-2048-stereo.mp4",
+        "event": "probe",
+        "ok": true,
+        "finalUrl": "https://dn601208.us.archive.org/0/items/Sintel/sintel-2048-stereo.mp4",
+        "status": 206,
+        "contentType": "video/mp4",
+        "contentLength": "1",
+        "contentRange": "bytes 0-0/282690045",
+        "rangeSupported": true,
+        "retryAfter": null,
+        "candidate": {
+          "sourceProvider": "internet_archive",
+          "sourceId": "sintel",
+          "url": "https://archive.org/download/Sintel/sintel-2048-stereo.mp4",
+          "mimeType": "video/mp4",
+          "verifiedLegal": true,
+          "licenseType": "CC BY 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+          "attribution": "© 2010 Blender Foundation · durian.blender.org",
+          "health": "unknown"
+        }
+      },
+      {
+        "ms": 21027,
+        "movie": "sintel",
+        "title": "Sintel",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://durian.blender.org/",
+        "playbackUrl": "https://archive.org/download/Sintel/sintel-2048-stereo.mp4",
+        "event": "stalled"
+      },
+      {
+        "ms": 27782,
+        "failed": "https://dn601208.us.archive.org/0/items/Sintel/sintel-2048-stereo.mp4",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "ms": 27782,
+        "movie": "sintel",
+        "title": "Sintel",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://durian.blender.org/",
+        "playbackUrl": "https://archive.org/download/Sintel/sintel-2048-stereo.mp4",
+        "event": "candidate-failed",
+        "reason": "Media load/buffering timeout (10s)",
+        "videoErrorName": null,
+        "videoErrorMessage": null
+      }
+    ]
+  },
+  "fallbackDiagnostic": {
+    "checkedAt": "2026-10-14T15:20:05.504Z",
+    "video": {
+      "src": "https://dn801203.us.archive.org/0/items/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "duration": 596.416667,
+      "currentTime": 0,
+      "readyState": 3,
+      "error": null
+    },
+    "logs": [
+      {
+        "ms": 1876,
+        "failed": "http://localhost:5188/api/playback?url=https%3A%2F%2Farchive.org%2Fdownload%2FBigBuckBunny_124%2FContent%252Fbig_buck_bunny_720p_surround.mp4",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "ms": 1886,
+        "movie": "bunny",
+        "title": "Big Buck Bunny",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "canPlayType": "",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://peach.blender.org/",
+        "event": "selected-movie",
+        "playbackCandidates": [
+          {
+            "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+            "mimeType": "video/mp4",
+            "health": "unknown",
+            "priority": 1
+          },
+          {
+            "url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+            "mimeType": "video/mp4",
+            "health": "unknown",
+            "priority": 2
+          }
+        ]
+      },
+      {
+        "ms": 1886,
+        "movie": "bunny",
+        "title": "Big Buck Bunny",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "canPlayType": "",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://peach.blender.org/",
+        "event": "selected-movie",
+        "playbackCandidates": [
+          {
+            "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+            "mimeType": "video/mp4",
+            "health": "unknown",
+            "priority": 1
+          },
+          {
+            "url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+            "mimeType": "video/mp4",
+            "health": "unknown",
+            "priority": 2
+          }
+        ]
+      },
+      {
+        "ms": 4625,
+        "movie": "bunny",
+        "title": "Big Buck Bunny",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://peach.blender.org/",
+        "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+        "event": "probe",
+        "ok": true,
+        "finalUrl": "https://dn710604.ca.archive.org/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+        "status": 206,
+        "contentType": "video/mp4",
+        "contentLength": "1",
+        "contentRange": "bytes 0-0/61878609",
+        "rangeSupported": true,
+        "retryAfter": null,
+        "candidate": {
+          "sourceProvider": "internet_archive",
+          "sourceId": "bunny",
+          "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+          "mimeType": "video/mp4",
+          "verifiedLegal": true,
+          "licenseType": "CC BY 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+          "attribution": "© 2008 Blender Foundation · peach.blender.org",
+          "health": "unknown"
+        }
+      },
+      {
+        "ms": 4627,
+        "failed": "https://dn710604.ca.archive.org/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+        "error": "net::ERR_FAILED"
+      },
+      {
+        "ms": 4629,
+        "movie": "bunny",
+        "title": "Big Buck Bunny",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://peach.blender.org/",
+        "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+        "event": "candidate-failed",
+        "reason": "Media source error",
+        "videoErrorName": null,
+        "videoErrorMessage": null
+      },
+      {
+        "ms": 7998,
+        "movie": "bunny",
+        "title": "Big Buck Bunny",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://peach.blender.org/",
+        "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+        "event": "probe",
+        "ok": true,
+        "finalUrl": "https://dn801203.us.archive.org/0/items/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+        "status": 206,
+        "contentType": "video/mp4",
+        "contentLength": "1",
+        "contentRange": "bytes 0-0/43315070",
+        "rangeSupported": true,
+        "retryAfter": null,
+        "candidate": {
+          "sourceProvider": "internet_archive",
+          "sourceId": "bunny",
+          "url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+          "mimeType": "video/mp4",
+          "verifiedLegal": true,
+          "licenseType": "CC BY 3.0",
+          "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+          "attribution": "© 2008 Blender Foundation · peach.blender.org",
+          "health": "unknown"
+        }
+      },
+      {
+        "ms": 25552,
+        "movie": "bunny",
+        "title": "Big Buck Bunny",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://peach.blender.org/",
+        "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+        "event": "loadedmetadata",
+        "duration": 596.416667
+      },
+      {
+        "ms": 25668,
+        "movie": "bunny",
+        "title": "Big Buck Bunny",
+        "sourceProvider": "Blender",
+        "licenseType": "CC BY 3.0",
+        "verifiedLegal": true,
+        "playable": true,
+        "mimeType": "video/mp4",
+        "canPlayType": "maybe",
+        "videoErrorCode": null,
+        "sourcePageUrl": "https://peach.blender.org/",
+        "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+        "event": "canplay"
+      }
+    ]
+  }
+}

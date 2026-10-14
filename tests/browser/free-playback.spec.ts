@@ -1,4 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
+import { readFileSync } from "node:fs";
 import sources from "../../src/data/freeSources.json" with { type: "json" };
 
 async function openMovie(page: Page, title = "Big Buck Bunny") {
@@ -24,16 +25,24 @@ async function play(page: Page) {
         page
           .locator("video")
           .evaluate(
-            (v: HTMLVideoElement) =>
-              Number.isFinite(v.duration) && v.duration > 0,
+            async (v: HTMLVideoElement) => {
+              if (!Number.isFinite(v.duration) || v.duration <= 0) return false;
+              // preload=metadata can require play() before downloading more data.
+              v.muted = true;
+              try {
+                await v.play();
+                return !v.paused && v.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA;
+              } catch (error) {
+                // A legitimate source failover cancels the previous play request.
+                if (error instanceof DOMException && error.name === 'AbortError') return false;
+                throw error;
+              }
+            },
           ),
-      { timeout: 30_000 },
+      // Two bounded candidates can each spend 10s probing and 20s loading.
+      { timeout: 65_000 },
     )
     .toBe(true);
-  await page.locator("video").evaluate(async (v: HTMLVideoElement) => {
-    v.muted = true;
-    await v.play();
-  });
   const before = await page
     .locator("video")
     .evaluate((v: HTMLVideoElement) => v.currentTime);
@@ -43,6 +52,32 @@ async function play(page: Page) {
     )
     .toBeGreaterThan(before + 0.3);
 }
+
+test("slow successful probe leaves a full media-loading budget and uses verified final URL", async ({ page }) => {
+  test.setTimeout(45_000);
+  const probes: string[] = [];
+  const canonical = 'https://dn710604.ca.archive.org/0/items/BigBuckBunny_124/fixture.webm';
+  // Original canvas fixture; this timing regression is independent of public CDNs.
+  await page.route("**/api/playback?**", async route => {
+    probes.push(new URL(route.request().url()).searchParams.get("url")!);
+    await new Promise(resolve => setTimeout(resolve, 6000));
+    await route.fulfill({ json: { ok: true, playbackUrl: sources.bunny.playbackUrl, finalUrl: canonical,
+      candidate: { url: sources.bunny.playbackUrl, mimeType: "video/webm" } } });
+  });
+  await page.route(sources.bunny.playbackUrl, route => route.abort('failed'));
+  await page.route(canonical, async route => {
+    await new Promise(resolve => setTimeout(resolve, 12000));
+    await route.fulfill({ contentType: "video/webm", body: readFileSync("tests/fixtures/progress.webm") });
+  });
+  await openMovie(page);
+  await expect.poll(() => page.locator('video').evaluate((v: HTMLVideoElement) => v.currentTime),
+    {timeout:30_000}).toBeGreaterThan(0.2);
+  await play(page);
+  // Development StrictMode may cancel/restart the same primary probe.
+  expect([...new Set(probes)]).toEqual([sources.bunny.playbackUrl]);
+  expect(await page.locator('video').evaluate((v: HTMLVideoElement) => v.currentSrc)).toBe(canonical);
+  await expect(page.getByText(/Playback unavailable/)).toHaveCount(0);
+});
 
 test("real legal MP4: metadata, playing, seek, pause, reload and 30-second resume", async ({
   page,
@@ -60,7 +95,9 @@ test("real legal MP4: metadata, playing, seek, pause, reload and 30-second resum
   });
   await openMovie(page);
   await play(page);
-  await page.waitForTimeout(30_000);
+  // Buffering time is not watched time: verify the actual media position.
+  await expect.poll(() => page.locator("video").evaluate((v: HTMLVideoElement) => v.currentTime),
+    { timeout: 45_000 }).toBeGreaterThan(30);
   await page.getByRole("button", { name: "Back to movie details" }).click();
   await page.getByRole("button", { name: "Resume", exact: true }).click();
   await expect
@@ -121,13 +158,14 @@ test("real legal MP4: metadata, playing, seek, pause, reload and 30-second resum
 
 for (const title of ["Sintel", "Tears of Steel"])
   test(`real legal MP4: ${title} plays`, async ({ page }) => {
-    test.setTimeout(60_000);
+    test.setTimeout(90_000);
     await openMovie(page, title);
     await play(page);
     if (title === "Sintel") {
       await page.locator("video").evaluate((video: HTMLVideoElement) => { video.currentTime = 30; video.pause(); });
       await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBe(30);
       await play(page);
+      await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(30.3);
       await page.getByRole("button", { name: "Fullscreen", exact: true }).click();
       await expect.poll(() => page.evaluate(() => document.fullscreenElement?.classList.contains("player-screen"))).toBe(true);
       await page.evaluate(() => document.exitFullscreen());
@@ -160,7 +198,8 @@ test("failed first media source falls back; exhaustion and Retry re-probe from f
     if (request.url().includes("/api/playback?"))
       probes.push(new URL(request.url()).searchParams.get("url")!);
   });
-  await page.route(sources.bunny.playbackUrl, (route) => route.abort("failed"));
+  const primaryMedia = /https:\/\/[^/]*archive\.org\/.*BigBuckBunny_124\/.*/;
+  await page.route(primaryMedia, (route) => route.abort("failed"));
   await openMovie(page);
   await play(page);
   expect(
@@ -175,7 +214,7 @@ test("failed first media source falls back; exhaustion and Retry re-probe from f
   await page.getByRole("button", { name: "Resume", exact: true }).click();
   await expect(page.getByText(/Playback unavailable/)).toBeVisible();
   await page.unroute("**/api/playback?**");
-  await page.unroute(sources.bunny.playbackUrl);
+  await page.unroute(primaryMedia);
   probes.length = 0;
   await page.getByRole("button", { name: "Retry", exact: true }).click();
   await play(page);

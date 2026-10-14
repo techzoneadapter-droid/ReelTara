@@ -2,6 +2,7 @@ import type { Movie, PlaybackCandidate } from "../types/movie";
 import { compatibleCandidates, playbackQuery, failed, healthy, revalidate } from "./playbackHealth";
 import { legalUrl } from "./legal";
 import { resolveApiUrl } from './apiBase';
+import { safeMediaRedirect } from '../utils/mediaRedirect';
 
 export const mediaErrorNames: Record<number, string> = {
   1: "MEDIA_ERR_ABORTED",
@@ -46,7 +47,9 @@ export function startFreePlayback(
   let timer: ReturnType<typeof setTimeout> | undefined;
   let controller: AbortController | undefined;
   let position = 0;
-  let shouldPlay = false;
+  // Preserve the explicit player's autoplay intent even if its first source
+  // fails before the first play event. User pauses still clear this intent.
+  let shouldPlay = video.autoplay;
   let seekingDisabled = false;
   let seekTimer: ReturnType<typeof setTimeout> | undefined;
   let removeListeners = () => {};
@@ -71,11 +74,11 @@ export function startFreePlayback(
       event,
       ...details,
     });
-  const arm = () => {
+  const arm = (timeout = 10_000) => {
     if (timer !== undefined) return;
     timer = setTimeout(
-      () => fail("Media load/buffering timeout (10s)"),
-      10_000,
+      () => fail(`Media load/buffering timeout (${timeout / 1000}s)`),
+      timeout,
     );
   };
   const fail = (reason: string) => {
@@ -117,7 +120,7 @@ export function startFreePlayback(
     callbacks.error("");
     active = true;
     seekingDisabled = false;
-    arm(); // Includes the HTTP probe and metadata load in the 10s candidate budget.
+    arm(); // Bound the HTTP probe independently of the subsequent media load.
     const candidate = candidates[index];
     controller = new AbortController();
     try {
@@ -135,6 +138,9 @@ export function startFreePlayback(
         fail("HTTP media probe failed");
         return;
       }
+      // A slow successful probe must not consume the video's buffering budget.
+      clearTimer();
+      arm(20_000); // Initial MP4 metadata may need additional range requests.
       // Use the canonical URL and MIME returned by provider verification.
       const media = probe.candidate || candidate;
       if (!video.canPlayType(media.mimeType)) { fail('Unsupported browser codec'); return; }
@@ -217,6 +223,15 @@ export function startFreePlayback(
           }
         },
         seeking: () => {
+          if (probe.rangeSupported === true) {
+            // A slow range request does not mean the source cannot seek.
+            // Preserve the requested position if buffering triggers failover.
+            position = video.currentTime;
+            clearTimeout(seekTimer);
+            clearTimer();
+            arm(20_000); // Seeking can require a fresh remote range request.
+            return;
+          }
           if (seekingDisabled) {
             try {
               if (Math.abs(video.currentTime - position) > 0.1)
@@ -269,7 +284,9 @@ export function startFreePlayback(
           video.removeEventListener(name, handler);
         source.removeEventListener("error", handlers.error);
       };
-      source.src = probe.playbackUrl || media.url;
+      // The backend checked every redirect; reuse its final HTTPS URL instead
+      // of paying for the Archive download redirect again in the WebView.
+      source.src = safeMediaRedirect(candidate.url, probe.finalUrl) || probe.playbackUrl || media.url;
       source.type = media.mimeType;
       // With <source>, unsupported-media errors may fire only on the source element.
       source.addEventListener("error", handlers.error);

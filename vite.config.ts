@@ -18,8 +18,8 @@ import { getMiddleware } from "./server/devApi.mjs";
 import healthHandler from "./api/health.mjs";
 export default defineConfig({
   server: {
-    // Native builds/downloads are not HMR inputs and can lock files on Windows.
-    watch: { ignored: ['**/.cache/**', '**/android/**', '**/dist/**'] },
+    // Generated files and QA evidence are not HMR inputs; Windows can lock them.
+    watch: { ignored: ['**/.cache/**', '**/android/**', '**/dist/**', '**/docs/**', '**/test-results/**', '**/playwright-report/**'] },
   },
   plugins: [
     react(),

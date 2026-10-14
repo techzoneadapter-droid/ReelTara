@@ -82,7 +82,8 @@ export async function probeMedia(candidate, fetcher = fetch, { force = false } =
     return { ok: false, status: 429, playbackUrl: candidate.url, error: 'provider_rate_limited', retryAfter: Math.ceil((cooldowns.get(candidate.sourceProvider) - Date.now()) / 1000) };
   }
   try {
-    const { response, finalUrl } = await providerFetch(candidate.url, candidate.sourceProvider, fetcher, { headers: { Range: 'bytes=0-0' } });
+    // Leave room for provider redirects while remaining below the client 10s probe deadline.
+    const { response, finalUrl } = await providerFetch(candidate.url, candidate.sourceProvider, fetcher, { headers: { Range: 'bytes=0-0' }, signal: AbortSignal.timeout(9000) });
     const h = response.headers, contentType = h.get('content-type');
     const result = { ok: [200,206].includes(response.status) && /^video\//i.test(contentType || ''), playbackUrl: candidate.url, finalUrl, status: response.status, contentType, contentLength: h.get('content-length'), contentRange: h.get('content-range'), rangeSupported: response.status === 206 || h.get('accept-ranges') === 'bytes', retryAfter: h.get('retry-after') };
     void response.body?.cancel().catch(() => {});

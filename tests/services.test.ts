@@ -5,6 +5,32 @@ import { movies } from "../src/data/movies";
 import { AppError, clearCache, object, request } from "../src/services/http";
 import { mapMovie } from "../src/services/tmdb";
 import { tmdbResponse } from "../server/tmdb.mjs";
+import { safeMediaRedirect } from '../src/utils/mediaRedirect';
+import { probeMedia } from '../server/sourceVerification.mjs';
+
+test('slow media headers fit within the bounded probe budget', async () => {
+  const result = await probeMedia({url:'https://archive.org/download/reviewed/movie.mp4',sourceProvider:'internet_archive'}, async (_url: string, options: {signal: AbortSignal}) => {
+    await new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(resolve, 7500);
+      options.signal.addEventListener('abort', () => {clearTimeout(timer);reject(options.signal.reason);}, {once:true});
+    });
+    return new Response('x', {status:206,headers:{'Content-Type':'video/mp4','Content-Range':'bytes 0-0/100'}});
+  });
+  assert.equal(result.ok, true);
+});
+
+test('verified media redirects retain HTTPS and provider boundaries without expanding movie rights', () => {
+  const original = 'https://archive.org/download/reviewed/movie.mp4';
+  const canonical = 'https://dn710604.ca.archive.org/0/items/reviewed/movie.mp4';
+  assert.equal(safeMediaRedirect(original, canonical), canonical);
+  for (const target of ['http://archive.org/movie.mp4', 'https://archive.org.evil.test/movie.mp4',
+    'https://user:pass@archive.org/movie.mp4', 'https://archive.org:444/movie.mp4',
+    'https://upload.wikimedia.org/movie.mp4', null, {}]) assert.equal(safeMediaRedirect(original, target), undefined);
+  assert.equal(safeMediaRedirect('https://upload.wikimedia.org/movie.webm', 'https://upload.wikimedia.org/derivative.webm'), 'https://upload.wikimedia.org/derivative.webm');
+  assert.equal(safeMediaRedirect('https://unknown.test/movie.mp4', canonical), undefined);
+  assert.equal(legalUrl(canonical), undefined); // General links/candidates remain unchanged.
+  assert.equal(canPlay(movies[0]), false);
+});
 
 test("legal boundary blocks commercial playback and unsafe URLs", () => {
   assert.equal(canPlay(movies[0]), false);
