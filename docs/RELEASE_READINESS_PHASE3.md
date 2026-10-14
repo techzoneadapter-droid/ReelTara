@@ -14,7 +14,8 @@ Fetched and fast-forwarded to upstream f7f6aae before making these changes; no r
 | Capacitor sync / Android build | PASS | npm run android:verify; debug APK, release APK, AAB, native unit task; 218 tasks executed |
 | Release networking isolation | PASS | Packaged APK/AAB inspection rejects dev URL, cleartext, mixed content and debug network XML |
 | Preflight rejection | PASS | npm run play intentionally exits 1: 2 PASS / 7 BLOCKED, no approval flags supplied |
-| New thumbnail verification on Samsung | BLOCKED | ADB currently lists no authorized device. Earlier Phase 2 device evidence does not prove these new changes |
+| New thumbnail verification on Samsung | PASS | Authorized SM-T385K, Android 9, live WebView localhost:5188; list, Wikidata detail, YouTube and free film thumbnails decoded |
+| Connected-device CSS HMR / React Refresh | PASS | Actual WebView probe: no full reload, unchanged APK timestamp/native fingerprint, no runtime exceptions |
 | Public HTTPS / installed release smoke | BLOCKED | No backend URL supplied; connected Vercel repository lookup returned no projects in the queried account scope |
 | Rights, privacy, support, Data Safety, app ID, signing | BLOCKED | Owner evidence and confirmations still required |
 | Approved launcher/splash artwork | FAIL | Phase 2 default Capacitor artwork remains; no invented replacement branding approval |
@@ -32,6 +33,16 @@ Files: src/utils/thumbnails.ts; src/components/ui.tsx; src/App.tsx; src/styles.c
 The dedicated browser thumbnail tests use controlled fixtures and assert decoded image dimensions. Live catalog smoke and actual media playback are separate checks. No new Android FPS/RAM claim is made.
 
 Real web screenshots were inspected for the home and Wikidata detail screens: the local SVG retains the existing layout and readable title treatment. The selected live detail was Nanakda Pagla Bhare Haranfad (upcoming 2027 metadata), not a hardcoded demo record.
+
+## Connected Samsung follow-up
+
+After the owner reconnected the tablet, real-device verification at 2026-10-14T07:01:49Z passed. The eight sampled mounted discovery cards decoded the 600×900 local placeholder. The actual Wikidata detail Nanakda Pagla Bhare Haranfad also decoded the placeholder; this verifies fallback display, not poster licensing or availability of a real poster.
+
+The first three sampled YouTube trailer images decoded actual i.ytimg.com hqdefault.jpg thumbnails at 480×360. A fourth lazy image was still pending when sampled; it was not counted as a successful decode or an image error. Big Buck Bunny decoded its existing /images/bunny.jpg at 480×360 in both the free list and detail artwork. These checks used the real app and network, with no browser fixture interception.
+
+Evidence is saved locally in ignored .cache/phase3/android-thumbnails.json. The preview server remains on 5188 with ADB reverse tcp:5188; no other app's listener or process was stopped.
+
+At 2026-10-14T07:03:36Z, node scripts/check-android-device.mjs independently verified CSS HMR and React Refresh in this same Android WebView. performance.timeOrigin stayed unchanged, the native fingerprint and debug APK timestamp did not change, and Runtime.exceptionThrown collected no events during the probe. Temporary CSS/React probe edits were removed while preserving other file contents. Ignored evidence: .cache/android-usb/device-verification.json. This is development Live Preview evidence, not a signed-release HTTPS or performance benchmark.
 
 ## Backend changes and remaining inputs
 

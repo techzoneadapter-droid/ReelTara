@@ -50,4 +50,4 @@ See DATA_SAFETY_DRAFT.md, RELEASE_READINESS_PHASE2.md and RELEASE_READINESS_PHAS
 
 The Phase 3 technical changes add npm run play as a safe preflight alias, backend:smoke for live API checks, strict shared development/production CORS contracts, a non-secret health endpoint and Vercel bundling preparation. See BACKEND_PRODUCTION_SETUP.md. Local smoke does not clear public HTTPS or signing blockers.
 
-Thumbnail repair now supplies an error-aware source/poster/backdrop/reviewed-video/local-SVG chain across lists, hero and details. Unreviewed open-data artwork remains withheld. Web QA passed; new Android thumbnail QA requires an authorized connected device and remains blocked until measured.
+Thumbnail repair now supplies an error-aware source/poster/backdrop/reviewed-video/local-SVG chain across lists, hero and details. Unreviewed open-data artwork remains withheld. Web QA and the connected Samsung SM-T385K Android 9 thumbnail follow-up passed; see RELEASE_READINESS_PHASE3.md for decoded dimensions and remaining production blockers.
