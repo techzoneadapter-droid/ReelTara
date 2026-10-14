@@ -1,0 +1,22 @@
+﻿import {test,expect} from '@playwright/test';
+const metadata={id:'wikidata:Q77777',title:'Open Metadata Film',year:2026,genre:'Film',rating:0,duration:'Film',certificate:'',poster:'https://static.tvmaze.com/unreviewed.jpg',backdrop:'',overview:'Open data',director:'',cast:[],provider:'',providerUrl:'https://www.wikidata.org/wiki/Q77777',origin:'open_data',contentMode:'discovery'};
+const decoded=async(img:any)=>expect.poll(()=>img.evaluate((i:HTMLImageElement)=>i.complete&&i.naturalWidth>0)).toBe(true);
+test('open film list, hero and details have decoded placeholders; unreviewed artwork remains withheld',async({page})=>{
+ let unreviewed=0;await page.route('https://static.tvmaze.com/**',r=>{unreviewed++;return r.abort();});
+ await page.route('**/api/open-catalog?**',r=>r.fulfill({json:{items:[metadata],totalPages:1,hasMore:false}}));await page.route('**/api/free-catalog**',r=>r.fulfill({json:{items:[]}}));
+ await page.goto('/',{waitUntil:'domcontentloaded'});const hero=page.locator('.hero-art .movie-image > img');await decoded(hero);await expect(hero).toHaveAttribute('src','/brand/thumbnail-placeholder.svg');
+ await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Discover',exact:true}).click();const card=page.locator('[data-catalog-total] .movie-image > img').first();await decoded(card);
+ await page.getByRole('button',{name:'View Open Metadata Film',exact:true}).click();await decoded(page.locator('.detail-poster .movie-image > img'));await decoded(page.locator('.detail-art .movie-image > img'));expect(unreviewed).toBe(0);await expect(page.getByRole('button',{name:'Watch Free',exact:true})).toHaveCount(0);
+});
+test('free catalog broken poster falls through to backdrop and survives cached reload',async({page})=>{
+ const item={id:'commons:42001',title:'Thumbnail Free Film',overview:'',posterUrl:'/images/phase3-missing.jpg',backdropUrl:'/images/bunny.jpg',genres:['Animation'],sourceProvider:'Wikimedia Commons',sourcePageUrl:'https://commons.wikimedia.org/wiki/File:Example.webm',captionTracks:[],playbackCandidates:[],licenseType:'CC BY 3.0',licenseUrl:'https://creativecommons.org/licenses/by/3.0/',attribution:'Author',verifiedLegal:true,playable:false};
+ await page.route('**/api/open-catalog?**',r=>r.fulfill({status:503,json:{}}));await page.route('**/api/free-catalog**',r=>r.fulfill({json:{items:[item]}}));await page.route('**/images/phase3-missing.jpg',r=>r.fulfill({status:404,body:''}));
+ await page.goto('/',{waitUntil:'domcontentloaded'});await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Free to Watch'}).click();const img=page.locator('[data-catalog-total] .movie-image > img').first();await expect(img).toHaveAttribute('src','/images/bunny.jpg');await decoded(img);
+ await page.reload();await page.getByRole('navigation',{name:'Main navigation'}).getByRole('button',{name:'Free to Watch'}).click();await expect(img).toHaveAttribute('src','/images/bunny.jpg');await decoded(img);
+});
+test('official YouTube trailer thumbnail loads, with a stable branded placeholder when all sources fail',async({page})=>{
+ await page.route('**/api/open-catalog?**',r=>r.fulfill({status:503,json:{}}));await page.route('**/api/free-catalog**',r=>r.fulfill({json:{items:[]}}));
+ await page.route('https://i.ytimg.com/**',r=>r.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360"><rect width="480" height="360" fill="#171e30"/></svg>'}));
+ await page.goto('/',{waitUntil:'domcontentloaded'});const thumbnail=page.locator('.trailer-row [data-thumbnail-kind="youtube"] > img').first();await decoded(thumbnail);await expect(thumbnail).toHaveAttribute('src',/i\.ytimg\.com\/vi\/.+\/hqdefault\.jpg/);
+ await page.route('https://i.ytimg.com/**',r=>r.fulfill({status:404,body:''}));await page.route('**/images/**',r=>r.fulfill({status:404,body:''}));await page.reload();const fallback=page.locator('.trailer-row [data-thumbnail-kind="placeholder"] > img').first();await decoded(fallback);await expect(fallback).toHaveAttribute('src','/brand/thumbnail-placeholder.svg');await expect(page.locator('.trailer-row .image-fallback').first()).toBeVisible();
+});

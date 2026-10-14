@@ -1915,3 +1915,11 @@ button:disabled { cursor: not-allowed; opacity: .6; }
 :root[data-low-memory-android="true"] :is(.save-button, .bottom-nav, .hero-label) {
   backdrop-filter: none;
 }
+
+/* Stable branded backing remains visible while source thumbnails decode or fail. */
+.movie-image {position:relative;overflow:hidden;background:#171e30 url('/brand/thumbnail-placeholder.svg') center/cover no-repeat;}
+.movie-image > img {display:block;}
+.movie-image > .image-fallback {position:absolute;inset:0;background:transparent;}
+.detail-visual {position:relative;isolation:isolate;overflow:hidden;}
+.detail-art {position:absolute;inset:0;z-index:-1;pointer-events:none;}
+.detail-art::after {content:'';position:absolute;inset:0;background:linear-gradient(90deg,#0b1020 3%,#0b102040 100%);}

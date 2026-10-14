@@ -419,3 +419,10 @@ test('CORS allows the production Capacitor origin and rejects unknown cross-orig
   assert.equal(handleCors({ method: 'GET', headers: { origin: 'https://unknown.invalid' } }, res), true);
   assert.equal(status, 403);
 });
+
+test('thumbnail candidates use reviewed video IDs and end in a local placeholder without relaxing playback rights', async()=>{
+ const {thumbnailCandidates,PLACEHOLDER_THUMBNAIL,safeThumbnail}=await import('../src/utils/thumbnails');
+ const dune=movies.find(m=>m.id==='dune')!;const list=thumbnailCandidates(dune,dune.poster,true);assert.match(list[0],/^https:\/\/i\.ytimg\.com\/vi\/[\w-]{11}\/hqdefault\.jpg$/);assert.equal(list[list.length-1],PLACEHOLDER_THUMBNAIL);
+ const metadata={...dune,id:'wikidata:Q42',origin:'open_data' as const,poster:'',backdrop:'',trailer:undefined};assert.deepEqual(thumbnailCandidates(metadata,''),[PLACEHOLDER_THUMBNAIL]);assert.equal(canPlay(metadata),false);
+ for(const input of ['javascript:alert(1)','http://i.ytimg.com/a.jpg','https://user:password@i.ytimg.com/a.jpg','//evil.invalid/img','https://evil.invalid/x.jpg','/images/../secret'])assert.equal(safeThumbnail(input),undefined);
+});

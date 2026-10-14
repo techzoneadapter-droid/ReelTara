@@ -514,12 +514,8 @@ export default function App() {
                   </button>
                 </div>
               )}
-              <div
-                className="detail-visual"
-                style={{
-                  backgroundImage: `linear-gradient(90deg, #0b1020 3%, #0b102040 100%), url(${current.backdrop})`,
-                }}
-              >
+              <div className="detail-visual">
+                <div className="detail-art" aria-hidden="true"><MovieImage src={current.backdrop} movie={current} title={current.title} eager decorative/></div>
                 <div>
                   <span className="eyebrow">
                     {current.free
@@ -585,6 +581,7 @@ export default function App() {
                 <div className="detail-poster">
                   <MovieImage
                     src={current.poster}
+                    movie={current}
                     title={current.title}
                     eager
                   />
@@ -715,10 +712,7 @@ export default function App() {
           ) : tab === "home" ? (
             <>
               <section className={`hero hero-${hero.id}`}>
-                <div
-                  className="hero-art"
-                  style={{ backgroundImage: `url(${hero.backdrop})` }}
-                />
+                <div className="hero-art"><MovieImage src={hero.backdrop} movie={hero} title={hero.title} eager decorative/></div>
                 <div className="hero-overlay" />
                 <div className="hero-content">
                   <span className="hero-label">

@@ -10,7 +10,11 @@ export async function cached(key, ttl, loader, { staleMs = ttl } = {}) {
     }
     return pending.get(key);
   };
-  if (hit && hit.expires + staleMs > Date.now()) { if (hit.expires <= Date.now()) void refresh().catch(() => {}); return hit.value; }
+  if (hit && hit.expires > Date.now()) return hit.value;
+  if (hit && hit.expires + staleMs > Date.now()) {
+    // Await refresh so a serverless response cannot freeze unfinished work.
+    try { return await refresh(); } catch { return hit.value; }
+  }
   return refresh();
 }
 export async function json(url) {

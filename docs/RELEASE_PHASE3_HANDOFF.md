@@ -46,4 +46,8 @@ unverified assets from store-facing screens.
 The current locally saved watchlist is not a user account. If future signup
 or hosted account data is added, implement Google Play account deletion requirements.
 
-See DATA_SAFETY_DRAFT.md and RELEASE_READINESS_PHASE2.md.
+See DATA_SAFETY_DRAFT.md, RELEASE_READINESS_PHASE2.md and RELEASE_READINESS_PHASE3.md.
+
+The Phase 3 technical changes add npm run play as a safe preflight alias, backend:smoke for live API checks, strict shared development/production CORS contracts, a non-secret health endpoint and Vercel bundling preparation. See BACKEND_PRODUCTION_SETUP.md. Local smoke does not clear public HTTPS or signing blockers.
+
+Thumbnail repair now supplies an error-aware source/poster/backdrop/reviewed-video/local-SVG chain across lists, hero and details. Unreviewed open-data artwork remains withheld. Web QA passed; new Android thumbnail QA requires an authorized connected device and remains blocked until measured.

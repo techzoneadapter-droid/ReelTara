@@ -12,6 +12,10 @@ import { freeCatalogResponse } from "./server/freeCatalog.mjs";
 import { openCatalogResponse } from "./server/openCatalog.mjs";
 // @ts-ignore Node-only environment loader.
 import { serverToken } from "./server/environment.mjs";
+// @ts-ignore Shared Node middleware with production-compatible CORS/method handling.
+import { getMiddleware } from "./server/devApi.mjs";
+// @ts-ignore Public health contract.
+import healthHandler from "./api/health.mjs";
 export default defineConfig({
   server: {
     // Native builds/downloads are not HMR inputs and can lock files on Windows.
@@ -22,28 +26,12 @@ export default defineConfig({
     {
       name: "tmdb-server-proxy",
       configureServer(server) {
-        server.middlewares.use("/api/open-catalog", async (req,res) => { const result = await openCatalogResponse(req.url); res.statusCode=result.status; res.setHeader("Content-Type","application/json"); res.end(JSON.stringify(result.body)); });
-        server.middlewares.use("/api/free-catalog", async (_req, res) => { const result = await freeCatalogResponse(); res.setHeader("Content-Type", "application/json"); res.end(JSON.stringify(result.body)); });
-        server.middlewares.use("/api/playback", async (req, res) => {
-          const result = await playbackResponse(req.url);
-          res.statusCode = result.status;
-          res.setHeader("Content-Type", "application/json");
-          res.setHeader("Cache-Control", "no-store");
-          res.end(JSON.stringify(result.body));
-        });
-        server.middlewares.use("/api/archive", async (req, res) => {
-          const result = await archiveResponse(req.url);
-          res.statusCode = result.status;
-          res.setHeader("Content-Type", "application/json");
-          res.end(JSON.stringify(result.body));
-        });
-        server.middlewares.use("/api/tmdb", async (req, res) => {
-          const result = await tmdbResponse(req.url, serverToken(server.config.mode));
-          res.statusCode = result.status;
-          res.setHeader("Content-Type", "application/json");
-          res.setHeader("Cache-Control", "no-store");
-          res.end(JSON.stringify(result.body));
-        });
+        server.middlewares.use('/api/health', healthHandler);
+        server.middlewares.use('/api/open-catalog',getMiddleware((req:{url?:string})=>openCatalogResponse(req.url||'/'),'public, s-maxage=900, stale-while-revalidate=3600'));
+        server.middlewares.use('/api/free-catalog',getMiddleware(()=>freeCatalogResponse(),'public, s-maxage=900, stale-while-revalidate=900'));
+        server.middlewares.use('/api/playback',getMiddleware((req:{url?:string})=>playbackResponse(req.url||'/')));
+        server.middlewares.use('/api/archive',getMiddleware((req:{url?:string})=>archiveResponse(req.url||'/'),'public, s-maxage=3600'));
+        server.middlewares.use('/api/tmdb',getMiddleware((req:{url?:string})=>tmdbResponse(req.url||'/',serverToken(server.config.mode))));
       },
     },
   ],

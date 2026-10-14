@@ -21,6 +21,7 @@ test('offline metadata stays bounded and labelled; reconnect refreshes real cata
 test('low-memory Android avoids expensive blur and failed posters retain the existing fallback',async({page})=>{
  await page.addInitScript(()=>{Object.defineProperty(navigator,'deviceMemory',{get:()=>2});Object.defineProperty(navigator,'userAgent',{get:()=> 'Mozilla/5.0 Android QA'});});
  await page.route('**/api/open-catalog?**',r=>r.fulfill({status:503,json:{}}));await page.route('**/api/free-catalog**',r=>r.fulfill({json:{items:[]}}));await page.route('**/images/**',r=>r.fulfill({status:404,body:''}));
+ await page.route('https://i.ytimg.com/**',r=>r.fulfill({status:404,body:''}));
  await page.goto('/',{waitUntil:'domcontentloaded'});await expect(page.locator('html')).toHaveAttribute('data-low-memory-android','true');
  await expect(page.locator('.movie-card .image-fallback').first()).toBeVisible();
  expect(await page.locator('.save-button').first().evaluate(e=>getComputedStyle(e).backdropFilter)).toBe('none');

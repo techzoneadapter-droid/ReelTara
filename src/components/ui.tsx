@@ -1,4 +1,4 @@
-import { memo, useEffect, useState, type ReactNode } from "react";
+import { memo, useMemo, useState, type ReactNode } from "react";
 import {
   ArrowUpRight,
   Check,
@@ -8,6 +8,7 @@ import {
   Plus,
   Star,
 } from "lucide-react";
+import { thumbnailCandidates, PLACEHOLDER_THUMBNAIL, firstThumbnailIndex, rememberBrokenThumbnail } from "../utils/thumbnails";
 import type { Movie } from "../types/movie";
 import { legalUrl } from "../services/legal";
 
@@ -136,44 +137,26 @@ export function SectionHeader({
     </div>
   );
 }
-export function MovieImage({
-  src,
-  title,
-  eager = false,
-}: {
-  src: string;
-  title: string;
-  eager?: boolean;
+export function MovieImage({src,title,eager=false,movie,trailer=false,decorative=false}: {
+  src:string;title:string;eager?:boolean;movie?:Movie;trailer?:boolean;decorative?:boolean;
 }) {
-  const [loaded, setLoaded] = useState(false);
-  const [failed, setFailed] = useState(!src);
-  useEffect(() => {
-    setLoaded(false);
-    setFailed(!src);
-  }, [src]);
-  return (
-    <div className={`movie-image ${loaded || failed ? "" : "skeleton"}`}>
-      {failed || !src ? (
-        <div className="image-fallback">
-          <BrandLogo icon />
-          <span>{title}</span>
-        </div>
-      ) : (
-        <img
-          src={src}
-          alt={title}
-          loading={eager ? "eager" : "lazy"}
-          decoding="async"
-          fetchPriority={eager ? 'high' : 'auto'}
-          srcSet={src.includes('image.tmdb.org/t/p/w500/') ? `${src.replace('/w500/', '/w185/')} 185w, ${src.replace('/w500/', '/w342/')} 342w, ${src} 500w` : undefined}
-          sizes="(max-width: 600px) 46vw, (max-width: 1100px) 28vw, 220px"
-          onLoad={() => setLoaded(true)}
-          onError={() => setFailed(true)}
-        />
-      )}
-    </div>
-  );
+  const candidates=useMemo(()=>thumbnailCandidates(movie,src,trailer),[src,movie?.poster,movie?.backdrop,movie?.origin,movie?.trailer,movie?.trailerUrl,trailer]);
+  return <ResolvedMovieImage key={candidates.join('|')} candidates={candidates} title={title} eager={eager} decorative={decorative}/>;
 }
+const ResolvedMovieImage=memo(function ResolvedMovieImage({candidates,title,eager,decorative}:{candidates:string[];title:string;eager:boolean;decorative:boolean}) {
+  const [index,setIndex]=useState(()=>firstThumbnailIndex(candidates));
+  const [loaded,setLoaded]=useState(false);
+  const src=candidates[index]||PLACEHOLDER_THUMBNAIL;
+  const placeholder=src===PLACEHOLDER_THUMBNAIL;
+  return <div className={`movie-image ${loaded||placeholder?'':'skeleton'}`} data-thumbnail-kind={placeholder?'placeholder':src.startsWith('https://i.ytimg.com/')?'youtube':'source'}>
+    <img key={src} src={src} alt={decorative?'':title} loading={eager?'eager':'lazy'} decoding="async" fetchPriority={eager?'high':'auto'}
+      style={{opacity:loaded||placeholder?1:0}}
+      srcSet={src.includes('image.tmdb.org/t/p/w500/')?`${src.replace('/w500/','/w185/')} 185w, ${src.replace('/w500/','/w342/')} 342w, ${src} 500w`:undefined}
+      sizes="(max-width: 600px) 46vw, (max-width: 1100px) 28vw, 220px" onLoad={()=>setLoaded(true)}
+      onError={()=>{rememberBrokenThumbnail(src);setLoaded(false);setIndex(i=>Math.min(i+1,candidates.length-1));}}/>
+    {placeholder&&!decorative&&<div className="image-fallback"><BrandLogo icon/><span>{title}</span></div>}
+  </div>;
+});
 export const MovieCard = memo(function MovieCard({
   movie,
   onSelect,
@@ -197,7 +180,7 @@ export const MovieCard = memo(function MovieCard({
           onClick={() => onSelect(movie)}
           aria-label={`View ${movie.title}`}
         >
-          <MovieImage src={movie.poster} title={movie.title} />
+          <MovieImage src={movie.poster} movie={movie} trailer={trailer} title={movie.title} />
           <span className="poster-shade" />
           {movie.free && <span className="badge">FREE TO WATCH</span>}
           {trailer && (
