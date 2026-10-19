@@ -1,3 +1,5 @@
+import { resolveApiUrl } from "./apiBase";
+
 export type ErrorCode =
   | "network_timeout"
   | "offline"
@@ -39,7 +41,7 @@ export async function request<T>(
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), url.startsWith("/api/free-catalog") ? 60000 : 8000);
         try {
-          const response = await fetch(url, {
+          const response = await fetch(resolveApiUrl(url), {
             signal: controller.signal,
             headers: { Accept: "application/json" },
           });

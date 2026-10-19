@@ -1,5 +1,6 @@
 import type { Movie, PlaybackCandidate } from "../types/movie";
 import { compatibleCandidates, playbackQuery, failed, healthy, revalidate } from "./playbackHealth";
+import { resolveApiUrl } from "./apiBase";
 import { legalUrl } from "./legal";
 
 export const mediaErrorNames: Record<number, string> = {
@@ -121,7 +122,7 @@ export function startFreePlayback(
     controller = new AbortController();
     try {
       const response = await fetch(
-        `/api/playback?${playbackQuery(candidate)}${recheck ? "&revalidate=1" : ""}`,
+        resolveApiUrl(`/api/playback?${playbackQuery(candidate)}${recheck ? "&revalidate=1" : ""}`),
         {
           signal: controller.signal,
           cache: "no-store",

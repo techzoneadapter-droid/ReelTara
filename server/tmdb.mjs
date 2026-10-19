@@ -12,7 +12,8 @@ export async function tmdbResponse(
   if (!allowed.test(path))
     return { status: 400, body: { error: "invalid_endpoint" } };
   if (!token) return { status: 503, body: { error: "api_unavailable" } };
-  const region = params.get("region") === "PH" ? "PH" : "IN";
+  const requestedRegion = params.get("region");
+  const region = ["VN", "IN", "PH"].includes(requestedRegion) ? requestedRegion : "VN";
   const url = new URL(`https://api.themoviedb.org/3/${path}`);
   url.searchParams.set("language", "en-US");
   url.searchParams.set("region", region);

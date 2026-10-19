@@ -1,5 +1,6 @@
 import type { FreeLegalMovie, Movie } from '../types/movie';
 import { request, object } from './http';
+import { resolveApiUrl } from './apiBase';
 import { compatibleCandidates, checkMedia, playbackQuery } from './playbackHealth';
 import { movies } from '../data/movies';
 export const catalogDiagnostics = { lastDiscoveryRefresh: '', lastFreeRefresh: '', discoveryItemCount: 0, freeItemCount: 0, verifiedFreeCount: 0, playableFreeCount: 0 };
@@ -19,7 +20,7 @@ export const FreeCatalogService = {
         for (const c of compatibleCandidates(m.playbackCandidates.filter(c => c.transportVerified !== false))) {
           if (c.transportVerified !== true) {
             try {
-              const response = await fetch(`/api/playback?${playbackQuery(c)}`, { signal: AbortSignal.timeout(10000), cache: 'no-store' });
+              const response = await fetch(resolveApiUrl(`/api/playback?${playbackQuery(c)}`), { signal: AbortSignal.timeout(10000), cache: 'no-store' });
               const probe = await response.json();
               if (!response.ok || !probe.ok || !probe.verifiedLegal) continue;
               Object.assign(c, probe.candidate, { transportVerified: true });

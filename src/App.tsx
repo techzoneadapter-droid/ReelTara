@@ -666,7 +666,7 @@ export default function App() {
                       <p>
                         {current.free
                           ? `${current.source?.attribution || ""} · ${current.source?.license || "License not listed"}. ${canPlay(current) ? "Watch here or visit the official source." : "Legal stream unavailable in this player. Visit the source."}`
-                          : `Discovery only. Full movies play on licensed platforms. Availability for ${user.country === "IN" ? "India" : "Philippines"} is supplied by JustWatch via TMDB.`}
+                          : `Discovery only. Full movies play on licensed platforms. Availability for ${user.country === "VN" ? "Vietnam" : user.country === "IN" ? "India" : "Philippines"} is supplied by JustWatch via TMDB.`}
                       </p>
                     </div>
                   </div>
@@ -925,6 +925,7 @@ export default function App() {
                         )
                       }
                     >
+                      <option value="VN">Việt Nam</option>
                       <option value="IN">India</option>
                       <option value="PH">Philippines</option>
                     </select>
@@ -1109,7 +1110,7 @@ export default function App() {
             · Availability varies by region. This product uses the TMDB API but
             is not endorsed or certified by TMDB.
           </p>
-          <span>Made for the love of cinema.</span>
+          <span>Made for the love of cinema. · <a href="/privacy.html">Privacy Policy</a></span>
         </footer>
       </div>
       <nav className="bottom-nav" aria-label="Mobile navigation">

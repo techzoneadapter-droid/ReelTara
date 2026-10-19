@@ -26,7 +26,7 @@ const initial = (): UserState => ({
   viewed: [],
   trailers: [],
   progress: {},
-  country: "IN",
+  country: "VN",
   preferences: {
     entitlement: { tier: "free", removeAds: false, cloudSync: false },
   },
@@ -61,7 +61,7 @@ export class LocalUserStateRepository implements UserStateRepository {
       );
       return {
         ...initial(),
-        country: raw.country === "PH" ? "PH" : "IN",
+        country: raw.country === "PH" || raw.country === "IN" ? raw.country : "VN",
         watchlist: Array.isArray(raw.watchlist)
           ? raw.watchlist
               .filter((v: WatchlistEntry) => v && isMovie(v.movie))
