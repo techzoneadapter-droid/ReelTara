@@ -347,3 +347,14 @@ test('Commons playback resolves canonical transcodes and rejects unsafe redirect
     assert.equal(calls, 1);
   }
 });
+
+test("native reviewed fallback accepts only exact Blender seed source files", async () => {
+  const { isReviewedNativeCandidate } = await import("../src/services/nativeCuratedPlayback");
+  const bunny = movies.find(m => m.id === "bunny")!;
+  const source = bunny.freeSource!.playbackUrl;
+  assert.equal(isReviewedNativeCandidate(bunny, source, true), true);
+  assert.equal(isReviewedNativeCandidate(bunny, source, false), false);
+  assert.equal(isReviewedNativeCandidate(bunny, "https://archive.org/download/arbitrary/upload.mp4", true), false);
+  assert.equal(isReviewedNativeCandidate({ ...bunny, id: "archive:unreviewed" }, source, true), false);
+  assert.equal(isReviewedNativeCandidate({ ...bunny, source: { ...bunny.source!, verified: false } }, source, true), false);
+});

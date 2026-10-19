@@ -1,6 +1,7 @@
 import type { Movie, PlaybackCandidate } from "../types/movie";
 import { compatibleCandidates, playbackQuery, failed, healthy, revalidate } from "./playbackHealth";
 import { resolveApiUrl } from "./apiBase";
+import { isReviewedNativeCandidate } from "./nativeCuratedPlayback";
 import { legalUrl } from "./legal";
 
 export const mediaErrorNames: Record<number, string> = {
@@ -121,17 +122,22 @@ export function startFreePlayback(
     const candidate = candidates[index];
     controller = new AbortController();
     try {
-      const response = await fetch(
-        resolveApiUrl(`/api/playback?${playbackQuery(candidate)}${recheck ? "&revalidate=1" : ""}`),
-        {
-          signal: controller.signal,
-          cache: "no-store",
-        },
-      );
-      const probe = await response.json();
+      const auditedNative = isReviewedNativeCandidate(movie, candidate.url);
+      let serverOk = true;
+      let probe: { ok: boolean; candidate?: PlaybackCandidate } = {
+        ok: true, candidate,
+      };
+      if (!auditedNative) {
+        const response = await fetch(
+          resolveApiUrl(`/api/playback?${playbackQuery(candidate)}${recheck ? "&revalidate=1" : ""}`),
+          { signal: controller.signal, cache: "no-store" },
+        );
+        serverOk = response.ok;
+        probe = await response.json();
+      }
       if (disposed || ownGeneration !== generation) return;
       log("probe", probe);
-      if (!response.ok || !probe.ok) {
+      if (!serverOk || !probe.ok) {
         fail("HTTP media probe failed");
         return;
       }
