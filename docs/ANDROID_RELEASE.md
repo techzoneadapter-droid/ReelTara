@@ -53,3 +53,6 @@ Install Node.js 22, Android Studio / SDK API 36, and run:
     npx cap open android
 
 Only run npx cap add android once per generated native directory. For lasting native customizations, commit the Android project in a separate change.
+
+## Branded app icon
+CI generates Android launcher icons and splash resources from `public/brand/icon.png` with `scripts/generate_android_assets.py` and Capacitor Assets. Because the current source icon is small, review the resulting icons on real devices and supply a higher-resolution original before final publication if edges appear soft.

@@ -31,7 +31,7 @@ jobs:
       - name: Run regression tests
         run: npm test
       - name: Install Capacitor 8
-        run: npm install --no-save --package-lock=false @capacitor/core@8.0.0 @capacitor/android@8.0.0 @capacitor/cli@8.0.0
+        run: npm install --no-save --package-lock=false @capacitor/core@8.0.0 @capacitor/android@8.0.0 @capacitor/cli@8.0.0 @capacitor/assets@3.0.5
       - name: Build web app
         run: npm run build
         env:
@@ -52,6 +52,11 @@ jobs:
           npx cap sync android
           grep -Eq 'targetSdkVersion[[:space:]]*=[[:space:]]*36' android/variables.gradle
           sed -i -E "s/versionCode [0-9]+/versionCode $GITHUB_RUN_NUMBER/" android/app/build.gradle
+      - name: Prepare ReelTara branded Android icon
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 scripts/generate_android_assets.py
+          npx capacitor-assets generate --android --iconBackgroundColor "#0B1020" --splashBackgroundColor "#0B1020"
       - name: Build debug APK
         run: cd android && bash ./gradlew --no-daemon assembleDebug
       - name: Build signed release AAB when keys exist
