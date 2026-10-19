@@ -8,6 +8,6 @@ export function resolveApiUrl(path: string, base = API_ORIGIN): string {
     const target = new URL(base);
     if (target.protocol !== "https:" || target.username || target.password ||
         target.pathname !== "/" || target.search || target.hash) return path;
-    return __B__target.origin__B__;
+    return target.origin + path;
   } catch { return path; }
 }
