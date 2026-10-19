@@ -124,7 +124,7 @@ export function startFreePlayback(
     try {
       const auditedNative = isReviewedNativeCandidate(movie, candidate.url);
       let serverOk = true;
-      let probe: { ok: boolean; candidate?: PlaybackCandidate } = {
+      let probe: { ok: boolean; candidate?: PlaybackCandidate; playbackUrl?: string } = {
         ok: true, candidate,
       };
       if (!auditedNative) {
