@@ -942,6 +942,16 @@ export default function App() {
                     Open your watchlist <ArrowRight size={16} />
                   </span>
                 </button>
+                <button type="button" className="profile-panel" onClick={() => {
+                  if (window.confirm("Erase local watchlist, viewing history and playback progress on this device?")) {
+                    UserStateService.reset();
+                    setNotice("Local ReelTara data cleared.");
+                  }
+                }}>
+                  <X size={25} />
+                  <h2>Clear local app data</h2>
+                  <p>Delete saved films, viewing history, and playback progress.</p>
+                </button>
                 <div className="profile-panel">
                   <ShieldCheck size={25} />
                   <h2>A better way to discover.</h2>

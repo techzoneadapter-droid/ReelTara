@@ -9,6 +9,8 @@
 4. Trong app mới, thực hiện App content: Data Safety, Target audience, Content rating, Ads declaration, Government/financial/medical declarations (nếu áp dụng), App access và thông tin liên hệ. Chỉ khai đúng những tính năng có trong bản đã build.
 5. Tải lên signed AAB theo hướng dẫn bên dưới rồi thử Internal testing. Nếu Play Console yêu cầu Closed testing 12 người/14 ngày, bạn phải tổ chức người thử nghiệm thật và trả lời yêu cầu cấp quyền production sau khi đạt điều kiện.
 
+Có thể tự xuất bản trang Privacy Policy miễn phí bằng GitHub: vào repository → Settings → Pages → Deploy from a branch → main + /docs. Sau đó kiểm tra URL công khai `https://techzoneadapter-droid.github.io/ReelTara/privacy.html`. Chỉ kích hoạt sau khi đã duyệt bản nháp và bổ sung email hỗ trợ chính thức.
+
 ## B. Backend online — bắt buộc nếu muốn tìm kiếm TMDB/danh mục phim động
 Vercel hiện trả 403 khi công cụ kết nối cố tạo dự án thay bạn. Cần bạn:
 1. Vào https://vercel.com/new, chọn GitHub repository `techzoneadapter-droid/ReelTara`, tạo project Vite (Root Directory: `.`, Build Command: `npm run build`, Output Directory: `dist`).

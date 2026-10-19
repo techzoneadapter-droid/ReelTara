@@ -36,6 +36,14 @@ export const UserStateService = {
   setCountry(country: Country) {
     update({ ...state, country });
   },
+  /** Clear locally saved viewing activity and preferences on this device. */
+  reset() {
+    update({
+      version: 1, watchlist: [], viewed: [], trailers: [], progress: {},
+      country: "VN",
+      preferences: { entitlement: { tier: "free", removeAds: false, cloudSync: false } },
+    });
+  },
   viewed(movie: Movie) {
     update({
       ...state,

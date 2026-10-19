@@ -130,6 +130,9 @@ test("local state migrates, persists watchlist, resumes, completes, and tolerate
   PlaybackService.save(movies[6], 580, 600);
   assert.equal(PlaybackService.resume(movies[6].id), 0);
   assert.equal(PlaybackService.continuing().length, 0);
+  UserStateService.reset();
+  assert.equal(new LocalUserStateRepository().read().watchlist.length, 0);
+  assert.equal(new LocalUserStateRepository().read().country, "VN");
   UserStateService.setCountry("PH");
   assert.equal(new LocalUserStateRepository().read().country, "PH");
   values.set("reeltara-user-v1", "{bad");
