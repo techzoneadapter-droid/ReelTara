@@ -133,7 +133,7 @@ test("local state migrates, persists watchlist, resumes, completes, and tolerate
   UserStateService.setCountry("PH");
   assert.equal(new LocalUserStateRepository().read().country, "PH");
   values.set("reeltara-user-v1", "{bad");
-  assert.equal(new LocalUserStateRepository().read().country, "IN");
+  assert.equal(new LocalUserStateRepository().read().country, "VN");
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,
     value: {

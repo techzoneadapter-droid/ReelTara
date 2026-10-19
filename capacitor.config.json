@@ -1,0 +1,8 @@
+{
+  "appId": "vn.com.nvbtech.reeltara",
+  "appName": "ReelTara",
+  "webDir": "dist",
+  "android": {
+    "backgroundColor": "#0B1020"
+  }
+}

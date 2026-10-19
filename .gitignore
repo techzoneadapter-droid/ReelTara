@@ -11,3 +11,8 @@ dist
 .cache/
 test-results/
 playwright-report/
+
+# Android build and signing credentials
+android/
+*.jks
+*.keystore
