@@ -10,9 +10,11 @@ This is a development release pipeline, not proof of Play acceptance.
 - Google Play approval and account/test eligibility cannot be granted through GitHub.
 
 ## Privacy Policy (website chính thức)
-https://nvbtech.com.vn/reeltara/privacy.html — xác nhận trình duyệt công khai có thể mở trước khi khai trên Play Console.
+https://nvbtech.com.vn/apps/reeltara/privacy.html — xác nhận trình duyệt công khai có thể mở trước khi khai trên Play Console.
 
 ## Backend
+Production host has been configured on Vercel as https://reel-tara.vercel.app (confirmed in owner's Vercel UI, 20 October 2026). Android workflow defaults to this public origin. Vercel READY does not prove TMDB works; advisory CI HTTP checks should be reviewed. If TMDB returns 503, set TMDB_READ_ACCESS_TOKEN in Vercel server environment and redeploy. Never put TMDB secret into GitHub code or VITE_API_BASE_URL.
+
 Deploy the Vite app and current /api functions on an HTTPS host such as Vercel. One-click project setup (requires the owner's Vercel approval): https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftechzoneadapter-droid%2FReelTara
 Set GitHub Actions repository variable REELTARA_API_ORIGIN to the HTTPS origin (no path or trailing slash), e.g. https://YOUR_HOST.vercel.app.
 The Android build bakes this PUBLIC origin into requests; it is not a credential.

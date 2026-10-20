@@ -2,6 +2,11 @@
 
 > Bản nháp, phù hợp phiên bản free không đăng nhập/không AdMob/không VIP. Nội dung mô tả phải khớp khả năng thật trên Android.
 
+Trang giới thiệu: https://nvbtech.com.vn/apps/reeltara/
+Privacy: https://nvbtech.com.vn/apps/reeltara/privacy.html
+Terms: https://nvbtech.com.vn/apps/reeltara/terms.html
+Support and deletion: https://nvbtech.com.vn/apps/reeltara/support.html
+
 ## Tên (tối đa 30 ký tự)
 ReelTara – Khám phá phim
 

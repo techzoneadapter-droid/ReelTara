@@ -35,10 +35,10 @@ jobs:
       - name: Build web app
         run: npm run build
         env:
-          VITE_API_BASE_URL: ${{ vars.REELTARA_API_ORIGIN }}
+          VITE_API_BASE_URL: ${{ vars.REELTARA_API_ORIGIN || 'https://reel-tara.vercel.app' }}
       - name: Validate backend origin
         env:
-          API_ORIGIN: ${{ vars.REELTARA_API_ORIGIN }}
+          API_ORIGIN: ${{ vars.REELTARA_API_ORIGIN || 'https://reel-tara.vercel.app' }}
         run: |
           if [ -z "$API_ORIGIN" ]; then
             echo "::warning::REELTARA_API_ORIGIN is unset. Android online film features need a deployed HTTPS backend."
@@ -46,6 +46,21 @@ jobs:
             echo "::error::REELTARA_API_ORIGIN must be an HTTPS origin without slash or path."
             exit 1
           fi
+      - name: Verify ReelTara Vercel API (advisory)
+        env:
+          API_ORIGIN: ${{ vars.REELTARA_API_ORIGIN || 'https://reel-tara.vercel.app' }}
+        run: |
+          check() {
+            local name="$1" endpoint="$2" status
+            status="$(curl --silent --show-error --location --max-time 20 -o /dev/null -w '%{http_code}' "${API_ORIGIN}${endpoint}" || true)"
+            if [[ "$status" == "200" ]]; then
+              echo "${name} status: 200"
+            else
+              echo "::warning::${name}: HTTP ${status}. Verify Vercel API and server-only TMDB_READ_ACCESS_TOKEN."
+            fi
+          }
+          check "Free catalog" "/api/free-catalog?version=2"
+          check "Movie discovery VN" "/api/tmdb?path=movie/popular&region=VN"
       - name: Generate Android native platform
         run: |
           npx cap add android
