@@ -30,9 +30,8 @@ function Set-GitHubSecret([string]$Name, [string]$Value) {
   $p.StartInfo.RedirectStandardInput = $true
   $p.StartInfo.RedirectStandardOutput = $true
   $p.StartInfo.RedirectStandardError = $true
-  foreach ($arg in @("secret","set",$Name,"-R",$Repository)) {
-    [void]$p.StartInfo.ArgumentList.Add($arg)
-  }
+  # PowerShell 5.1 / .NET Framework compatible; no password enters command-line arguments.
+  $p.StartInfo.Arguments = "secret set $Name -R $Repository"
   [void]$p.Start()
   $p.StandardInput.Write($Value)
   $p.StandardInput.Close()
