@@ -60,7 +60,11 @@ jobs:
       - name: Build debug APK
         run: cd android && bash ./gradlew --no-daemon assembleDebug
       - name: Validate release bundle compilation (unsigned)
-        run: cd android && bash ./gradlew --no-daemon bundleRelease
+        run: |
+          cd android
+          bash ./gradlew --no-daemon bundleRelease
+          # Unsigned output is deliberately deleted so it cannot be misidentified as Play-ready.
+          rm -f app/build/outputs/bundle/release/*.aab
       - name: Build signed release AAB when keys exist
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -92,6 +96,8 @@ jobs:
           }
           GRADLE
           (cd android && bash ./gradlew --no-daemon bundleRelease)
+          test -s android/app/build/outputs/bundle/release/app-release.aab
+          echo "SIGNED_AAB_AVAILABLE=true" >> "$GITHUB_ENV"
           rm -f android/upload-keystore.jks
       - uses: actions/upload-artifact@v4
         with:
@@ -100,8 +106,9 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - uses: actions/upload-artifact@v4
+        if: env.SIGNED_AAB_AVAILABLE == 'true'
         with:
           name: reeltara-signed-release-aab
           path: android/app/build/outputs/bundle/release/*.aab
-          if-no-files-found: ignore
+          if-no-files-found: error
           retention-days: 14
