@@ -17,6 +17,7 @@
 
 
 ## B. Backend online — bắt buộc nếu muốn tìm kiếm TMDB/danh mục phim động
+Link triển khai một lần: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftechzoneadapter-droid%2FReelTara. Chọn tài khoản Vercel bạn có quyền tạo project và xác nhận kết nối GitHub. Nếu giao diện không tự nhận diện Vite thì Build Command = npm run build, Output Directory = dist. Script Windows đã cho phép nhập URL backend và tự cài biến GitHub Actions sau khi bạn tạo project.
 Vercel hiện trả 403 khi công cụ kết nối cố tạo dự án thay bạn. Cần bạn:
 1. Vào https://vercel.com/new, chọn GitHub repository `techzoneadapter-droid/ReelTara`, tạo project Vite (Root Directory: `.`, Build Command: `npm run build`, Output Directory: `dist`).
 2. Trong Vercel, chỉ khi có quyền dữ liệu TMDB phù hợp, tự thêm secret `TMDB_READ_ACCESS_TOKEN` ở project Environment Variables. Không gửi token cho trợ lý và không điền dạng `VITE_...`.

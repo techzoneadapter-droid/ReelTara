@@ -1,6 +1,7 @@
 param(
   [string]$Repository = "techzoneadapter-droid/ReelTara",
-  [string]$KeyAlias = "reeltara-upload"
+  [string]$KeyAlias = "reeltara-upload",
+  [string]$ApiOrigin = ""
 )
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
@@ -83,6 +84,15 @@ Set-GitHubSecret "ANDROID_KEYSTORE_PASSWORD" $storePassword
 Set-GitHubSecret "ANDROID_KEY_ALIAS" $KeyAlias
 Set-GitHubSecret "ANDROID_KEY_PASSWORD" $keyPassword
 $storePassword = $null; $keyPassword = $null; $base64 = $null
+
+if (-not $ApiOrigin) { $ApiOrigin = Read-Host "URL Vercel backend HTTPS (nhan Enter neu chua trien khai)" }
+if ($ApiOrigin) {
+  try { $uri = [Uri]$ApiOrigin } catch { throw "URL backend khong hop le." }
+  if ($uri.Scheme -ne "https" -or $uri.AbsolutePath -ne "/" -or $uri.Query -or $uri.Fragment -or -not $uri.Host) { throw "Can URL HTTPS origin, vi du https://reeltara-nvb.vercel.app, khong co path." }
+  & gh variable set "REELTARA_API_ORIGIN" -R $Repository -b $ApiOrigin
+  if ($LASTEXITCODE -ne 0) { throw "Khong cai duoc REELTARA_API_ORIGIN." }
+  Write-Host "Da cai bien REELTARA_API_ORIGIN: $ApiOrigin" -ForegroundColor Green
+}
 
 Write-Host "QUAN TRONG: Hay copy file .jks sang USB bao mat va cat giu offline." -ForegroundColor Yellow
 Write-Host "Duong dan khoa: $file"

@@ -4,6 +4,8 @@ React + TypeScript + Vite. Existing branding, layouts and card sizes are preserv
 
 The Android GitHub Actions build and Play preparation checklist are in docs/ANDROID_RELEASE.md. Official privacy policy: https://nvbtech.com.vn/reeltara/privacy.html. A signed app bundle requires a private upload key; Google Play approval is a separate process.
 
+Vercel project setup (owner approval required): https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftechzoneadapter-droid%2FReelTara
+
 ## Run
 
 ```sh
