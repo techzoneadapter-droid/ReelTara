@@ -57,6 +57,8 @@ jobs:
           python3 -m pip install --quiet Pillow
           python3 scripts/generate_android_assets.py
           npx capacitor-assets generate --android --iconBackgroundColor "#0B1020" --splashBackgroundColor "#0B1020"
+      - name: Generate Google Play listing graphics
+        run: python3 scripts/generate_store_assets.py
       - name: Build debug APK
         run: cd android && bash ./gradlew --no-daemon assembleDebug
       - name: Validate release bundle compilation (unsigned)
@@ -112,3 +114,10 @@ jobs:
           path: android/app/build/outputs/bundle/release/*.aab
           if-no-files-found: error
           retention-days: 14
+      - name: Upload store listing graphics
+        uses: actions/upload-artifact@v4
+        with:
+          name: reeltara-play-store-assets
+          path: play-store-assets/*.png
+          if-no-files-found: error
+          retention-days: 30

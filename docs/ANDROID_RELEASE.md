@@ -66,3 +66,6 @@ Khi đã cài Android Studio/JDK và GitHub CLI, mở PowerShell tại repo và 
     powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\prepare_release_windows.ps1
 
 Script tạo hoặc dùng lại file khóa upload tại Documents/ReelTara-Upload-Key, đăng nhập GitHub trên máy bạn, nhập mật khẩu an toàn, thiết lập 4 Secrets qua GitHub CLI và kích hoạt lại Android Actions. Bạn vẫn phải giữ bản sao ngoại tuyến của .jks và không tiết lộ khóa/mật khẩu cho trợ lý.
+
+## Tài nguyên Google Play
+Workflow tạo thêm artifact `reeltara-play-store-assets` gồm icon PNG 512×512 và feature graphic PNG 1024×500, sử dụng logo gốc đang có. Tài nguyên là bản khởi tạo; kiểm tra chất lượng logo và chữ trước khi nộp. Ảnh screenshot phải chụp từ ứng dụng chạy thực tế trên Android, không sử dụng ảnh mô phỏng tính năng.
