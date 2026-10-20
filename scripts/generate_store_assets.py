@@ -33,7 +33,7 @@ large = ImageOps.contain(logo, (220, 220), Image.Resampling.LANCZOS)
 graphic.paste(large, (720, 140), large)
 draw.text((68, 150), "ReelTara", fill=(242, 246, 255), font=font(80, True))
 draw.rounded_rectangle((70, 275, 155, 283), radius=4, fill=(89, 151, 241))
-draw.text((70, 315), "Kham pha phim  |  Trailer  |  Phim mo", fill=(195, 215, 240), font=font(27))
+draw.text((70, 315), "Khám phá phim  ·  Trailer  ·  Phim mở", fill=(195, 215, 240), font=font(27))
 graphic.save(DEST / "feature-graphic-1024x500.png", "PNG", optimize=True)
 
 assert Image.open(DEST / "icon-512.png").size == (512, 512)
