@@ -3,6 +3,7 @@ import { compatibleCandidates, playbackQuery, failed, healthy, revalidate } from
 import { resolveApiUrl } from "./apiBase";
 import { isReviewedNativeCandidate } from "./nativeCuratedPlayback";
 import { legalUrl } from "./legal";
+import { reviewedPlaybackUrl, reviewedPlaybackUrls } from '../utils/releaseRights';
 
 export const mediaErrorNames: Record<number, string> = {
   1: "MEDIA_ERR_ABORTED",
@@ -11,9 +12,9 @@ export const mediaErrorNames: Record<number, string> = {
   4: "MEDIA_ERR_SRC_NOT_SUPPORTED",
 };
 const retryMovies = new Set<string>();
-export function resetPlaybackHealth(movie: Movie) { retryMovies.add(movie.id); (movie.playbackCandidates || playbackCandidates(movie)).forEach(c => revalidate(c.url)); }
+export function resetPlaybackHealth(movie: Movie) { retryMovies.add(movie.id); reviewedPlaybackUrls(movie.id).forEach(revalidate); }
 export function playbackCandidates(movie: Movie): (PlaybackCandidate & { priority: number })[] {
-  if (movie.playbackCandidates?.length) return compatibleCandidates(movie.playbackCandidates.filter(c => legalUrl(c.url))).map((c,i) => ({ ...c, priority: i+1 }));
+  if (movie.playbackCandidates?.length) return compatibleCandidates(movie.playbackCandidates.filter(c => legalUrl(c.url) && reviewedPlaybackUrl(movie.id, c.url))).map((c,i) => ({ ...c, priority: i+1 }));
   const source = movie.freeSource;
   return [
     ...new Set(
@@ -24,7 +25,7 @@ export function playbackCandidates(movie: Movie): (PlaybackCandidate & { priorit
   ]
     .filter(
       (url): url is string =>
-        !!legalUrl(url) && /\.mp4$/i.test(new URL(url!).pathname),
+        !!url && reviewedPlaybackUrl(movie.id, url) && !!legalUrl(url) && /\.mp4$/i.test(new URL(url).pathname),
     )
     .map((url, index) => ({ url, mimeType: "video/mp4", health: "unknown" as const, priority: index + 1 }));
 }
@@ -34,6 +35,7 @@ export function startFreePlayback(
   video: HTMLVideoElement,
   movie: Movie,
   callbacks: {
+    resumeTime?: number;
     loading: (value: boolean) => void;
     error: (value: string) => void;
   },
@@ -46,7 +48,7 @@ export function startFreePlayback(
   let active = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
   let controller: AbortController | undefined;
-  let position = 0;
+  let position = callbacks.resumeTime || 0;
   let shouldPlay = false;
   let seekingDisabled = false;
   let seekTimer: ReturnType<typeof setTimeout> | undefined;

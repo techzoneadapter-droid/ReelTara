@@ -1,5 +1,6 @@
 import type { Movie } from "../types/movie";
 import { array, object, request, str, AppError } from "../services/http";
+import { reviewedPlaybackUrl } from '../utils/releaseRights';
 // Only reviewed open films may enter this catalog. Archive metadata alone is not rights verification.
 const reviewedItems: Record<string, { movieId: string; attribution: string }> =
   {
@@ -46,7 +47,8 @@ export const ArchiveAdapter = {
           !/(?:preview|trailer|sample|thumb)/i.test(str(f.name)) &&
           !/(?:preview|thumbnail)/i.test(str(f.format)) &&
           f.private !== "true" &&
-          f.private !== true,
+          f.private !== true &&
+          reviewedPlaybackUrl(movie.id, `https://archive.org/download/${identifier}/${encodeURIComponent(str(f.name))}`),
       )
       .sort((a, b) => {
         const rank = (f: Record<string, unknown>) =>

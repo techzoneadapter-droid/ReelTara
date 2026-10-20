@@ -11,12 +11,14 @@ export async function playbackResponse(input, fetcher = fetch) {
       const entry = reviewed.get(p.get('url'));
       if (!entry) return { status: 400, body: { ok: false, error: 'unreviewed_source' } };
       candidate = curatedCandidate(entry.id, entry.index);
-    } else if (p.get('provider') === 'internet_archive') {
-      const { candidates } = await verifyArchive(p.get('sourceId') || '', fetcher);
-      candidate = candidates.find(c => c.fileName === p.get('fileName'));
-    } else if (p.get('provider') === 'wikimedia') {
-      const candidates = await verifyCommons(p.get('sourceId') || '', fetcher);
-      candidate = candidates.find(c => c.fileName === p.get('fileName'));
+    } else if (['internet_archive', 'wikimedia'].includes(p.get('provider'))) {
+      const entry = [...reviewed.entries()].find(([url]) => {
+        const parts = new URL(url).pathname.split('/');
+        return p.get('provider') === 'internet_archive' && parts[2] === p.get('sourceId') &&
+          decodeURIComponent(parts.slice(3).join('/')) === p.get('fileName');
+      });
+      if (!entry) return { status: 400, body: { ok: false, error: 'unreviewed_source' } };
+      candidate = curatedCandidate(entry[1].id, entry[1].index);
     } else if (p.get('provider') === 'blender') {
       candidate = curatedCandidate(p.get('sourceId'), Number(p.get('index') || 0));
     } else return { status: 400, body: { ok: false, error: 'unreviewed_source' } };

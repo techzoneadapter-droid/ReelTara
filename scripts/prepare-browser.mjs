@@ -10,6 +10,10 @@ import {
 } from "node:fs";
 import { execFileSync } from "node:child_process";
 const target = ".cache/browser";
+if (process.platform === 'win32') {
+  console.log('Using installed Microsoft Edge for Windows browser QA.');
+  process.exit(0);
+}
 mkdirSync(target, { recursive: true });
 mkdirSync(".cache/tmp", { recursive: true });
 if (!existsSync(`${target}/chromium`)) {

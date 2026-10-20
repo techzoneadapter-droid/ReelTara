@@ -202,14 +202,14 @@ test("Archive playback requires reviewed identity, license metadata and a public
             { name: "preview.mp4", format: "h.264", size: "1" },
             { name: "trailer.mp4", size: "2" },
             { name: "generic.mp4", size: "100" },
-            { name: "movie.mp4", format: "h.264", size: "2000" },
+            { name: "BigBuckBunny_512kb.mp4", format: "h.264", size: "2000" },
           ],
         }),
       );
     const movie = await ArchiveAdapter.resolve("BigBuckBunny_328", bunny);
     assert.equal(canPlay(movie), true);
     assert.equal(movie.source?.name, "Internet Archive");
-    assert.match(movie.source!.playableUrl!, /\/movie.mp4$/);
+    assert.match(movie.source!.playableUrl!, /\/BigBuckBunny_512kb.mp4$/);
   } finally {
     globalThis.fetch = original;
     clearCache();
@@ -320,9 +320,9 @@ test('dynamic verification derives license and file identity; never trusts clien
   };
   const query = '/?provider=internet_archive&sourceId=dynamic-film&fileName=';
   const valid = await playbackResponse(query + 'movie.mp4', fetcher);
-  assert.equal(valid.body.playable, true);
-  assert.equal(valid.body.candidate.sourceProvider, 'internet_archive');
-  assert.equal(valid.body.playbackUrl, 'https://archive.org/download/dynamic-film/movie.mp4');
+  assert.equal(valid.status, 400);
+  assert.equal(valid.body.error, 'unreviewed_source');
+  assert.equal(calls.length, 0, 'Metadata cannot grant release playback rights');
   for (const name of ['private.mp4', 'trailer.mp4', '../movie.mp4', 'missing.mp4']) assert.equal((await playbackResponse(query + encodeURIComponent(name), fetcher)).status, 400);
   meta.metadata.licenseurl = 'https://creativecommons.org/licenses/by-nc/4.0/';
   assert.equal((await playbackResponse(query + 'movie.mp4&verifiedLegal=true', fetcher)).body.ok, false);
@@ -331,22 +331,22 @@ test('dynamic verification derives license and file identity; never trusts clien
   assert.equal(calls.length, 0);
 });
 
-test('Commons playback resolves canonical transcodes and rejects unsafe redirects on metadata and media', async () => {
+test('Commons metadata resolves canonical transcodes but release playback needs editorial approval', async () => {
   const { playbackResponse } = await import('../server/playback.mjs');
+  const { verifyCommons } = await import('../server/sourceVerification.mjs');
   const page = { pageid: 42, videoinfo: [{ url: 'https://upload.wikimedia.org/movie.webm', mime: 'video/webm', extmetadata: { LicenseUrl: { value: 'https://creativecommons.org/licenses/by-sa/4.0/' }, Artist: { value: 'Artist' } }, derivatives: [{ src: 'https://upload.wikimedia.org/movie.480p.webm', type: 'video/webm; codecs="vp9, opus"', transcodekey: '480p.vp9.webm', height: 480 }] }] };
   const input = '/?provider=wikimedia&sourceId=42&fileName=480p.vp9.webm';
   let calls = 0;
-  const good = await playbackResponse(input, async (url: string) => {
+  const good = await verifyCommons('42', async (url: string) => {
     calls++;
     return url.includes('/w/api.php') ? new Response(JSON.stringify({ query: { pages: { 42: page } } })) : new Response(null, { status: 206, headers: { 'Content-Type': 'video/webm' } });
   });
-  assert.equal(good.body.ok, true);
-  assert.equal(good.body.candidate.mimeType, 'video/webm; codecs="vp9, opus"');
-  assert.equal(calls, 2);
+  assert.equal(good.find((c: { fileName: string }) => c.fileName === '480p.vp9.webm')?.mimeType, 'video/webm; codecs="vp9, opus"');
+  assert.equal(calls, 1);
+  assert.equal((await playbackResponse(input)).body.error, 'unreviewed_source');
   for (const location of ['http://127.0.0.1/', 'https://upload.wikimedia.org.evil.test/', 'https://upload.wikimedia.org:444/', 'https://user@upload.wikimedia.org/', 'https://archive.org/download/other']) {
     calls = 0;
-    const result = await playbackResponse(input, async () => { calls++; return new Response(null, { status: 302, headers: { Location: location } }); });
-    assert.equal(result.body.ok, false);
+    await assert.rejects(verifyCommons('42', async () => { calls++; return new Response(null, { status: 302, headers: { Location: location } }); }));
     assert.equal(calls, 1);
   }
 });

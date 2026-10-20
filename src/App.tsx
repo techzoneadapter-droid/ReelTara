@@ -33,6 +33,7 @@ import { canPlay, legalUrl } from "./services/legal";
 import { AppError } from "./services/http";
 import { ProviderPicker } from "./components/ProviderPicker";
 import { PlayerScreen } from "./components/player/PlayerScreen";
+import { registerNativeBack, minimizeNativeApp } from './services/nativeNavigation';
 import type {
   Movie,
   MovieDetails,
@@ -204,6 +205,14 @@ export default function App() {
     if (history.state?.player) history.back();
     else setPlayer(null);
   };
+  useEffect(() => registerNativeBack(() => {
+    if (document.fullscreenElement) { void document.exitFullscreen(); return; }
+    if (providerPicker) { setProviderPicker(null); return; }
+    if (player) { closePlayer(); return; }
+    if (selected) { closeDetail(); return; }
+    if (tab !== 'home') { navigate('home'); return; }
+    minimizeNativeApp();
+  }), [providerPicker, player, selected, tab]);
   useEffect(() => {
     const update = () => setOnline(navigator.onLine);
     window.addEventListener("online", update);
@@ -1120,7 +1129,7 @@ export default function App() {
             · Availability varies by region. This product uses the TMDB API but
             is not endorsed or certified by TMDB.
           </p>
-          <span>Made for the love of cinema. · <a href="/privacy.html">Privacy Policy</a></span>
+          <span>Made for the love of cinema. · <a href="https://nvbtech.com.vn/apps/reeltara/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a> · <a href="https://nvbtech.com.vn/apps/reeltara/support.html" target="_blank" rel="noopener noreferrer">Support</a></span>
         </footer>
       </div>
       <nav className="bottom-nav" aria-label="Mobile navigation">

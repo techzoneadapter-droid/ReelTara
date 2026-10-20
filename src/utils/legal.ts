@@ -1,5 +1,6 @@
 import type { Movie, Trailer } from "../types/movie";
 import { compatibleCandidates } from "../services/playbackHealth";
+import { reviewedPlaybackUrl } from './releaseRights';
 const legalDomains = [
   "themoviedb.org",
   "www.themoviedb.org",
@@ -45,6 +46,7 @@ export function canPlay(movie: Movie): boolean {
   const url = legalUrl(source.playableUrl);
   return (
     !!url &&
+    reviewedPlaybackUrl(movie.id, url) &&
     ["download.blender.org", "archive.org", "upload.wikimedia.org"].includes(new URL(url).hostname) &&
     /\.(mp4|m4v|mov|webm|ogv|ogg)$/i.test(new URL(url).pathname)
   );

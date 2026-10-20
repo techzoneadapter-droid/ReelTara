@@ -51,13 +51,13 @@ Re-run Android QA and bundles in the GitHub Actions tab. Download the signed AAB
 Install Node.js 22, Android Studio / SDK API 36, and run:
 
     npm ci
-    npm install --no-save --package-lock=false @capacitor/core@8.0.0 @capacitor/android@8.0.0 @capacitor/cli@8.0.0
+    # Capacitor 8.5.3 and the Android App plugin are pinned in package-lock.json.
     npm run build
     npx cap add android
     npx cap sync android
     npx cap open android
 
-Only run npx cap add android once per generated native directory. For lasting native customizations, commit the Android project in a separate change.
+Only run npx cap add android once per generated native directory. Run `node scripts/prepare-android.mjs` after generation to apply release networking, backup, debug-package and Windows path settings. For lasting native customizations, commit the Android project in a separate change.
 
 ## Branded app icon
 CI generates Android launcher icons and splash resources from `public/brand/icon.png` with `scripts/generate_android_assets.py` and Capacitor Assets. Because the current source icon is small, review the resulting icons on real devices and supply a higher-resolution original before final publication if edges appear soft.

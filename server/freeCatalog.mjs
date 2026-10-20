@@ -56,7 +56,8 @@ function bounded(promise, ms = 25000) {
 }
 export async function freeCatalogResponse() {
   const body = await cached('free-catalog', 3600000, async () => {
-    const adapters = [new CuratedLegalAdapter(), new InternetArchiveAdapter(), new WikimediaCommonsAdapter()];
+    // Uploader license metadata is insufficient rights evidence for release.
+    const adapters = [new CuratedLegalAdapter()];
     const results = await Promise.allSettled(adapters.map(a => bounded(a.load())));
     const unique = new Map();
     results.forEach(r => { if (r.status === 'fulfilled') r.value.forEach(item => {

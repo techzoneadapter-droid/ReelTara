@@ -31,7 +31,7 @@ Thông tin phim có thể do bên thứ ba cung cấp. ReelTara không đại di
 - Loại ứng dụng: App.
 - Danh mục: Entertainment.
 - Giá: Free.
-- Chứa quảng cáo: No **chỉ đúng với phiên bản hiện hành**.
+- Chứa quảng cáo: không có AdMob hoặc vị trí quảng cáo do ReelTara thêm; cần đánh giá quảng cáo trong YouTube nhúng trước câu trả lời cuối trong Console.
 - Mục tiêu người dùng: xác định từ danh mục phim thực tế; không tự khai dành cho trẻ em.
 - Ảnh: icon chất lượng cao 512×512 và ảnh chụp màn hình Android thật; dùng giao diện thực tế, không quảng cáo chức năng chưa có.
 - Email hỗ trợ, URL Privacy Policy, nội dung đánh giá độ tuổi: chủ sở hữu phải kiểm tra và xác nhận trước khi bấm nộp.

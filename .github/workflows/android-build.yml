@@ -30,8 +30,6 @@ jobs:
         run: npm ci
       - name: Run regression tests
         run: npm test
-      - name: Install Capacitor 8
-        run: npm install --no-save --package-lock=false @capacitor/core@8.0.0 @capacitor/android@8.0.0 @capacitor/cli@8.0.0 @capacitor/assets@3.0.5
       - name: Build web app
         run: npm run build
         env:
@@ -66,7 +64,7 @@ jobs:
           npx cap add android
           npx cap sync android
           grep -Eq 'targetSdkVersion[[:space:]]*=[[:space:]]*36' android/variables.gradle
-          sed -i -E "s/versionCode [0-9]+/versionCode $GITHUB_RUN_NUMBER/" android/app/build.gradle
+          node scripts/prepare-android.mjs
       - name: Prepare ReelTara branded Android icon
         run: |
           python3 -m pip install --quiet Pillow
@@ -75,7 +73,7 @@ jobs:
       - name: Generate Google Play listing graphics
         run: python3 scripts/generate_store_assets.py
       - name: Build debug APK
-        run: cd android && bash ./gradlew --no-daemon assembleDebug
+        run: cd android && bash ./gradlew --no-daemon assembleDebug testDebugUnitTest
       - name: Validate release bundle compilation (unsigned)
         run: |
           cd android
@@ -96,6 +94,7 @@ jobs:
           fi
           printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > android/upload-keystore.jks
           chmod 600 android/upload-keystore.jks
+          trap 'rm -f android/upload-keystore.jks' EXIT
           export ANDROID_UPLOAD_KEYSTORE_PATH="$PWD/android/upload-keystore.jks"
           cat >> android/app/build.gradle <<'GRADLE'
           android {
@@ -114,6 +113,9 @@ jobs:
           GRADLE
           (cd android && bash ./gradlew --no-daemon bundleRelease)
           test -s android/app/build/outputs/bundle/release/app-release.aab
+          curl --fail --location --silent --show-error https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar -o /tmp/reeltara-bundletool.jar
+          echo 'a099cfa1543f55593bc2ed16a70a7c67fe54b1747bb7301f37fdfd6d91028e29  /tmp/reeltara-bundletool.jar' | sha256sum --check
+          BUNDLETOOL_JAR=/tmp/reeltara-bundletool.jar node scripts/verify-aab.mjs android/app/build/outputs/bundle/release/app-release.aab
           echo "SIGNED_AAB_AVAILABLE=true" >> "$GITHUB_ENV"
           rm -f android/upload-keystore.jks
       - uses: actions/upload-artifact@v4
@@ -134,5 +136,13 @@ jobs:
         with:
           name: reeltara-play-store-assets
           path: play-store-assets/*.png
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload signed bundle verification
+        if: env.SIGNED_AAB_AVAILABLE == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: reeltara-aab-verification
+          path: release-evidence/aab-verification.json
           if-no-files-found: error
           retention-days: 30

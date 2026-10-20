@@ -3,12 +3,13 @@ import { request, object } from './http';
 import { resolveApiUrl } from './apiBase';
 import { compatibleCandidates, checkMedia, playbackQuery } from './playbackHealth';
 import { movies } from '../data/movies';
+import { reviewedCatalogItem } from '../utils/releaseRights';
 export const catalogDiagnostics = { lastDiscoveryRefresh: '', lastFreeRefresh: '', discoveryItemCount: 0, freeItemCount: 0, verifiedFreeCount: 0, playableFreeCount: 0 };
 export const FreeCatalogService = {
   async load(): Promise<Movie[]> {
     const data = await request('/api/free-catalog?version=2', object, 300000);
     if (!Array.isArray(data.items)) throw new Error('Invalid free catalog');
-    const items = (data.items as FreeLegalMovie[]).filter(m => m.verifiedLegal);
+    const items = (data.items as FreeLegalMovie[]).filter(m => m.verifiedLegal && reviewedCatalogItem(m));
     // Bounded parallel media checks; legal items remain visible even when every
     // candidate is unsupported, inaccessible, or undecodable in this browser.
     let cursor = 0;

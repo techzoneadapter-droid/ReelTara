@@ -193,6 +193,10 @@ const tmdbIds: Record<string, number> = {
 };
 export const movies: Movie[] = seeds.map((movie) => ({
   ...movie,
+  // Commercial poster/hero files have no permission record in this repository.
+  // Keep discovery text, trailers and official links with authored artwork.
+  poster: movie.free ? movie.poster : '/brand/discovery-placeholder.svg',
+  backdrop: movie.free ? movie.backdrop : '/brand/discovery-placeholder.svg',
   tmdbId: tmdbIds[movie.id],
   origin: "curated",
   contentMode: movie.free ? "free_legal" : "discovery",

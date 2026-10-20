@@ -1,102 +1,125 @@
 param(
-  [string]$Repository = "techzoneadapter-droid/ReelTara",
-  [string]$KeyAlias = "reeltara-upload",
-  [string]$ApiOrigin = ""
+  [string]$Repository = 'techzoneadapter-droid/ReelTara',
+  [string]$KeyAlias = 'reeltara-upload',
+  [string]$KeyPath = '',
+  [string]$ApiOrigin = '',
+  [string]$GitHubCli = 'gh',
+  [string]$JavaHome = $env:JAVA_HOME
 )
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-function Find-Keytool {
-  $found = Get-Command keytool -ErrorAction SilentlyContinue
-  if ($found) { return $found.Source }
-  $candidates = @(
-    (Join-Path $env:ProgramFiles "Android\Android Studio\jbr\bin\keytool.exe"),
-    (Join-Path $env:ProgramFiles "Java\jdk-21\bin\keytool.exe")
-  )
-  if ($env:JAVA_HOME) { $candidates += (Join-Path $env:JAVA_HOME "bin\keytool.exe") }
-  foreach ($item in $candidates) { if (Test-Path $item) { return $item } }
-  throw "Khong tim thay keytool. Cai Android Studio (kem JBR) hoac JDK 21 truoc."
+# Run in a LOCAL console without transcripts. Passwords use hidden input;
+# private values go only to encrypted GitHub Actions Secrets via standard input.
+function Invoke-PrivateProcess($Executable, $Arguments, $InputText = $null, $PrivateEnv = @{}) {
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo.FileName = $Executable
+  $process.StartInfo.Arguments = $Arguments
+  $process.StartInfo.UseShellExecute = $false
+  $process.StartInfo.CreateNoWindow = $true
+  $process.StartInfo.RedirectStandardInput = $true
+  $process.StartInfo.RedirectStandardOutput = $true
+  $process.StartInfo.RedirectStandardError = $true
+  foreach ($name in $PrivateEnv.Keys) { $process.StartInfo.EnvironmentVariables[$name] = $PrivateEnv[$name] }
+  try {
+    [void]$process.Start()
+    if ($null -ne $InputText) { $process.StandardInput.Write($InputText) }
+    $process.StandardInput.Close()
+    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $stderrTask = $process.StandardError.ReadToEndAsync()
+    $process.WaitForExit()
+    [void]$stdoutTask.Result; [void]$stderrTask.Result
+    if ($process.ExitCode -ne 0) {
+      $reason = if (($stdoutTask.Result + $stderrTask.Result) -match 'Illegal char|InvalidPath') { 'Windows path encoding error. Select an ASCII-only key path.' }
+      elseif (($stdoutTask.Result + $stderrTask.Result) -match 'password was incorrect|tampered with|Cannot recover key|UnrecoverableKey') { 'The keystore or private-key password is incorrect.' }
+      elseif (($stdoutTask.Result + $stderrTask.Result) -match 'already exists') { 'The alias already exists. Reuse the existing key.' }
+      elseif (($stdoutTask.Result + $stderrTask.Result) -match 'does not exist') { 'Selected key file or alias does not exist.' }
+      else { 'Private operation failed. Check key, alias, passwords and GitHub permissions locally.' }
+      throw $reason
+    }
+  } finally { $process.Dispose() }
 }
-
-function Secure-ToText([System.Security.SecureString]$Secure) {
-  $ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Secure)
-  try { return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr) }
+function Convert-PrivateText([Security.SecureString]$Value) {
+  $ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($Value)
+  try { [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr) }
   finally { [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr) }
 }
-
-function Set-GitHubSecret([string]$Name, [string]$Value) {
-  $p = New-Object System.Diagnostics.Process
-  $p.StartInfo.FileName = (Get-Command gh).Source
-  $p.StartInfo.UseShellExecute = $false
-  $p.StartInfo.RedirectStandardInput = $true
-  $p.StartInfo.RedirectStandardOutput = $true
-  $p.StartInfo.RedirectStandardError = $true
-  # PowerShell 5.1 / .NET Framework compatible; no password enters command-line arguments.
-  $p.StartInfo.Arguments = "secret set $Name -R $Repository"
-  [void]$p.Start()
-  $p.StandardInput.Write($Value)
-  $p.StandardInput.Close()
-  $stdout = $p.StandardOutput.ReadToEnd()
-  $stderr = $p.StandardError.ReadToEnd()
-  $p.WaitForExit()
-  if ($p.ExitCode -ne 0) { throw "Khong the cai Secret $Name tren GitHub: $stderr" }
-  Write-Host "Da cai Secret: $Name" -ForegroundColor Green
+$keytool = if ($JavaHome) { Join-Path $JavaHome 'bin/keytool.exe' } else { (Get-Command keytool -ErrorAction Stop).Source }
+if (-not (Test-Path -LiteralPath $keytool)) { throw 'JDK 21 keytool is required.' }
+$gh = (Get-Command $GitHubCli -ErrorAction Stop).Source
+try { Invoke-PrivateProcess $gh 'auth status' }
+catch {
+  # Native stderr redirected by PowerShell 5.1 becomes a terminating error under
+  # ErrorActionPreference=Stop. Inherit the LOCAL console directly for login.
+  $login = New-Object System.Diagnostics.Process
+  $login.StartInfo.FileName = $gh
+  $login.StartInfo.Arguments = 'auth login --hostname github.com --git-protocol https --web'
+  $login.StartInfo.UseShellExecute = $false
+  try {
+    [void]$login.Start(); $login.WaitForExit()
+    if ($login.ExitCode -ne 0) { throw 'GitHub login failed.' }
+  } finally { $login.Dispose() }
 }
-
-Write-Host "REELTARA - TAO KHOA KY ANDROID AN TOAN" -ForegroundColor Cyan
-$keytool = Find-Keytool
-if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-  throw "Can cai GitHub CLI (gh) tu https://cli.github.com/ truoc khi chay script."
+if (-not $KeyPath) {
+  $documentsKey = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'ReelTara-Upload-Key/reeltara-upload.jks'
+  # keytool on this Windows system loses Unicode path characters. Preserve any
+  # previous Documents key, but put NEW keys at an ASCII path outside the repo.
+  $localKey = Join-Path $env:LOCALAPPDATA 'ReelTara/Signing/reeltara-upload.jks'
+  $KeyPath = if (Test-Path -LiteralPath $documentsKey) { $documentsKey } else { $localKey }
 }
-& gh auth status *> $null
-if ($LASTEXITCODE -ne 0) {
-  Write-Host "Dang nhap GitHub tren may cua ban..." -ForegroundColor Yellow
-  & gh auth login
-  if ($LASTEXITCODE -ne 0) { throw "Dang nhap GitHub khong thanh cong." }
+Write-Host 'REELTARA - PRIVATE ANDROID UPLOAD KEY SETUP' -ForegroundColor Cyan
+Write-Host 'If this app has already been uploaded to Play, reuse its upload key.'
+if (-not (Test-Path -LiteralPath $KeyPath)) {
+  $existing = Read-Host 'Existing upload key elsewhere? Enter full path, or Enter if none exists'
+  if ($existing) { $KeyPath = $existing.Trim('"') }
 }
-
-$folder = Join-Path ([Environment]::GetFolderPath("MyDocuments")) "ReelTara-Upload-Key"
-[void](New-Item -ItemType Directory -Force -Path $folder)
-$file = Join-Path $folder "reeltara-upload.jks"
-if (Test-Path $file) {
-  Write-Host "Da co file upload key: $file" -ForegroundColor Yellow
-  Write-Host "Se SU DUNG LAI khoa cu. Khong duoc thay khoa upload giua cac lan cap nhat."
+$create = -not (Test-Path -LiteralPath $KeyPath)
+if ($create) {
+  if ((Read-Host 'No existing key selected. Type CREATE to create a NEW upload key') -cne 'CREATE') { throw 'Key creation cancelled.' }
+  [void](New-Item -ItemType Directory -Force -Path (Split-Path -Parent $KeyPath))
 } else {
-  Write-Host "Keytool se yeu cau ban dat MAT KHAU, nhap 2 lan. Giu an toan."
-  Write-Host "Khi hoi MAT KHAU CHO KEY $KeyAlias, nhan Enter de dung chung mat khau kho."
-  & $keytool -genkeypair -v -keystore $file -alias $KeyAlias -keyalg RSA -keysize 4096 -validity 10000 -storetype JKS -dname "CN=NVB Tech, OU=Mobile, O=NVB Technology and Services, L=Thanh Hoa, C=VN"
-  if ($LASTEXITCODE -ne 0 -or -not (Test-Path $file)) { throw "Tao upload keystore that bai." }
+  Write-Host "Reusing existing key: $KeyPath" -ForegroundColor Yellow
+  $aliasInput = Read-Host "Alias (Enter for $KeyAlias)"
+  if ($aliasInput) { $KeyAlias = $aliasInput }
 }
-
-$storeSecure = Read-Host "Nhap lai mat khau keystore vua tao" -AsSecureString
-$storePassword = Secure-ToText $storeSecure
-if ([string]::IsNullOrWhiteSpace($storePassword)) { throw "Mat khau rong." }
-$keyPassword = $storePassword
-Write-Host "Dang xac minh upload keystore..." -ForegroundColor Yellow
-# Validate without putting passwords on any command line. keytool prompts interactively.
-& $keytool -list -keystore $file -alias $KeyAlias
-if ($LASTEXITCODE -ne 0) { throw "Keystore/alias khong hop le." }
-
-Write-Host "Upload 4 secrets qua GitHub CLI, khong hien thi mat khau..." -ForegroundColor Yellow
-$base64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($file))
-Set-GitHubSecret "ANDROID_KEYSTORE_BASE64" $base64
-Set-GitHubSecret "ANDROID_KEYSTORE_PASSWORD" $storePassword
-Set-GitHubSecret "ANDROID_KEY_ALIAS" $KeyAlias
-Set-GitHubSecret "ANDROID_KEY_PASSWORD" $keyPassword
+if ($KeyAlias -notmatch '^[a-zA-Z0-9._-]+$') { throw 'Unsupported alias characters.' }
+if ($KeyPath.Contains('"')) { throw 'Invalid key path.' }
+$storeSecure = Read-Host 'Keystore password (hidden)' -AsSecureString
+$keySecure = Read-Host 'Private key password (hidden; Enter = same as keystore)' -AsSecureString
 $storePassword = $null; $keyPassword = $null; $base64 = $null
-
-if (-not $ApiOrigin) { $ApiOrigin = Read-Host "URL Vercel backend HTTPS (nhan Enter neu chua trien khai)" }
-if ($ApiOrigin) {
-  try { $uri = [Uri]$ApiOrigin } catch { throw "URL backend khong hop le." }
-  if ($uri.Scheme -ne "https" -or $uri.AbsolutePath -ne "/" -or $uri.Query -or $uri.Fragment -or -not $uri.Host) { throw "Can URL HTTPS origin, vi du https://reeltara-nvb.vercel.app, khong co path." }
-  & gh variable set "REELTARA_API_ORIGIN" -R $Repository -b $ApiOrigin
-  if ($LASTEXITCODE -ne 0) { throw "Khong cai duoc REELTARA_API_ORIGIN." }
-  Write-Host "Da cai bien REELTARA_API_ORIGIN: $ApiOrigin" -ForegroundColor Green
+try {
+  $storePassword = Convert-PrivateText $storeSecure
+  $keyPassword = if ($keySecure.Length) { Convert-PrivateText $keySecure } else { $storePassword }
+  if ($storePassword.Length -lt 6 -or $keyPassword.Length -lt 6) { throw 'Passwords need at least 6 characters.' }
+  if ($create) {
+    Write-Host 'Creating upload key locally...' -ForegroundColor Yellow
+    $confirmation = Read-Host 'Confirm keystore password (hidden)' -AsSecureString
+    try { if ((Convert-PrivateText $confirmation) -cne $storePassword) { throw 'Passwords do not match.' } }
+    finally { $confirmation.Dispose() }
+  }
+  $privateEnv = @{ REELTARA_STORE_PASSWORD = $storePassword; REELTARA_KEY_PASSWORD = $keyPassword }
+  if ($create) {
+    Invoke-PrivateProcess $keytool "-genkeypair -keystore `"$KeyPath`" -alias $KeyAlias -keyalg RSA -keysize 4096 -validity 10000 -storetype JKS -dname `"CN=NVB Tech, O=NVB Technology and Services, C=VN`" -storepass:env REELTARA_STORE_PASSWORD -keypass:env REELTARA_KEY_PASSWORD" $null $privateEnv
+  }
+  # Checks the EXACT store and private-key passwords that will be uploaded.
+  Write-Host 'Verifying selected key and both passwords...' -ForegroundColor Yellow
+  Invoke-PrivateProcess $keytool "-certreq -keystore `"$KeyPath`" -alias $KeyAlias -storepass:env REELTARA_STORE_PASSWORD -keypass:env REELTARA_KEY_PASSWORD" $null $privateEnv
+  $base64 = [Convert]::ToBase64String([IO.File]::ReadAllBytes($KeyPath))
+  foreach ($entry in @(@('ANDROID_KEYSTORE_BASE64',$base64),@('ANDROID_KEYSTORE_PASSWORD',$storePassword),@('ANDROID_KEY_ALIAS',$KeyAlias),@('ANDROID_KEY_PASSWORD',$keyPassword))) {
+    Invoke-PrivateProcess $gh "secret set $($entry[0]) -R $Repository" $entry[1]
+    Write-Host "Configured encrypted Actions Secret: $($entry[0])" -ForegroundColor Green
+  }
+  if ($ApiOrigin) {
+    $uri = [Uri]$ApiOrigin
+    if ($uri.Scheme -ne 'https' -or $uri.UserInfo -or $uri.AbsolutePath -ne '/' -or $uri.Query -or $uri.Fragment) { throw 'Expected HTTPS origin.' }
+    Invoke-PrivateProcess $gh "variable set REELTARA_API_ORIGIN -R $Repository --body $($uri.GetLeftPart([UriPartial]::Authority))"
+  }
+  $statusFolder = Join-Path $PSScriptRoot '../.cache'
+  [void](New-Item -ItemType Directory -Force -Path $statusFolder)
+  @{ configuredAt = [DateTime]::UtcNow.ToString('o'); repository = $Repository; status = 'secrets-configured'; createdNewKey = $create } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $statusFolder 'signing-status.json') -Encoding UTF8
+  Write-Host "SUCCESS. Keep this key and passwords in an OFFLINE backup: $KeyPath" -ForegroundColor Green
+  Write-Host 'No workflow dispatched. Build the verified release commit explicitly.'
+} finally {
+  $storePassword = $null; $keyPassword = $null; $base64 = $null; $privateEnv = $null; $entry = $null
+  $storeSecure.Dispose(); $keySecure.Dispose()
 }
-
-Write-Host "QUAN TRONG: Hay copy file .jks sang USB bao mat va cat giu offline." -ForegroundColor Yellow
-Write-Host "Duong dan khoa: $file"
-& gh workflow run "android-build.yml" -R $Repository
-if ($LASTEXITCODE -ne 0) { throw "Khong khoi chay duoc GitHub Actions." }
-Write-Host "Da kich hoat build AAB. Xem Actions > ReelTara Android QA and bundles." -ForegroundColor Green
-Write-Host "Khong chia se file .jks hay mat khau voi bat ky ai."

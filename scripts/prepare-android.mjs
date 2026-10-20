@@ -1,0 +1,18 @@
+import { readFileSync, writeFileSync } from 'node:fs';
+const path = 'android/app/build.gradle';
+let gradle = readFileSync(path, 'utf8');
+const versionCode = Number(process.env.GITHUB_RUN_NUMBER || process.env.ANDROID_VERSION_CODE || 1);
+if (!Number.isInteger(versionCode) || versionCode < 1) throw Error('Invalid Android versionCode');
+gradle = gradle.replace(/versionCode \d+/, `versionCode ${versionCode}`);
+if (!gradle.includes("applicationIdSuffix '.debug'")) gradle = gradle.replace(/buildTypes\s*\{/, "buildTypes {\n        debug { applicationIdSuffix '.debug' }");
+writeFileSync(path, gradle);
+const manifestPath = 'android/app/src/main/AndroidManifest.xml';
+let manifest = readFileSync(manifestPath, 'utf8');
+manifest = manifest.replace(/android:allowBackup="true"/, 'android:allowBackup="false"');
+if (!manifest.includes('android:usesCleartextTraffic=')) manifest = manifest.replace('<application', '<application android:usesCleartextTraffic="false"');
+writeFileSync(manifestPath, manifest);
+const propertiesPath = 'android/gradle.properties';
+let properties = readFileSync(propertiesPath, 'utf8');
+if (!properties.includes('android.overridePathCheck=')) properties += '\nandroid.overridePathCheck=true\n';
+writeFileSync(propertiesPath, properties);
+console.log(`Prepared ${versionCode}: distinct debug package, disabled backup, HTTPS only`);

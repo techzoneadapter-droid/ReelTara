@@ -2,6 +2,9 @@ import { test, expect, type Page } from "@playwright/test";
 import sources from "../../src/data/freeSources.json" with { type: "json" };
 
 async function openMovie(page: Page, title = "Big Buck Bunny") {
+  // These tests exercise reviewed streams, without background catalog probes
+  // racing the player's source timers or changing source health mid-scenario.
+  await page.route('**/api/free-catalog?**', route => route.fulfill({ status: 503, json: {} }));
   await page.route("**/api/tmdb?**", (route) =>
     route.fulfill({ status: 503, json: {} }),
   );
@@ -60,7 +63,7 @@ test("real legal MP4: metadata, playing, seek, pause, reload and 30-second resum
   });
   await openMovie(page);
   await play(page);
-  await page.waitForTimeout(30_000);
+  await expect.poll(() => page.locator('video').evaluate((v: HTMLVideoElement) => v.currentTime), { timeout: 60000 }).toBeGreaterThan(30);
   await page.getByRole("button", { name: "Back to movie details" }).click();
   await page.getByRole("button", { name: "Resume", exact: true }).click();
   await expect
@@ -128,6 +131,7 @@ for (const title of ["Sintel", "Tears of Steel"])
       await page.locator("video").evaluate((video: HTMLVideoElement) => { video.currentTime = 30; video.pause(); });
       await expect.poll(() => page.locator("video").evaluate((video: HTMLVideoElement) => video.currentTime)).toBe(30);
       await play(page);
+      await page.locator('.trailer-control-rail').hover();
       await page.getByRole("button", { name: "Fullscreen", exact: true }).click();
       await expect.poll(() => page.evaluate(() => document.fullscreenElement?.classList.contains("player-screen"))).toBe(true);
       await page.evaluate(() => document.exitFullscreen());

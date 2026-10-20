@@ -247,6 +247,9 @@ test("E/F: IN and PH providers follow persisted preference", async ({
 }) => {
   await live(page);
   await page.goto("/");
+  await page.getByRole('button', { name: 'Your profile', exact: true }).click();
+  await page.getByLabel('Country', { exact: true }).selectOption('IN');
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Home', exact: true }).click();
   await expect(page.getByRole("heading", { name: "Fixture Film", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Explore the story" }).click();
   await expect(
@@ -365,6 +368,9 @@ test("provider picker groups availability and confirms the actual outbound desti
 }) => {
   await live(page);
   await page.goto("/");
+  await page.getByRole('button', { name: 'Your profile', exact: true }).click();
+  await page.getByLabel('Country', { exact: true }).selectOption('IN');
+  await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('button', { name: 'Home', exact: true }).click();
   await expect(page.getByRole("heading", { name: "Fixture Film", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Explore the story" }).click();
   await expect(page.getByText("Loading movie details…")).toHaveCount(0);

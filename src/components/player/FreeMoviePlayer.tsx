@@ -62,6 +62,7 @@ export function FreeMoviePlayer({
   useEffect(() => {
     if (!allowed || !video.current) return;
     return startFreePlayback(video.current, movie, {
+      resumeTime: resume.current,
       loading: setLoading,
       error: setError,
     });

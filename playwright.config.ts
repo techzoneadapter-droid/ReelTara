@@ -10,8 +10,8 @@ export default defineConfig({
     viewport: { width: 1440, height: 900 },
     headless: true,
     launchOptions: {
-      executablePath: resolve(".cache/browser/chromium"),
-      args: chromium.args.filter(
+      ...(process.platform === 'win32' ? { channel: 'msedge' } : { executablePath: resolve('.cache/browser/chromium') }),
+      args: process.platform === 'win32' ? [] : chromium.args.filter(
         (arg) =>
           ![
             "--disable-web-security",
@@ -20,7 +20,7 @@ export default defineConfig({
             "--disable-site-isolation-trials",
           ].includes(arg),
       ),
-      env: {
+      env: process.platform === 'win32' ? undefined : {
         LD_LIBRARY_PATH: resolve(".cache/browser/lib"),
         FONTCONFIG_PATH: resolve(".cache/browser"),
         TMPDIR: resolve(".cache/tmp"),

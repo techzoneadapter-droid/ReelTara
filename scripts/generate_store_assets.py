@@ -3,6 +3,7 @@
 Actual Android UI screenshots must be captured separately from a running build.
 """
 from pathlib import Path
+import os
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -25,6 +26,7 @@ for dx, dy, radius in [(865, 110, 170), (910, 375, 205), (680, 280, 105)]:
 
 def font(size, bold=False):
     paths = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"]
+    paths.append(str(Path(os.environ.get('WINDIR', 'C:/Windows')) / 'Fonts' / ('segoeuib.ttf' if bold else 'segoeui.ttf')))
     for path in paths:
         if Path(path).exists(): return ImageFont.truetype(path, size)
     return ImageFont.load_default()
