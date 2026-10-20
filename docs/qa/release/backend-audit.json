@@ -1,0 +1,148 @@
+{
+  "checkedAt": "2026-10-20T12:45:20.887Z",
+  "results": [
+    {
+      "name": "free-catalog",
+      "url": "https://reel-tara.vercel.app/api/free-catalog?version=2",
+      "http": 200,
+      "type": "application/json; charset=utf-8",
+      "cors": "https://localhost",
+      "count": 60,
+      "ids": [
+        "bunny",
+        "sintel",
+        "steel",
+        "archive:MorePopeyeCartoons",
+        "archive:pdcartooncollection",
+        "archive:ACornyConcerto1943BugsBunny",
+        "archive:ColorPopeye",
+        "archive:BugsBunnyCaseOfTheMissingHare",
+        "archive:POPEYEMeetsSindbadTheSailor1936",
+        "archive:bugs-bunny-all-this-and-rabbit-stew",
+        "archive:SantasSuprise",
+        "archive:JackFrost_",
+        "archive:SteamboatWillie",
+        "archive:elephants_dream_voscastellano",
+        "archive:BoomBoom_206",
+        "archive:SupermanCartoonsVideoQualityUpgrades",
+        "archive:TheBarnDance",
+        "archive:PlaneCrazy_201511",
+        "archive:PopeyeTheSailorMeetsAliBabasFortyThieves",
+        "archive:TheGallopinGaucho",
+        "archive:TheAdventuresOfPinocchio1978EnglishVersion",
+        "archive:AnyBondsToday",
+        "archive:40sSupermanCartoonCopiedInskyCaptainAndTheWorldOfTomorrow",
+        "archive:TheStoryOfHeidiEnglishVersion",
+        "archive:TheMadDoctor1933MickeyMouseSoundCartoon",
+        "archive:ConfusionsOfANutzySpy1943",
+        "archive:Fantasmagorie",
+        "archive:SinbadTheSailor",
+        "archive:wallaceandgromit_202003",
+        "archive:SnowWhiteWithBettyBoop1933",
+        "archive:GoopyGeer1932HughHarmanRudolfIsing",
+        "archive:the-biggest-ever-childrens-tv-collection-volume-30_202201",
+        "archive:LittleOrphanWillie1930FlipTheFrogSoundCartoon",
+        "archive:SmileDarnYaSmile1931HughHarmanRudolfIsing",
+        "archive:TheFreshVegetableMystery",
+        "archive:UbIwerksComiColorMarysLittleLamb1935",
+        "archive:UBIwerksComiColorCartoonBalloonLand1935",
+        "commons:76416208",
+        "commons:82808773",
+        "commons:106322221",
+        "commons:118777687",
+        "commons:120543302",
+        "commons:138263998",
+        "commons:143148567",
+        "commons:144859221",
+        "commons:145063858",
+        "commons:146002164",
+        "commons:146376230",
+        "commons:146447955",
+        "commons:146708460",
+        "commons:146789463",
+        "commons:146912889",
+        "commons:147007275",
+        "commons:149208741",
+        "commons:165057593",
+        "commons:187686046",
+        "commons:187686048",
+        "commons:197148047",
+        "commons:197148187",
+        "commons:197148274"
+      ],
+      "unreviewedCount": 57
+    },
+    {
+      "name": "tmdb-VN",
+      "url": "https://reel-tara.vercel.app/api/tmdb?path=movie/popular&region=VN",
+      "http": 503,
+      "type": "application/json; charset=utf-8",
+      "cors": "https://localhost",
+      "error": "api_unavailable"
+    },
+    {
+      "name": "unreviewed-playback",
+      "url": "https://reel-tara.vercel.app/api/playback?provider=internet_archive&sourceId=unreviewed-film&fileName=film.mp4",
+      "http": 400,
+      "type": "application/json; charset=utf-8",
+      "cors": "https://localhost",
+      "error": "Unverified Archive license or identity",
+      "allowed": false
+    },
+    {
+      "name": "website-home",
+      "url": "https://nvbtech.com.vn/apps/reeltara/",
+      "http": 200,
+      "type": "text/html; charset=utf-8",
+      "cors": "*",
+      "title": "ReelTara – Khám phá phim và trailer | NVB Tech",
+      "emails": [
+        "baovan597@gmail.com"
+      ]
+    },
+    {
+      "name": "website-privacy.html",
+      "url": "https://nvbtech.com.vn/apps/reeltara/privacy.html",
+      "http": 200,
+      "type": "text/html; charset=utf-8",
+      "cors": "*",
+      "title": "Chính sách quyền riêng tư ReelTara | NVB Tech",
+      "emails": [
+        "baovan597@gmail.com"
+      ]
+    },
+    {
+      "name": "website-terms.html",
+      "url": "https://nvbtech.com.vn/apps/reeltara/terms.html",
+      "http": 200,
+      "type": "text/html; charset=utf-8",
+      "cors": "*",
+      "title": "Điều khoản sử dụng ReelTara | NVB Tech",
+      "emails": [
+        "baovan597@gmail.com"
+      ]
+    },
+    {
+      "name": "website-support.html",
+      "url": "https://nvbtech.com.vn/apps/reeltara/support.html",
+      "http": 200,
+      "type": "text/html; charset=utf-8",
+      "cors": "*",
+      "title": "Hỗ trợ ReelTara và xóa dữ liệu | NVB Tech",
+      "emails": [
+        "baovan597@gmail.com"
+      ]
+    },
+    {
+      "name": "website-google-play.html",
+      "url": "https://nvbtech.com.vn/apps/reeltara/google-play.html",
+      "http": 200,
+      "type": "text/html; charset=utf-8",
+      "cors": "*",
+      "title": "Thông tin ứng dụng ReelTara | NVB Tech",
+      "emails": [
+        "baovan597@gmail.com"
+      ]
+    }
+  ]
+}

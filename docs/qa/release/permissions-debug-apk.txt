@@ -1,0 +1,10 @@
+Checked with Android SDK 36 aapt dump permissions on the downloaded CI debug APK.
+Application commit: bd1ea2004becde856800248240a6bd68c0f06ef0
+APK SHA-256: f5db892b76762ab05b2bbed21f12447d10390bd2778ec5a1966d9563c8ad27d7
+
+package: vn.com.nvbtech.reeltara.debug
+uses-permission: name='android.permission.INTERNET'
+permission: vn.com.nvbtech.reeltara.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+uses-permission: name='vn.com.nvbtech.reeltara.debug.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+
+This is the installed debug artifact. Recheck the release manifest and Play App Bundle Explorer after upload; do not treat this as Google approval.

@@ -1,0 +1,109 @@
+{
+  "checkedAt": "2026-10-20T12:44:33.387Z",
+  "purpose": "File identity and end-credit inspection; transport alone does not establish licensing.",
+  "files": [
+    {
+      "id": "bunny",
+      "index": 0,
+      "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "frames": [
+        {
+          "path": "docs/qa/release/credits/bunny-0-end-60.png",
+          "time": 536.48
+        },
+        {
+          "path": "docs/qa/release/credits/bunny-0-end-15.png",
+          "time": 581.48
+        }
+      ],
+      "duration": 596.48,
+      "status": "FRAMES_CAPTURED_FOR_REVIEW"
+    },
+    {
+      "id": "bunny",
+      "index": 1,
+      "url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "frames": [
+        {
+          "path": "docs/qa/release/credits/bunny-1-end-60.png",
+          "time": 536.416665
+        },
+        {
+          "path": "docs/qa/release/credits/bunny-1-end-15.png",
+          "time": 581.416667
+        }
+      ],
+      "duration": 596.416667,
+      "status": "FRAMES_CAPTURED_FOR_REVIEW"
+    },
+    {
+      "id": "sintel",
+      "index": 0,
+      "url": "https://archive.org/download/Sintel/sintel-2048-stereo_512kb.mp4",
+      "frames": [
+        {
+          "path": "docs/qa/release/credits/sintel-0-end-60.png",
+          "time": 828.064
+        },
+        {
+          "path": "docs/qa/release/credits/sintel-0-end-15.png",
+          "time": 873.064
+        }
+      ],
+      "duration": 888.064,
+      "status": "FRAMES_CAPTURED_FOR_REVIEW"
+    },
+    {
+      "id": "sintel",
+      "index": 1,
+      "url": "https://archive.org/download/Sintel/sintel-2048-stereo.mp4",
+      "frames": [
+        {
+          "path": "docs/qa/release/credits/sintel-1-end-60.png",
+          "time": 828.064
+        },
+        {
+          "path": "docs/qa/release/credits/sintel-1-end-15.png",
+          "time": 873.064
+        }
+      ],
+      "duration": 888.064,
+      "status": "FRAMES_CAPTURED_FOR_REVIEW"
+    },
+    {
+      "id": "steel",
+      "index": 0,
+      "url": "https://archive.org/download/Tears-of-Steel/tears_of_steel_720p.mp4",
+      "frames": [
+        {
+          "path": "docs/qa/release/credits/steel-0-end-60.png",
+          "time": 674.125
+        },
+        {
+          "path": "docs/qa/release/credits/steel-0-end-15.png",
+          "time": 719.125
+        }
+      ],
+      "duration": 734.125,
+      "status": "FRAMES_CAPTURED_FOR_REVIEW"
+    },
+    {
+      "id": "steel",
+      "index": 1,
+      "url": "https://archive.org/download/Tears-of-Steel/tears_of_steel_1080p.mp4",
+      "frames": [
+        {
+          "path": "docs/qa/release/credits/steel-1-end-60.png",
+          "time": 674.121451
+        },
+        {
+          "path": "docs/qa/release/credits/steel-1-end-15.png",
+          "time": 719.121451
+        }
+      ],
+      "duration": 734.121451,
+      "status": "FRAMES_CAPTURED_FOR_REVIEW"
+    }
+  ],
+  "completedAt": "2026-10-20T12:47:34.786Z"
+}

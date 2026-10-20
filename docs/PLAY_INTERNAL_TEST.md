@@ -4,6 +4,7 @@ Trạng thái: chuẩn bị; không phải bản nộp hay thông báo Google ch
 
 - Package dự kiến: `vn.com.nvbtech.reeltara` (chủ tài khoản đối chiếu trước upload).
 - Track: Internal testing. Giá: miễn phí. Category đề xuất: Entertainment.
+- Bundle đã kiểm: versionCode **23**, target SDK **36**, commit `bd1ea2004becde856800248240a6bd68c0f06ef0`; lấy đúng signed AAB và đối chiếu hash trong `PLAY_RELEASE_REPORT.md`. Nếu Console đã có versionCode >= 23 hoặc certificate khác, dừng upload và đối chiếu trước khi build lại.
 - App access: không cần đăng nhập, không cần tài khoản thử nghiệm; Internet cần cho trailer/video và dữ liệu trực tuyến.
 - Không có in-app purchase, đăng ký VIP, cloud account hoặc tính năng tải phim.
 - Target audience: chưa chốt; thư viện có nội dung bạo lực/fantasy/khoa học viễn tưởng, không tự đánh dấu dành cho trẻ em.

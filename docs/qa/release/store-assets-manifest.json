@@ -1,0 +1,48 @@
+{
+  "createdAt": "2026-10-20T13:45:58.072Z",
+  "applicationCommit": "bd1ea2004becde856800248240a6bd68c0f06ef0",
+  "status": "Prepared for owner review; API live discovery, provider privacy and Play Console declarations remain open.",
+  "notes": [
+    "Phone screenshots are original ADB captures from installed CI debug APK of the AAB source commit, with no fixtures or image edits.",
+    "No commercial trailer frame is selected for the store artwork. QA trailer image is evidence only.",
+    "Free-list was scrolled normally in the app. Some other QA images were captured before compositor stabilization; use this selection.",
+    "Recapture after live API verification if needed for the final listing."
+  ],
+  "files": [
+    {
+      "path": "docs/qa/release/free-list-android.png",
+      "kind": "real Android screenshot",
+      "width": 1080,
+      "height": 1920,
+      "sha256": "66935580a907af6aa1cfaff71508c74be2c6f609bae2e7a9da7c623d1d0d9cba"
+    },
+    {
+      "path": "docs/qa/release/detail-android.png",
+      "kind": "real Android screenshot",
+      "width": 1080,
+      "height": 1920,
+      "sha256": "f87dae189766f2342cef928fc346334f0be35ffdf02a7f2f0bc9fe4b5b5129d4"
+    },
+    {
+      "path": "docs/qa/release/playback-android.png",
+      "kind": "real Android screenshot",
+      "width": 1080,
+      "height": 1920,
+      "sha256": "69f178f073f958f9c845a855bdf3da8b8c4b34bbfbe4bf722920eb25fdbb903d"
+    },
+    {
+      "path": ".cache/ci-bd1ea20/reeltara-play-store-assets/icon-512.png",
+      "kind": "CI store artwork",
+      "width": 512,
+      "height": 512,
+      "sha256": "03272fcaf5c1c62ad48ed441b08757acaa84de02b63d368d5be746daddf9dd25"
+    },
+    {
+      "path": ".cache/ci-bd1ea20/reeltara-play-store-assets/feature-graphic-1024x500.png",
+      "kind": "CI store artwork",
+      "width": 1024,
+      "height": 500,
+      "sha256": "69cc8f8b78f5205152b7ce1bb19ae05573adee80a9788733b93c51056cde17d8"
+    }
+  ]
+}

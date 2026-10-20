@@ -1,0 +1,188 @@
+{
+  "checkedAt": "2026-10-20T10:09:57.042Z",
+  "films": [
+    {
+      "id": "bunny",
+      "sourcePageUrl": "https://peach.blender.org/",
+      "declaredLicense": "https://creativecommons.org/licenses/by/3.0/",
+      "files": [
+        {
+          "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+          "metadataTitle": "Big Buck Bunny",
+          "metadataLicense": "http://creativecommons.org/licenses/by/3.0/",
+          "file": {
+            "name": "Content/big_buck_bunny_720p_surround.mp4",
+            "format": "h.264",
+            "size": "61878609",
+            "md5": "aa031fc2040afe00241b390dbfda2e4f",
+            "sha1": "3bdcef855ca17af11e96b8f8dbaeb4d3e54b996a"
+          },
+          "transport": {
+            "ok": true,
+            "status": 206,
+            "mime": "video/mp4",
+            "range": true
+          },
+          "note": "Uploader metadata and transport are supporting evidence; creator licensing and complete credit roll must be reviewed independently."
+        },
+        {
+          "url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+          "metadataTitle": "Big Buck Bunny",
+          "metadataLicense": "http://creativecommons.org/licenses/by/3.0/us/",
+          "file": {
+            "name": "BigBuckBunny_512kb.mp4",
+            "format": "512Kb MPEG4",
+            "size": "43315070",
+            "md5": "54673faa68059667f58edb0f96a70d9d",
+            "sha1": "a57f87656494bd13d467b3a890aa7cf59b28e44f"
+          },
+          "transport": {
+            "ok": true,
+            "status": 206,
+            "mime": "video/mp4",
+            "range": true
+          },
+          "note": "Uploader metadata and transport are supporting evidence; creator licensing and complete credit roll must be reviewed independently."
+        }
+      ]
+    },
+    {
+      "id": "sintel",
+      "sourcePageUrl": "https://durian.blender.org/",
+      "declaredLicense": "https://creativecommons.org/licenses/by/3.0/",
+      "files": [
+        {
+          "url": "https://archive.org/download/Sintel/sintel-2048-stereo_512kb.mp4",
+          "metadataTitle": "Sintel",
+          "metadataCreator": "Blender Foundation",
+          "metadataLicense": "http://creativecommons.org/licenses/by/3.0/",
+          "file": {
+            "name": "sintel-2048-stereo_512kb.mp4",
+            "format": "512Kb MPEG4",
+            "size": "77410288",
+            "md5": "a85c735099876c82ca804d8c44196b09",
+            "sha1": "1918a22b3e9829605a3656949b0b5e2b96a4583b"
+          },
+          "transport": {
+            "ok": true,
+            "status": 206,
+            "mime": "video/mp4",
+            "range": true
+          },
+          "note": "Uploader metadata and transport are supporting evidence; creator licensing and complete credit roll must be reviewed independently."
+        },
+        {
+          "url": "https://archive.org/download/Sintel/sintel-2048-stereo.mp4",
+          "metadataTitle": "Sintel",
+          "metadataCreator": "Blender Foundation",
+          "metadataLicense": "http://creativecommons.org/licenses/by/3.0/",
+          "file": {
+            "name": "sintel-2048-stereo.mp4",
+            "format": "MPEG4",
+            "size": "282690045",
+            "md5": "e02a7538bfaddd47209743591d3e5dcb",
+            "sha1": "3d228eed0cbcb817cf9b712010eb730d01f3d173"
+          },
+          "transport": {
+            "ok": true,
+            "status": 206,
+            "mime": "video/mp4",
+            "range": true
+          },
+          "note": "Uploader metadata and transport are supporting evidence; creator licensing and complete credit roll must be reviewed independently."
+        }
+      ]
+    },
+    {
+      "id": "steel",
+      "sourcePageUrl": "https://mango.blender.org/",
+      "declaredLicense": "https://creativecommons.org/licenses/by/3.0/",
+      "files": [
+        {
+          "url": "https://archive.org/download/Tears-of-Steel/tears_of_steel_720p.mp4",
+          "metadataTitle": "Tears of Steel",
+          "metadataCreator": "Ton Roosendaal",
+          "metadataLicense": "http://creativecommons.org/licenses/by/3.0/",
+          "file": {
+            "name": "tears_of_steel_720p.mp4",
+            "format": "h.264",
+            "size": "76435802",
+            "md5": "de619ffdc5b898eb1326c8a839edcb8d",
+            "sha1": "90ad6c354ff0b21802e018ba13127ccc8119aa1b"
+          },
+          "transport": {
+            "ok": true,
+            "status": 206,
+            "mime": "video/mp4",
+            "range": true
+          },
+          "note": "Uploader metadata and transport are supporting evidence; creator licensing and complete credit roll must be reviewed independently."
+        },
+        {
+          "url": "https://archive.org/download/Tears-of-Steel/tears_of_steel_1080p.mp4",
+          "metadataTitle": "Tears of Steel",
+          "metadataCreator": "Ton Roosendaal",
+          "metadataLicense": "http://creativecommons.org/licenses/by/3.0/",
+          "file": {
+            "name": "tears_of_steel_1080p.mp4",
+            "format": "h.264",
+            "size": "76119705",
+            "md5": "182e6ad2fd34312407ba97343e063a41",
+            "sha1": "c0ad0ca96e1301cb3e4aa2b0216d8f7e4c6e429c"
+          },
+          "transport": {
+            "ok": true,
+            "status": 206,
+            "mime": "video/mp4",
+            "range": true
+          },
+          "note": "Uploader metadata and transport are supporting evidence; creator licensing and complete credit roll must be reviewed independently."
+        }
+      ]
+    }
+  ],
+  "trailers": [
+    {
+      "url": "https://www.youtube.com/watch?v=Way9Dexny3w",
+      "http": 200,
+      "title": "Dune: Part Two | Official Trailer",
+      "author": "Warner Bros.",
+      "authorUrl": "https://www.youtube.com/@WarnerBros"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=uYPbbksJxIg",
+      "http": 200,
+      "title": "Oppenheimer | New Trailer",
+      "author": "Universal Pictures",
+      "authorUrl": "https://www.youtube.com/@UniversalPictures"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=RlbR5N6veqw",
+      "http": 200,
+      "title": "POOR THINGS | Official Trailer | Searchlight Pictures",
+      "author": "SearchlightPictures",
+      "authorUrl": "https://www.youtube.com/@searchlightpictures"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=zSWdZVtXT7E",
+      "http": 200,
+      "title": "Interstellar - Trailer - Official Warner Bros. UK",
+      "author": "Warner Bros. UK & Ireland",
+      "authorUrl": "https://www.youtube.com/@warnerbrosuktrailers"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=cqGjhVJWtEg",
+      "http": 200,
+      "title": "SPIDER-MAN: ACROSS THE SPIDER-VERSE - Official Trailer (HD)",
+      "author": "Sony Pictures Entertainment",
+      "authorUrl": "https://www.youtube.com/@sonypictures"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=kA244xewjcI",
+      "http": 200,
+      "title": "Past Lives | Official Trailer HD | A24",
+      "author": "A24",
+      "authorUrl": "https://www.youtube.com/@A24"
+    }
+  ]
+}

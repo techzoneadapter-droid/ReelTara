@@ -1,0 +1,1496 @@
+{
+  "checkedAt": "2026-10-20T13:24:29.356Z",
+  "serial": "emulator-5580",
+  "packageId": "vn.com.nvbtech.reeltara.debug",
+  "mode": "Installed bundled APK; real Android WebView and live network; no API/media fixtures",
+  "apkSha256": "f5db892b76762ab05b2bbed21f12447d10390bd2778ec5a1966d9563c8ad27d7",
+  "android": "15",
+  "checks": [
+    {
+      "name": "bundled launch and home",
+      "status": "PASS",
+      "evidence": {
+        "origin": "https://localhost",
+        "title": "ReelTara — Find your next great story",
+        "cards": 12
+      }
+    },
+    {
+      "name": "free catalog and detail",
+      "status": "PASS",
+      "evidence": "Big Buck Bunny detail from reviewed bundled catalog"
+    },
+    {
+      "name": "watchlist persistence",
+      "status": "PASS",
+      "evidence": [
+        "bunny"
+      ]
+    },
+    {
+      "name": "live full film playback and seek",
+      "status": "PASS",
+      "evidence": {
+        "duration": 596.416667,
+        "currentTime": 37.58359,
+        "source": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+        "width": 426,
+        "height": 240,
+        "error": null
+      }
+    },
+    {
+      "name": "native fullscreen and Back",
+      "status": "PASS",
+      "evidence": "Fullscreen API"
+    },
+    {
+      "name": "native Android Back returns from player",
+      "status": "PASS",
+      "evidence": "Detail visible after hardware Back"
+    },
+    {
+      "name": "resume saved film progress",
+      "status": "PASS",
+      "evidence": {
+        "currentTime": 37.591635,
+        "source": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4"
+      }
+    },
+    {
+      "name": "landscape rotation",
+      "status": "PASS",
+      "evidence": {
+        "width": 732,
+        "height": 364
+      }
+    },
+    {
+      "name": "offline bundled launch and saved data",
+      "status": "PASS",
+      "evidence": {
+        "online": false,
+        "saved": 1,
+        "method": "DevTools network offline simulation on installed WebView; not a physical Wi-Fi/4G handover"
+      }
+    },
+    {
+      "name": "clear local viewing data",
+      "status": "PASS",
+      "evidence": {
+        "watchlist": 0,
+        "viewed": 0,
+        "trailers": 0,
+        "progress": 0
+      }
+    },
+    {
+      "name": "YouTube trailer embedding or visible official fallback",
+      "status": "PASS",
+      "evidence": {
+        "state": "Playing",
+        "iframe": "https://www.youtube-nocookie.com/embed/Way9Dexny3w?controls=0&playsinline=1&rel=0&enablejsapi=1&autoplay=1&origin=https%3A%2F%2Flocalhost&widgetid=1&forigin=https%3A%2F%2Flocalhost%2F&aoriginsup=1&vf=5",
+        "officialLinks": []
+      }
+    },
+    {
+      "name": "official source opens externally",
+      "status": "PASS",
+      "evidence": {
+        "url": "https://tv.apple.com/search?term=Dune%3A%20Part%20Two",
+        "activity": [
+          "    topResumedActivity=ActivityRecord{58d2792 u0 com.android.chrome/org.chromium.chrome.browser.firstrun.FirstRunActivity t21}\r"
+        ],
+        "note": "Official Apple TV catalog search; not proof of regional availability or a direct entitlement to the movie."
+      }
+    }
+  ],
+  "screenshots": [
+    "docs/qa/release/home-android.png",
+    "docs/qa/release/free-android.png",
+    "docs/qa/release/detail-android.png",
+    "docs/qa/release/playback-android.png",
+    "docs/qa/release/landscape-android.png",
+    "docs/qa/release/offline-android.png",
+    "docs/qa/release/watchlist-offline-android.png",
+    "docs/qa/release/privacy-android.png",
+    "docs/qa/release/trailer-qa-android.png"
+  ],
+  "network": [
+    {
+      "host": "localhost",
+      "path": "/",
+      "type": "Document"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch"
+    },
+    {
+      "host": "fonts.googleapis.com",
+      "path": "/css2",
+      "type": "Stylesheet"
+    },
+    {
+      "host": "localhost",
+      "path": "/assets/index-CWsfHi3r.js",
+      "type": "Script"
+    },
+    {
+      "host": "localhost",
+      "path": "/assets/index-DUREnsLd.css",
+      "type": "Stylesheet"
+    },
+    {
+      "host": "fonts.gstatic.com",
+      "path": "/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2",
+      "type": "Font"
+    },
+    {
+      "host": "fonts.gstatic.com",
+      "path": "/s/intertight/v9/NGSwv5HMAFg6IuGlBNMjxLsH8ahuQ2e8.woff2",
+      "type": "Font"
+    },
+    {
+      "host": "localhost",
+      "path": "/brand/wordmark.png",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/brand/icon.png",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/brand/discovery-placeholder.svg",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/images/bunny.jpg",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/images/sintel.jpg",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/images/steel.jpg",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/brand/icon.png",
+      "type": "Other"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/free-catalog",
+      "type": "Fetch"
+    },
+    {
+      "host": "archive.org",
+      "path": "/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media"
+    },
+    {
+      "host": "archive.org",
+      "path": "/download/Tears-of-Steel/tears_of_steel_720p.mp4",
+      "type": "Media"
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media"
+    },
+    {
+      "host": "dn710301.ca.archive.org",
+      "path": "/0/items/Tears-of-Steel/tears_of_steel_720p.mp4",
+      "type": "Media"
+    },
+    {
+      "host": "archive.org",
+      "path": "/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "type": "Media"
+    },
+    {
+      "host": "dn801203.us.archive.org",
+      "path": "/0/items/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "type": "Media"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/playback",
+      "type": "Fetch"
+    },
+    {
+      "host": "fonts.gstatic.com",
+      "path": "/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7W0Q5n-wU.woff2",
+      "type": "Font"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/iframe_api",
+      "type": "Script"
+    },
+    {
+      "host": "www.youtube.com",
+      "path": "/s/player/c271e571/www-widgetapi.vflset/www-widgetapi.js",
+      "type": "Script"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/embed/Way9Dexny3w",
+      "type": "Document"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/s/player/c271e571/www-player.css",
+      "type": "Stylesheet"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/s/_/ytembeds/_/ss/k=ytembeds.base.n6rSn6h5C6A.L.W.O/am=AAAAIIAx/d=1/br=1/rs=AGKMywFzTn1F_G8XSVkq8bsWbTCNlBG5bg/m=root,base",
+      "type": "Stylesheet"
+    },
+    {
+      "host": "fonts.gstatic.com",
+      "path": "/s/roboto/v48/KFO7CnqEu92Fr1ME7kSn66aGLdTylUAMa3yUBHMdazQ.woff2",
+      "type": "Font"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/s/_/ytembeds/_/js/k=ytembeds.base.en_US.ryewfCfqm_w.2021.O/am=AAAAIIAx/d=1/excm=base,root/br=1/rs=AGKMywElm0AntLCgB4vCNQsSQyjd1kKnsg/m=root,base",
+      "type": "Script"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/s/player/c271e571/player_embed_es6.vflset/en_US/base.js",
+      "type": "Script"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/s/_/ytembeds/_/js/k=ytembeds.base.en_US.ryewfCfqm_w.2021.O/ck=ytembeds.base.n6rSn6h5C6A.L.W.O/am=AAAAIIAx/d=1/exm=base,root/excm=base,root/ed=1/br=1/rs=AGKMywEZ2Jdwbwp1NYmxw3Zu5kL0dF7VLg/m=r78Drb",
+      "type": "Script"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/youtubei/v1/player",
+      "type": "Fetch"
+    },
+    {
+      "host": "www.google.com",
+      "path": "/js/th/UuzLx1YTO8P6u56myU4pojdeJmdcBWAsOkQVPkq63qc.js",
+      "type": "Script"
+    },
+    {
+      "host": "rr1---sn-42u-i5olz.googlevideo.com",
+      "path": "/videoplayback",
+      "type": "Fetch"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/s/player/c271e571/player_embed_es6.vflset/en_US/captions.js",
+      "type": "Script"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/s/player/c271e571/player_embed_es6.vflset/en_US/heartbeat.js",
+      "type": "Script"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/youtubei/v1/next",
+      "type": "Fetch"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/timedtext",
+      "type": "XHR"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/qoe",
+      "type": "Fetch"
+    },
+    {
+      "host": "i.ytimg.com",
+      "path": "/vi_webp/Way9Dexny3w/maxresdefault.webp",
+      "type": "Image"
+    },
+    {
+      "host": "yt3.ggpht.com",
+      "path": "/yVXKYrUI8hckCQdyUuOWf5ZJk2keT8WO3TV2b8RYk3RKgjz5Rh8v1UsH7Yz2j_hbDQRk32rZ_rM=s68-c-k-c0x00ffffff-no-rj",
+      "type": "Image"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/s/_/ytembeds/_/js/k=ytembeds.base.en_US.ryewfCfqm_w.2021.O/ck=ytembeds.base.n6rSn6h5C6A.L.W.O/am=AAAAIIAx/d=1/exm=base,r78Drb,root/excm=base,root/ed=1/br=1/rs=AGKMywEZ2Jdwbwp1NYmxw3Zu5kL0dF7VLg/m=Nuilue",
+      "type": "Script"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/youtubei/v1/log_event",
+      "type": "XHR"
+    },
+    {
+      "host": "yt3.ggpht.com",
+      "path": "/yVXKYrUI8hckCQdyUuOWf5ZJk2keT8WO3TV2b8RYk3RKgjz5Rh8v1UsH7Yz2j_hbDQRk32rZ_rM=s88-c-k-c0x00ffffff-no-rj",
+      "type": "Image"
+    },
+    {
+      "host": "i.ytimg.com",
+      "path": "/vi/3_9vCamtuPY/hqdefault.jpg",
+      "type": "Image"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/generate_204",
+      "type": "Image"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/playback",
+      "type": "Fetch"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/ptracking",
+      "type": "Fetch"
+    },
+    {
+      "host": "jnn-pa.googleapis.com",
+      "path": "/$rpc/google.internal.waa.v1.Waa/GenerateIT",
+      "type": "XHR"
+    },
+    {
+      "host": "jnn-pa.googleapis.com",
+      "path": "/$rpc/google.internal.waa.v1.Waa/GenerateIT",
+      "type": "Other"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/watchtime",
+      "type": "Fetch"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/atr",
+      "type": "XHR"
+    }
+  ],
+  "responses": [
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/free-catalog",
+      "type": "Fetch",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "dn710301.ca.archive.org",
+      "path": "/0/items/Tears-of-Steel/tears_of_steel_720p.mp4",
+      "type": "Media",
+      "status": 206,
+      "mime": "video/mp4"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "status": 206,
+      "mime": "video/mp4"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "status": 206,
+      "mime": "video/mp4"
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "status": 206,
+      "mime": "video/mp4"
+    },
+    {
+      "host": "dn801203.us.archive.org",
+      "path": "/0/items/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "type": "Media",
+      "status": 206,
+      "mime": "video/mp4"
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "status": 206,
+      "mime": "video/mp4"
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "status": 206,
+      "mime": "video/mp4"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/youtubei/v1/player",
+      "type": "Fetch",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "host": "rr1---sn-42u-i5olz.googlevideo.com",
+      "path": "/videoplayback",
+      "type": "Fetch",
+      "status": 200,
+      "mime": "application/vnd.yt-ump"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/youtubei/v1/next",
+      "type": "Fetch",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/qoe",
+      "type": "Fetch",
+      "status": 204,
+      "mime": "text/html"
+    },
+    {
+      "host": "rr1---sn-42u-i5olz.googlevideo.com",
+      "path": "/videoplayback",
+      "type": "Fetch",
+      "status": 200,
+      "mime": "application/vnd.yt-ump"
+    },
+    {
+      "host": "rr1---sn-42u-i5olz.googlevideo.com",
+      "path": "/videoplayback",
+      "type": "Fetch",
+      "status": 200,
+      "mime": "application/vnd.yt-ump"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/playback",
+      "type": "Fetch",
+      "status": 204,
+      "mime": "text/html"
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/ptracking",
+      "type": "Fetch",
+      "status": 204,
+      "mime": "text/html"
+    }
+  ],
+  "networkErrors": [
+    {
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "dn710301.ca.archive.org",
+      "path": "/0/items/Tears-of-Steel/tears_of_steel_720p.mp4",
+      "type": "Media",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "dn801203.us.archive.org",
+      "path": "/0/items/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "type": "Media",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "dn710604.ca.archive.org",
+      "path": "/0/items/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "archive.org",
+      "path": "/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "type": "Media",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/playback",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "error": "net::ERR_INTERNET_DISCONNECTED",
+      "canceled": false
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/qoe",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "yt3.ggpht.com",
+      "path": "/yVXKYrUI8hckCQdyUuOWf5ZJk2keT8WO3TV2b8RYk3RKgjz5Rh8v1UsH7Yz2j_hbDQRk32rZ_rM=s68-c-k-c0x00ffffff-no-rj",
+      "type": "Image",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/playback",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/ptracking",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "jnn-pa.googleapis.com",
+      "path": "/$rpc/google.internal.waa.v1.Waa/GenerateIT",
+      "type": "XHR",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/watchtime",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/atr",
+      "type": "XHR",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/api/stats/qoe",
+      "type": "Fetch",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "host": "www.youtube-nocookie.com",
+      "path": "/youtubei/v1/log_event",
+      "type": "XHR",
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    },
+    {
+      "error": "net::ERR_ABORTED",
+      "canceled": true
+    }
+  ],
+  "playbackEvents": [
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "canPlayType": "",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "event": "selected-movie",
+      "playbackCandidates": [
+        {
+          "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+          "mimeType": "video/mp4",
+          "health": "unknown",
+          "priority": 1
+        },
+        {
+          "url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+          "mimeType": "video/mp4",
+          "health": "unknown",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "event": "probe",
+      "ok": true,
+      "candidate": {
+        "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+        "mimeType": "video/mp4",
+        "health": "unknown",
+        "priority": 1
+      }
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "event": "stalled"
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "event": "loadedmetadata",
+      "duration": 596.48
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "event": "candidate-failed",
+      "reason": "Media load/buffering timeout (10s)",
+      "videoErrorName": null,
+      "videoErrorMessage": null
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "event": "probe",
+      "ok": true,
+      "candidate": {
+        "url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+        "mimeType": "video/mp4",
+        "health": "unknown",
+        "priority": 2
+      }
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "event": "loadedmetadata",
+      "duration": 596.416667
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "event": "canplay"
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "event": "playing",
+      "currentTime": 0.037245,
+      "duration": 596.416667
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "event": "progress",
+      "currentTime": 0.109365,
+      "duration": 596.416667
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "event": "canplay"
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+      "event": "playing",
+      "currentTime": 35.028102,
+      "duration": 596.416667
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "canPlayType": "",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "event": "selected-movie",
+      "playbackCandidates": [
+        {
+          "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+          "mimeType": "video/mp4",
+          "health": "unknown",
+          "priority": 1
+        },
+        {
+          "url": "https://archive.org/download/BigBuckBunny_328/BigBuckBunny_512kb.mp4",
+          "mimeType": "video/mp4",
+          "health": "unknown",
+          "priority": 2
+        }
+      ]
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "event": "probe",
+      "ok": true,
+      "candidate": {
+        "url": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+        "mimeType": "video/mp4",
+        "health": "unknown",
+        "priority": 1
+      }
+    },
+    {
+      "movie": "bunny",
+      "title": "Big Buck Bunny",
+      "sourceProvider": "Blender",
+      "licenseType": "CC BY 3.0",
+      "verifiedLegal": true,
+      "playable": true,
+      "mimeType": "video/mp4",
+      "canPlayType": "maybe",
+      "videoErrorCode": null,
+      "sourcePageUrl": "https://peach.blender.org/",
+      "playbackUrl": "https://archive.org/download/BigBuckBunny_124/Content%2Fbig_buck_bunny_720p_surround.mp4",
+      "event": "loadedmetadata",
+      "duration": 596.48
+    }
+  ],
+  "errors": [],
+  "completedAt": "2026-10-20T13:25:31.141Z",
+  "status": "PASS"
+}

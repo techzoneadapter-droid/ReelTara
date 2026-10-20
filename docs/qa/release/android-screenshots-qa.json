@@ -1,0 +1,261 @@
+{
+  "checkedAt": "2026-10-20T13:42:17.666Z",
+  "serial": "emulator-5580",
+  "packageId": "vn.com.nvbtech.reeltara.debug",
+  "mode": "Installed bundled APK; real Android WebView and live network; no API/media fixtures",
+  "apkSha256": "f5db892b76762ab05b2bbed21f12447d10390bd2778ec5a1966d9563c8ad27d7",
+  "android": "15",
+  "checks": [
+    {
+      "name": "bundled launch and home",
+      "status": "PASS",
+      "evidence": {
+        "origin": "https://localhost",
+        "title": "ReelTara — Find your next great story",
+        "cards": 12
+      }
+    },
+    {
+      "name": "free catalog and detail",
+      "status": "PASS",
+      "evidence": "Big Buck Bunny detail from reviewed bundled catalog"
+    }
+  ],
+  "screenshots": [
+    "docs/qa/release/home-android.png",
+    "docs/qa/release/free-android.png",
+    "docs/qa/release/free-list-android.png",
+    "docs/qa/release/detail-android.png"
+  ],
+  "network": [
+    {
+      "host": "localhost",
+      "path": "/",
+      "type": "Document"
+    },
+    {
+      "host": "localhost",
+      "path": "/brand/wordmark.png",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/brand/icon.png",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/brand/discovery-placeholder.svg",
+      "type": "Image"
+    },
+    {
+      "host": "fonts.gstatic.com",
+      "path": "/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2",
+      "type": "Font"
+    },
+    {
+      "host": "fonts.gstatic.com",
+      "path": "/s/intertight/v9/NGSwv5HMAFg6IuGlBNMjxLsH8ahuQ2e8.woff2",
+      "type": "Font"
+    },
+    {
+      "host": "localhost",
+      "path": "/images/bunny.jpg",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/images/sintel.jpg",
+      "type": "Image"
+    },
+    {
+      "host": "localhost",
+      "path": "/images/steel.jpg",
+      "type": "Image"
+    },
+    {
+      "host": "fonts.googleapis.com",
+      "path": "/css2",
+      "type": "Stylesheet"
+    },
+    {
+      "host": "localhost",
+      "path": "/assets/index-CWsfHi3r.js",
+      "type": "Script"
+    },
+    {
+      "host": "localhost",
+      "path": "/assets/index-DUREnsLd.css",
+      "type": "Stylesheet"
+    },
+    {
+      "host": "localhost",
+      "path": "/brand/icon.png",
+      "type": "Other"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/free-catalog",
+      "type": "Fetch"
+    }
+  ],
+  "responses": [
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/free-catalog",
+      "type": "Fetch",
+      "status": 200,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    },
+    {
+      "host": "reel-tara.vercel.app",
+      "path": "/api/tmdb",
+      "type": "Fetch",
+      "status": 503,
+      "mime": "application/json"
+    }
+  ],
+  "networkErrors": [],
+  "playbackEvents": [],
+  "errors": [],
+  "completedAt": "2026-10-20T13:42:26.483Z",
+  "status": "PASS"
+}

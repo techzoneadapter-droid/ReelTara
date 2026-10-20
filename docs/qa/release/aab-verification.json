@@ -1,0 +1,16 @@
+{
+  "checkedAt": "2026-10-20T07:52:50.836Z",
+  "signed": true,
+  "applicationId": "vn.com.nvbtech.reeltara",
+  "targetSdk": 36,
+  "versionCode": 23,
+  "debuggable": false,
+  "sha256": "19872e2f679ace4637884f42648d65aba09681b29e13758938870e3b65525032",
+  "nativeLibraries": [],
+  "commit": "bd1ea2004becde856800248240a6bd68c0f06ef0",
+  "localVerifiedAt": "2026-10-20T08:28:35.230Z",
+  "localJarsigner": "PASS",
+  "localSha256": "19872e2f679ace4637884f42648d65aba09681b29e13758938870e3b65525032",
+  "signerSha256": "F1:DB:83:A1:CA:EB:BD:23:0C:12:BD:03:50:2A:A9:02:DD:F2:86:6C:6D:56:4D:3B:09:07:04:E9:08:44:7E:B9",
+  "forbiddenEntries": []
+}
