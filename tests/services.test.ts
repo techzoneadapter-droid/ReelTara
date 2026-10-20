@@ -374,7 +374,7 @@ test("TMDB discovery only targets India and the Philippines", async () => {
   try {
     assert.equal((await tmdbResponse("/?path=movie/popular&region=IN", "testing-token")).status, 200);
     assert.equal((await tmdbResponse("/?path=movie/popular&region=PH", "testing-token")).status, 200);
-    assert.equal((await tmdbResponse("/?path=movie/popular&region=VN", "testing-token")).status, 200);
+    assert.equal((await tmdbResponse("/?path=movie/now_playing&region=VN", "testing-token")).status, 200);
     assert.deepEqual(targetRegions, ["IN", "PH", "IN"]);
   } finally { globalThis.fetch = originalFetch; }
 });
