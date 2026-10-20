@@ -1,3 +1,9 @@
+## 20/10/2026 — Cập nhật tự động
+- Chính sách quyền riêng tư đã được bổ sung email liên hệ doanh nghiệp do chủ dự án cung cấp: baovan597@gmail.com. Chủ dự án cần xác nhận email này được phép công khai.
+- Workflow GitHub Pages đã được thêm. Nếu workflow thất bại vì Pages chưa bật, truy cập **Settings → Pages → Source → GitHub Actions** rồi chạy lại workflow `Publish ReelTara privacy policy`.
+- URL dự kiến sau khi Pages hoạt động: `https://techzoneadapter-droid.github.io/ReelTara/privacy.html`. Phải truy cập được bằng trình duyệt không đăng nhập trước khi khai trên Google Play.
+- Bản Android không có API backend hiện dùng danh mục offline sẵn có thay vì đợi các request `/api` lỗi.
+
 # ReelTara — CHỈ CÁC BƯỚC CHỦ SỞ HỮU PHẢI LÀM
 
 > Các bước dưới đây đòi hỏi xác minh danh tính, xác nhận quyền nội dung, hoặc bí mật cá nhân. Không đăng mật khẩu/token/khóa ký vào GitHub, email hay tin nhắn. Báo khi từng bước hoàn tất để kiểm tra lại.

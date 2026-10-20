@@ -1,0 +1,42 @@
+name: Publish ReelTara privacy policy
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/privacy.html
+      - .github/workflows/privacy-pages.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: reeltara-privacy-pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/configure-pages@v5
+      - name: Create public static policy site
+        run: |
+          mkdir -p _privacy-site
+          cp docs/privacy.html _privacy-site/privacy.html
+          cp docs/privacy.html _privacy-site/index.html
+          touch _privacy-site/.nojekyll
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _privacy-site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy policy
+        id: deployment
+        uses: actions/deploy-pages@v4

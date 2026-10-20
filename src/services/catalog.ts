@@ -11,6 +11,9 @@ import type {
 import { TmdbAdapter } from "./tmdb";
 import { UserStateService } from "./userState";
 import { preferredTrailer, youtubeKey } from "./legal";
+import { isNativeAndroid } from "./nativeCuratedPlayback";
+import { hasConfiguredApiOrigin } from "./apiBase";
+const nativeWithoutBackend = () => isNativeAndroid() && !hasConfiguredApiOrigin();
 export interface CatalogAdapter {
   home(country: Country): Promise<Catalog>;
   search(query: string, country: Country): Promise<SearchResult>;
@@ -35,11 +38,12 @@ let freeAvailable = fallbackCatalog.free;
 let freeTask: Promise<void> | undefined;
 const homeCache = new Map<Country, { value: Catalog; expires: number }>();
 export const MovieService: CatalogAdapter & { retry(): void; page(country: Country, page: number, sort: string, query?: string): Promise<Movie[]> } = {
-  async page(country, page, sort, query) { return query ? DiscoveryCatalogAdapter.search(query, country, page) : sort === "popular" ? DiscoveryCatalogAdapter.getPopular(country, page) : sort === "trending" ? DiscoveryCatalogAdapter.getTrending(country, page) : DiscoveryCatalogAdapter.getDiscover(country, page); },
+  async page(country, page, sort, query) { if (nativeWithoutBackend()) return []; return query ? DiscoveryCatalogAdapter.search(query, country, page) : sort === "popular" ? DiscoveryCatalogAdapter.getPopular(country, page) : sort === "trending" ? DiscoveryCatalogAdapter.getTrending(country, page) : DiscoveryCatalogAdapter.getDiscover(country, page); },
   retry() {
     homeCache.clear();
   },
   async home(country) {
+    if (nativeWithoutBackend()) return fallbackCatalog;
     const cached = homeCache.get(country);
     if (cached && cached.expires > Date.now()) return cached.value;
     const genres = await TmdbAdapter.genres(country).catch(() => []);
@@ -89,6 +93,7 @@ export const MovieService: CatalogAdapter & { retry(): void; page(country: Count
       ...user.viewed.map((e) => e.movie),
     ]).filter((m) => m.title.toLowerCase().includes(normalized));
     if (!normalized) return { movies: available, status: "fallback" };
+    if (nativeWithoutBackend()) return { movies: local, status: "fallback" };
     try {
       const result = await DiscoveryCatalogAdapter.search(query, country);
       available = unique([...result, ...available]).slice(0, 300);
@@ -106,7 +111,7 @@ export const MovieService: CatalogAdapter & { retry(): void; page(country: Count
     }
   },
   async details(movie, country) {
-    if (movie.origin === "tmdb" || movie.tmdbId) {
+    if (!nativeWithoutBackend() && (movie.origin === "tmdb" || movie.tmdbId)) {
       try {
         const live = await DiscoveryCatalogAdapter.getDetails(
           movie.tmdbId ? `tmdb:${movie.tmdbId}` : movie.id,

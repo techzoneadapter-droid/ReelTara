@@ -38,6 +38,14 @@ export const UserStateService = {
   },
   /** Clear locally saved viewing activity and preferences on this device. */
   reset() {
+    try {
+      const staleKeys: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && (k.startsWith("reeltara-cache:") || k === "reeltara-watchlist" || k === "reeltara-playback-health-v2")) staleKeys.push(k);
+      }
+      staleKeys.forEach(k => localStorage.removeItem(k));
+    } catch { /* Browser storage may be disabled. */ }
     update({
       version: 1, watchlist: [], viewed: [], trailers: [], progress: {},
       country: "VN",
