@@ -59,6 +59,8 @@ jobs:
           npx capacitor-assets generate --android --iconBackgroundColor "#0B1020" --splashBackgroundColor "#0B1020"
       - name: Build debug APK
         run: cd android && bash ./gradlew --no-daemon assembleDebug
+      - name: Validate release bundle compilation (unsigned)
+        run: cd android && bash ./gradlew --no-daemon bundleRelease
       - name: Build signed release AAB when keys exist
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

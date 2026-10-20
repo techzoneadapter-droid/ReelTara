@@ -9,6 +9,9 @@ This is a development release pipeline, not proof of Play acceptance.
 - Debug APK is generated without credentials. A signed AAB is generated ONLY when the upload key GitHub Secrets exist.
 - Google Play approval and account/test eligibility cannot be granted through GitHub.
 
+## Privacy Policy (website chính thức)
+https://nvbtech.com.vn/reeltara/privacy.html — xác nhận trình duyệt công khai có thể mở trước khi khai trên Play Console.
+
 ## Backend
 Deploy the Vite app and current /api functions on an HTTPS host such as Vercel.
 Set GitHub Actions repository variable REELTARA_API_ORIGIN to the HTTPS origin (no path or trailing slash), e.g. https://YOUR_HOST.vercel.app.

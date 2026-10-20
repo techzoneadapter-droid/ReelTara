@@ -2,7 +2,7 @@
 
 React + TypeScript + Vite. Existing branding, layouts and card sizes are preserved. Typography uses Inter Tight (headings/titles) and Inter (body/controls), with swap and system fallbacks. Additions are functional loading/error feedback, country preference, availability, Continue Watching and a media dialog.
 
-The Android GitHub Actions build and Play preparation checklist are in docs/ANDROID_RELEASE.md. A signed app bundle requires a private upload key; Google Play approval is a separate process.
+The Android GitHub Actions build and Play preparation checklist are in docs/ANDROID_RELEASE.md. Official privacy policy: https://nvbtech.com.vn/reeltara/privacy.html. A signed app bundle requires a private upload key; Google Play approval is a separate process.
 
 ## Run
 

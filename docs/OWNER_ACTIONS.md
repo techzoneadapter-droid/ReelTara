@@ -1,8 +1,8 @@
-## 20/10/2026 — Cập nhật tự động
-- Chính sách quyền riêng tư đã được bổ sung email liên hệ doanh nghiệp do chủ dự án cung cấp: baovan597@gmail.com. Chủ dự án cần xác nhận email này được phép công khai.
-- Workflow GitHub Pages đã được thêm. Nếu workflow thất bại vì Pages chưa bật, truy cập **Settings → Pages → Source → GitHub Actions** rồi chạy lại workflow `Publish ReelTara privacy policy`.
-- URL dự kiến sau khi Pages hoạt động: `https://techzoneadapter-droid.github.io/ReelTara/privacy.html`. Phải truy cập được bằng trình duyệt không đăng nhập trước khi khai trên Google Play.
-- Bản Android không có API backend hiện dùng danh mục offline sẵn có thay vì đợi các request `/api` lỗi.
+## 20/10/2026 — Chính sách đã triển khai
+- Đã đặt chính sách quyền riêng tư ReelTara trên website công ty tại **https://nvbtech.com.vn/reeltara/privacy.html**.
+- Repo website NVB Tech có GitHub Pages, đợt triển khai chính sách thành công. Chủ dự án cần mở link ở trình duyệt không đăng nhập và xác nhận email liên hệ.
+- Không cần bật GitHub Pages ở repository ReelTara nữa.
+- Vercel từ kết nối này trả 403 khi tạo project; công cụ không thể cấu hình backend thay bạn trên tài khoản hiện tại.
 
 # ReelTara — CHỈ CÁC BƯỚC CHỦ SỞ HỮU PHẢI LÀM
 
@@ -11,11 +11,10 @@
 ## A. Google Play Console — bắt buộc
 1. Vào https://play.google.com/console, xác minh tên pháp nhân **CÔNG TY TNHH CÔNG NGHỆ VÀ DỊCH VỤ NVB** và trạng thái tài khoản **Organization** (không chỉ là hồ sơ thanh toán doanh nghiệp).
 2. Chốt package ID cho ReelTara: đề xuất `vn.com.nvbtech.reeltara`. Nếu đã tạo ứng dụng khác cùng tên trong Play Console, xác minh chưa dùng package ID này cho ứng dụng khác trước khi phát hành.
-3. Chọn email hỗ trợ chính thức mà bạn chấp nhận công khai; kiểm tra pháp nhân, website, email và chính sách quyền riêng tư khớp nhau. Bản `public/privacy.html` hiện là **bản nháp**, chưa nên nộp.
+3. Xác nhận email liên hệ công khai `baovan597@gmail.com` và trang chính sách `https://nvbtech.com.vn/reeltara/privacy.html` mở được bên ngoài GitHub.
 4. Trong app mới, thực hiện App content: Data Safety, Target audience, Content rating, Ads declaration, Government/financial/medical declarations (nếu áp dụng), App access và thông tin liên hệ. Chỉ khai đúng những tính năng có trong bản đã build.
 5. Tải lên signed AAB theo hướng dẫn bên dưới rồi thử Internal testing. Nếu Play Console yêu cầu Closed testing 12 người/14 ngày, bạn phải tổ chức người thử nghiệm thật và trả lời yêu cầu cấp quyền production sau khi đạt điều kiện.
 
-Có thể tự xuất bản trang Privacy Policy miễn phí bằng GitHub: vào repository → Settings → Pages → Deploy from a branch → main + /docs. Sau đó kiểm tra URL công khai `https://techzoneadapter-droid.github.io/ReelTara/privacy.html`. Chỉ kích hoạt sau khi đã duyệt bản nháp và bổ sung email hỗ trợ chính thức.
 
 ## B. Backend online — bắt buộc nếu muốn tìm kiếm TMDB/danh mục phim động
 Vercel hiện trả 403 khi công cụ kết nối cố tạo dự án thay bạn. Cần bạn:
