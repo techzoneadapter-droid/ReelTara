@@ -1,8 +1,8 @@
 # ReelTara
 
-React + TypeScript + Vite. Existing branding, layouts and card sizes are preserved. Typography uses Inter Tight (headings/titles) and Inter (body/controls), with swap and system fallbacks. Additions are functional loading/error feedback, country preference, availability, Continue Watching and a media dialog.
+React + TypeScript + Vite. Existing branding, layouts and card sizes are preserved. Typography uses Inter Tight (headings/titles) and Inter (body/controls), with swap and system fallbacks. Additions are functional loading/error feedback, country preference (India IN / Philippines PH only), availability, Continue Watching and a media dialog.
 
-The Android GitHub Actions build and Play preparation checklist are in docs/ANDROID_RELEASE.md. Official privacy policy: https://nvbtech.com.vn/reeltara/privacy.html. A signed app bundle requires a private upload key; Google Play approval is a separate process.
+The Android GitHub Actions build and Play preparation checklist are in docs/ANDROID_RELEASE.md. Official privacy policy: https://nvbtech.com.vn/apps/reeltara/privacy.html. A signed app bundle requires a private upload key; Google Play approval is a separate process.
 
 Vercel project setup (owner approval required): https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftechzoneadapter-droid%2FReelTara
 

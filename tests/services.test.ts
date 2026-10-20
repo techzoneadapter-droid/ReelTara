@@ -132,11 +132,11 @@ test("local state migrates, persists watchlist, resumes, completes, and tolerate
   assert.equal(PlaybackService.continuing().length, 0);
   UserStateService.reset();
   assert.equal(new LocalUserStateRepository().read().watchlist.length, 0);
-  assert.equal(new LocalUserStateRepository().read().country, "VN");
+  assert.equal(new LocalUserStateRepository().read().country, "IN");
   UserStateService.setCountry("PH");
   assert.equal(new LocalUserStateRepository().read().country, "PH");
   values.set("reeltara-user-v1", "{bad");
-  assert.equal(new LocalUserStateRepository().read().country, "VN");
+  assert.equal(new LocalUserStateRepository().read().country, "IN");
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,
     value: {
@@ -360,4 +360,37 @@ test("native reviewed fallback accepts only exact Blender seed source files", as
   assert.equal(isReviewedNativeCandidate(bunny, "https://archive.org/download/arbitrary/upload.mp4", true), false);
   assert.equal(isReviewedNativeCandidate({ ...bunny, id: "archive:unreviewed" }, source, true), false);
   assert.equal(isReviewedNativeCandidate({ ...bunny, source: { ...bunny.source!, verified: false } }, source, true), false);
+});
+
+test("TMDB discovery only targets India and the Philippines", async () => {
+  const originalFetch = globalThis.fetch;
+  const targetRegions: string[] = [];
+  globalThis.fetch = (async (input: string | URL | Request) => {
+    const target = new URL(String(input));
+    targetRegions.push(target.searchParams.get("watch_region") || "");
+    assert.equal(target.searchParams.get("region"), target.searchParams.get("watch_region"));
+    return new Response(JSON.stringify({ results: [] }), { status: 200, headers: { "Content-Type": "application/json" } });
+  }) as typeof fetch;
+  try {
+    assert.equal((await tmdbResponse("/?path=movie/popular&region=IN", "testing-token")).status, 200);
+    assert.equal((await tmdbResponse("/?path=movie/popular&region=PH", "testing-token")).status, 200);
+    assert.equal((await tmdbResponse("/?path=movie/popular&region=VN", "testing-token")).status, 200);
+    assert.deepEqual(targetRegions, ["IN", "PH", "IN"]);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test("legacy VN setting migrates to India without changing PH preference", async () => {
+  const { LocalUserStateRepository } = await import("../src/storage/userState");
+  const original = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
+  let stored = JSON.stringify({ version: 1, country: "VN" });
+  Object.defineProperty(globalThis, "localStorage", { configurable: true, value: { getItem: () => stored, setItem: (_: string, value: string) => { stored = value; } } });
+  try {
+    const local = new LocalUserStateRepository();
+    assert.equal(local.read().country, "IN");
+    stored = JSON.stringify({ version: 1, country: "PH" });
+    assert.equal(local.read().country, "PH");
+  } finally {
+    if (original) Object.defineProperty(globalThis, "localStorage", original);
+    else delete (globalThis as unknown as {localStorage?: Storage}).localStorage;
+  }
 });

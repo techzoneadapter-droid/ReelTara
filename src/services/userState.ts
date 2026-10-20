@@ -48,7 +48,7 @@ export const UserStateService = {
     } catch { /* Browser storage may be disabled. */ }
     update({
       version: 1, watchlist: [], viewed: [], trailers: [], progress: {},
-      country: "VN",
+      country: "IN",
       preferences: { entitlement: { tier: "free", removeAds: false, cloudSync: false } },
     });
   },

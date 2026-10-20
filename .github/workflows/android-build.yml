@@ -60,7 +60,8 @@ jobs:
             fi
           }
           check "Free catalog" "/api/free-catalog?version=2"
-          check "Movie discovery VN" "/api/tmdb?path=movie/popular&region=VN"
+          check "Movie discovery India" "/api/tmdb?path=movie/popular&region=IN"
+          check "Movie discovery Philippines" "/api/tmdb?path=movie/popular&region=PH"
       - name: Generate Android native platform
         run: |
           npx cap add android

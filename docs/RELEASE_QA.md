@@ -13,7 +13,7 @@
 - [ ] Điện thoại Android 12, 14, 16: mở/đóng, foreground/background, nút Back.
 - [ ] Ảnh và banner không bị vỡ, chạm được mọi nút trên màn hình nhỏ.
 - [ ] Kết nối Internet không có backend: danh mục dự phòng và thông báo lỗi rõ ràng.
-- [ ] Có backend: tìm phim, đổi vùng VN, metadata, trailer, liên kết chính thức.
+- [ ] Có backend: tìm phim, chuyển India (IN) / Philippines (PH), metadata và nơi xem hợp pháp đúng từng quốc gia; đảm bảo không có lựa chọn VN.
 - [ ] Video nguồn hợp pháp: bắt đầu phát, seek, tạm dừng, tiếp tục, toàn màn hình, xoay ngang.
 - [ ] Thử nguồn 403/429, mất mạng, chuyển Wi-Fi sang 4G, mở app lại.
 - [ ] Kiểm tra không tải hoặc rehost phim thương mại.

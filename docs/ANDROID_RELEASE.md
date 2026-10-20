@@ -12,6 +12,9 @@ This is a development release pipeline, not proof of Play acceptance.
 ## Privacy Policy (website chính thức)
 https://nvbtech.com.vn/apps/reeltara/privacy.html — xác nhận trình duyệt công khai có thể mở trước khi khai trên Play Console.
 
+## Target markets (confirmed by owner)
+Only **India (IN)** and **Philippines (PH)**. The default market is India and users can switch to the Philippines. Vietnam is the developer company location, **not** a content or Play distribution market. In Play Console select India and Philippines only; do not accidentally enable worldwide distribution. TMDB watch-region checks must be run separately for IN and PH, and provider availability is market-specific. Test on devices/network routes in both countries before public release.
+
 ## Backend
 Production host has been configured on Vercel as https://reel-tara.vercel.app (confirmed in owner's Vercel UI, 20 October 2026). Android workflow defaults to this public origin. Vercel READY does not prove TMDB works; advisory CI HTTP checks should be reviewed. If TMDB returns 503, set TMDB_READ_ACCESS_TOKEN in Vercel server environment and redeploy. Never put TMDB secret into GitHub code or VITE_API_BASE_URL.
 

@@ -12,12 +12,13 @@ Hỗ trợ/xóa dữ liệu: https://nvbtech.com.vn/apps/reeltara/support.html
 Giới thiệu Play: https://nvbtech.com.vn/apps/reeltara/google-play.html
 Android: Capacitor 8, target API 36, package ID dự kiến vn.com.nvbtech.reeltara.
 Chủ sở hữu nói tài khoản Play Console Organization đã hoàn tất.
+**TARGET MARKETS: INDIA (IN) + PHILIPPINES (PH) ONLY. No Vietnam (VN) release.** Android region selection and server-side TMDB watch_region must only use IN/PH. Google Play Console country availability must be set to India and Philippines (by the owner); use English Play listings for the two countries.
 
 PHẦN A — ĐỒNG BỘ VÀ KIỂM THỬ:
 - Nếu đã có repo ở máy: kiểm tra git status. Nếu clean, git fetch và git pull --ff-only origin main. Nếu chưa có repo thì clone. Tuyệt đối không xóa sửa local user changes.
 - Đọc README, docs/ANDROID_RELEASE.md, docs/RELEASE_QA.md, scripts/prepare_release_windows.ps1, workflow android-build.yml.
 - npm ci, npm test, npm run build; xem log build GitHub Actions mới nhất.
-- Kiểm thử thật hai API /api/free-catalog?version=2 và /api/tmdb?path=movie/popular&region=VN ở reel-tara.vercel.app. Nếu thiếu TMDB token, yêu cầu chủ tài khoản tự đặt biến TMDB_READ_ACCESS_TOKEN trên server Vercel, không lấy token vào chat/ghi log.
+- Kiểm thử ba endpoint /api/free-catalog?version=2, /api/tmdb?path=movie/popular&region=IN và /api/tmdb?path=movie/popular&region=PH tại reel-tara.vercel.app. **Chỉ nhắm thị trường India/Philippines, không dùng VN**. Nếu thiếu TMDB token, yêu cầu chủ tài khoản tự đặt TMDB_READ_ACCESS_TOKEN trên server Vercel, không lấy token vào chat/ghi log.
 
 PHẦN B — BƯỚC 2 (KÝ BUNDLE ANDROID):
 - Xác minh Android Studio, JDK 21, keytool, GitHub CLI, SDK 36 ở Windows. Hỏi chủ sở hữu trước khi cài đặt hoặc tạo khóa.

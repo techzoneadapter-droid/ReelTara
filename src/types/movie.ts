@@ -1,4 +1,4 @@
-export type Country = "IN" | "PH" | "VN";
+export type Country = "IN" | "PH";
 export type ContentMode = "free_legal" | "discovery";
 export type Genre = { id: number; name: string };
 export type CastMember = {
