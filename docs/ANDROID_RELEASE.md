@@ -59,3 +59,10 @@ Only run npx cap add android once per generated native directory. For lasting na
 
 ## Branded app icon
 CI generates Android launcher icons and splash resources from `public/brand/icon.png` with `scripts/generate_android_assets.py` and Capacitor Assets. Because the current source icon is small, review the resulting icons on real devices and supply a higher-resolution original before final publication if edges appear soft.
+
+## Windows: thiết lập khóa ký với một script
+Khi đã cài Android Studio/JDK và GitHub CLI, mở PowerShell tại repo và chạy:
+
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\prepare_release_windows.ps1
+
+Script tạo hoặc dùng lại file khóa upload tại Documents/ReelTara-Upload-Key, đăng nhập GitHub trên máy bạn, nhập mật khẩu an toàn, thiết lập 4 Secrets qua GitHub CLI và kích hoạt lại Android Actions. Bạn vẫn phải giữ bản sao ngoại tuyến của .jks và không tiết lộ khóa/mật khẩu cho trợ lý.
